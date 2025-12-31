@@ -1,24 +1,19 @@
 """
 测试报告生成器
 
-生成测试报告，支持多种格式。
+支持 JSON 和 Markdown 格式。
 """
 
 import json
-from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from typing import List
 
-from .case import TestResult, TestStatus
+from .types import TestResult, TestStatus
 
 
 class TestReporter:
-    """
-    测试报告生成器
-
-    支持生成 JSON、Markdown 等格式的报告。
-    """
+    """测试报告生成器"""
 
     def __init__(self, results: List[TestResult]):
         self.results = results
@@ -60,14 +55,14 @@ class TestReporter:
         """生成 Markdown 报告"""
         stats = self._get_stats()
         lines = [
-            "# API 集成测试报告",
+            "# API 端到端测试报告",
             "",
             f"**生成时间**: {self.generated_at.strftime('%Y-%m-%d %H:%M:%S')}",
             "",
             "## 统计",
             "",
-            f"| 状态 | 数量 |",
-            f"|------|------|",
+            "| 状态 | 数量 |",
+            "|------|------|",
             f"| ✅ 通过 | {stats['passed']} |",
             f"| ❌ 失败 | {stats['failed']} |",
             f"| ⏭️ 跳过 | {stats['skipped']} |",
@@ -102,41 +97,48 @@ class TestReporter:
 
                 duration = f"{result.duration:.2f}s" if result.duration else "-"
                 comment = result.human_comment or result.error or "-"
-                # 截断过长的评论
                 if len(comment) > 50:
                     comment = comment[:47] + "..."
 
                 lines.append(
-                    f"| {result.test_case.name} | `{result.test_case.api_endpoint}` | {status_emoji} | {duration} | {comment} |"
+                    f"| {result.test_case.name} | "
+                    f"`{result.test_case.api_endpoint}` | "
+                    f"{status_emoji} | {duration} | {comment} |"
                 )
 
             lines.append("")
 
         # 失败详情
-        failed_results = [
-            r for r in self.results if r.status in [TestStatus.FAILED, TestStatus.ERROR]
+        failed = [
+            r for r in self.results
+            if r.status in [TestStatus.FAILED, TestStatus.ERROR]
         ]
-        if failed_results:
-            lines.append("## 失败详情")
-            lines.append("")
-
-            for result in failed_results:
-                lines.append(f"### {result.test_case.name}")
-                lines.append("")
-                lines.append(f"**API**: `{result.test_case.api_endpoint}`")
-                lines.append("")
-                lines.append(f"**预期**: {result.test_case.expected}")
-                lines.append("")
-                if result.error:
-                    lines.append("**错误**:")
-                    lines.append("```")
-                    lines.append(result.error)
-                    lines.append("```")
-                if result.human_comment:
-                    lines.append(f"**人工评语**: {result.human_comment}")
-                lines.append("")
+        if failed:
+            lines.extend(self._format_failures(failed))
 
         return "\n".join(lines)
+
+    def _format_failures(self, failed_results: List[TestResult]) -> List[str]:
+        """格式化失败详情"""
+        lines = ["## 失败详情", ""]
+
+        for result in failed_results:
+            lines.append(f"### {result.test_case.name}")
+            lines.append("")
+            lines.append(f"**API**: `{result.test_case.api_endpoint}`")
+            lines.append("")
+            lines.append(f"**预期**: {result.test_case.expected}")
+            lines.append("")
+
+            if result.error:
+                lines.extend(["**错误**:", "```", result.error, "```"])
+
+            if result.human_comment:
+                lines.append(f"**人工评语**: {result.human_comment}")
+
+            lines.append("")
+
+        return lines
 
     def save(self, path: str, format: str = "markdown") -> None:
         """
@@ -151,12 +153,8 @@ class TestReporter:
 
         if format == "json":
             content = self.to_json()
-        elif format == "markdown":
-            content = self.to_markdown()
         else:
-            raise ValueError(f"不支持的格式: {format}")
+            content = self.to_markdown()
 
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content)
-
-        print(f"报告已保存到: {filepath}")

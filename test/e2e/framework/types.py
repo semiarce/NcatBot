@@ -1,24 +1,24 @@
 """
 测试用例定义
 
-定义测试用例、测试结果等核心数据结构。
+定义测试用例核心数据结构。
 """
 
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Coroutine, Dict, List, Optional
+from typing import Any, Callable, Coroutine, List, Optional
 
 
 class TestStatus(Enum):
     """测试状态"""
 
-    PENDING = "pending"  # 待执行
-    RUNNING = "running"  # 执行中
-    PASSED = "passed"  # 通过
-    FAILED = "failed"  # 失败
-    SKIPPED = "skipped"  # 跳过
-    ERROR = "error"  # 执行错误
+    PENDING = "pending"
+    RUNNING = "running"
+    PASSED = "passed"
+    FAILED = "failed"
+    SKIPPED = "skipped"
+    ERROR = "error"
 
 
 @dataclass
@@ -29,13 +29,15 @@ class TestCase:
     Attributes:
         name: 测试名称
         description: 测试描述
-        category: 测试分类（如 account, message, group）
+        category: 测试分类
         api_endpoint: 测试的 API 端点
         expected: 预期结果描述
         func: 测试函数
         tags: 标签列表
         requires_input: 是否需要人工输入测试数据
-        cleanup: 清理函数（可选）
+        cleanup: 清理函数
+        validator: 结果验证函数，接受 actual_result，返回 (passed, message)
+        show_result: 是否显示详细结果供人工确认
     """
 
     name: str
@@ -47,9 +49,22 @@ class TestCase:
     tags: List[str] = field(default_factory=list)
     requires_input: bool = False
     cleanup: Optional[Callable[..., Coroutine[Any, Any, None]]] = None
+    validator: Optional[Callable[[Any], tuple]] = None
+    show_result: bool = False
 
     def __repr__(self) -> str:
         return f"TestCase({self.name})"
+    
+    def validate(self, result: Any) -> tuple:
+        """
+        验证测试结果
+        
+        Returns:
+            (passed: bool, message: str)
+        """
+        if self.validator:
+            return self.validator(result)
+        return (True, "")
 
 
 @dataclass
@@ -61,7 +76,7 @@ class TestResult:
         test_case: 关联的测试用例
         status: 测试状态
         actual_result: 实际结果
-        error: 错误信息（如果有）
+        error: 错误信息
         human_comment: 人工评语
         started_at: 开始时间
         finished_at: 结束时间
@@ -105,44 +120,3 @@ class TestResult:
         self.status = TestStatus.ERROR
         self.error = error
         self.finished_at = datetime.now()
-
-
-def test_case(
-    name: str,
-    description: str,
-    category: str,
-    api_endpoint: str,
-    expected: str,
-    tags: List[str] = None,
-    requires_input: bool = False,
-):
-    """
-    测试用例装饰器
-
-    用于将函数标记为测试用例。
-
-    Example:
-        @test_case(
-            name="获取登录信息",
-            description="获取当前登录的 QQ 账号信息",
-            category="account",
-            api_endpoint="/get_login_info",
-            expected="返回包含 user_id 和 nickname 的信息",
-        )
-        async def test_get_login_info(api):
-            return await api.get_login_info()
-    """
-
-    def decorator(func: Callable) -> TestCase:
-        return TestCase(
-            name=name,
-            description=description,
-            category=category,
-            api_endpoint=api_endpoint,
-            expected=expected,
-            func=func,
-            tags=tags or [],
-            requires_input=requires_input,
-        )
-
-    return decorator
