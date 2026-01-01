@@ -138,7 +138,7 @@ class EventBus:
             所有处理器的返回结果列表
         """
         LOG.debug(
-            f"发布事件: {event.type} 数据: {event.data if len(str(event.data)) < 50 else str(event.data)[:50] + '...'}"
+            f"发布事件: {event.type} 数据: {str(event.data)[:50]}{'...' if len(str(event.data)) > 50 else ''}"
         )
         handlers = self._collect_handlers(event.type)
 
