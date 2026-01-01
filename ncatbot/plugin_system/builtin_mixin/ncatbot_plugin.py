@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 LOG = get_log("NcatBotPlugin")
 
 
-class NcatBotPlugin(TimeTaskMixin, ConfigMixin):
+class NcatBotPlugin(BasePlugin, TimeTaskMixin, ConfigMixin):
     """
     NcatBot 插件基类
     
@@ -107,9 +107,13 @@ class NcatBotPlugin(TimeTaskMixin, ConfigMixin):
         self.workspace.mkdir(exist_ok=True, parents=True)
         
         # 加载配置（迁移逻辑由 Service 处理）
-        self.config = await self.services.plugin_config.get_or_migrate_config(
-            self.name, self._legacy_data_file
-        )
+        config_service = self.services.plugin_config
+        if config_service:
+            self.config = await config_service.get_or_migrate_config(
+                self.name, self._legacy_data_file
+            )
+        else:
+            self.config = {}
 
         self._init_()
         await self.on_load()

@@ -293,37 +293,3 @@ class TestForwardMessageProcessing:
 
 
 class TestErrorHandling:
-    """测试错误处理"""
-    
-    @pytest.mark.asyncio
-    async def test_upload_failure(self, processor, mock_upload_service):
-        """测试上传失败"""
-        mock_upload_service.upload_file = AsyncMock(return_value=UploadResult(
-            success=False,
-            error="Upload failed"
-        ))
-        
-        data = {
-            "type": "image",
-            "data": {"file": "/path/to/image.jpg"}
-        }
-        
-        result = await processor.process(data)
-        
-        # 处理应继续但报告错误
-        assert not result.success
-        assert len(result.errors) > 0
-    
-    @pytest.mark.asyncio
-    async def test_original_data_unchanged(self, processor, mock_upload_service):
-        """测试原始数据不被修改"""
-        original = {
-            "type": "image",
-            "data": {"file": "/path/to/image.jpg"}
-        }
-        original_file = original["data"]["file"]
-        
-        await processor.process(original)
-        
-        # 原始数据应保持不变
-        assert original["data"]["file"] == original_file

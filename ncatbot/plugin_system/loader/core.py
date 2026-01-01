@@ -182,9 +182,11 @@ class PluginLoader:
 
     async def unload_all(self, **kwargs) -> None:
         """一键异步卸载全部插件。"""
+        # RBAC 服务会在 on_close 时自动保存数据
         await asyncio.gather(
             *(self.unload_plugin(name, **kwargs) for name in list(self.plugins))
         )
+        # 服务关闭由外部 ServiceManager 统一管理
 
     # -------------------- 查询 API --------------------
     def get_plugin(self, name: str) -> Optional[BasePlugin]:
