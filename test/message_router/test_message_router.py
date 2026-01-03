@@ -24,7 +24,7 @@ class TestMessageRouterInit:
         router = MessageRouter()
 
         assert router._uri is None
-        assert router._event_callback is None
+        assert router._event_dispatcher is None
         assert router._ws is None
         assert router._pending_futures == {}
 
@@ -41,9 +41,9 @@ class TestMessageRouterInit:
         async def callback(data):
             pass
 
-        router = MessageRouter(event_callback=callback)
+        router = MessageRouter(event_dispatcher=callback)
 
-        assert router._event_callback is callback
+        assert router._event_dispatcher is callback
 
     def test_service_name_and_description(self):
         """测试服务名称和描述"""
@@ -88,18 +88,18 @@ class TestMessageRouterProperties:
 
 
 class TestSetEventCallback:
-    """set_event_callback 方法测试"""
+    """set_event_dispatcher 方法测试"""
 
-    def test_set_event_callback(self):
+    def test_set_event_dispatcher(self):
         """测试设置事件回调"""
         router = MessageRouter()
 
         async def new_callback(data):
             pass
 
-        router.set_event_callback(new_callback)
+        router.set_event_dispatcher(new_callback)
 
-        assert router._event_callback is new_callback
+        assert router._event_dispatcher is new_callback
 
 
 class TestMessageRouterSend:
@@ -111,6 +111,7 @@ class TestMessageRouterSend:
         router = MessageRouter()
         router._ws = MagicMock()
         router._ws.send = AsyncMock()
+        router._loop = MagicMock()
         return router
 
     @pytest.mark.asyncio
@@ -171,6 +172,7 @@ class TestOnMessage:
         router = MessageRouter()
         router._ws = MagicMock()
         router._ws.send = AsyncMock()
+        router._loop = asyncio.get_running_loop()
 
         # 模拟发送请求
         send_task = asyncio.create_task(router.send("test_action", timeout=1.0))
@@ -193,7 +195,7 @@ class TestOnMessage:
     async def test_on_message_calls_event_callback_for_events(self):
         """测试收到事件时调用回调"""
         callback = AsyncMock()
-        router = MessageRouter(event_callback=callback)
+        router = MessageRouter(event_dispatcher=callback)
 
         event_data = {
             "post_type": "message",
@@ -210,7 +212,7 @@ class TestOnMessage:
     async def test_on_message_ignores_unknown_echo(self):
         """测试忽略未知 echo 的响应"""
         callback = AsyncMock()
-        router = MessageRouter(event_callback=callback)
+        router = MessageRouter(event_dispatcher=callback)
 
         # 发送带未知 echo 的消息
         unknown_response = {"echo": "unknown-echo-id", "status": "ok"}

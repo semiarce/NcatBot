@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import List
 
-from ..utils import get_log
+from ncatbot.utils import get_log
 
 LOG = get_log("ncatbot.core.api.api_message.validation")
 

@@ -49,7 +49,7 @@ class IAPIClient(ABC):
         self, endpoint: str, params: Optional[Dict[str, Any]] = None
     ) -> APIResponse:
         """
-        发送 API 请求
+        发送 API 请求，必须线程安全 & 协程安全
 
         Args:
             endpoint: API 端点路径，如 "/get_login_info"
@@ -74,7 +74,7 @@ class CallbackAPIClient(IAPIClient):
     ):
         """
         Args:
-            callback: 异步回调函数，接受 (endpoint, params) 返回响应字典
+            callback: 线程安全的异步回调函数，接受 (endpoint, params) 返回响应字典，可以在任意线程调用
         """
         self._callback = callback
 
@@ -83,38 +83,3 @@ class CallbackAPIClient(IAPIClient):
     ) -> APIResponse:
         result = await self._callback(endpoint, params or {})
         return APIResponse.from_dict(result)
-
-
-class MockAPIClient(IAPIClient):
-    """
-    模拟 API 客户端，用于测试
-
-    可以预设响应或自定义响应逻辑
-    """
-
-    def __init__(self):
-        self._responses: Dict[str, APIResponse] = {}
-        self._default_response = APIResponse(retcode=0, message="ok", data={})
-        self._request_history: list = []
-
-    def set_response(self, endpoint: str, response: APIResponse) -> None:
-        """设置特定端点的模拟响应"""
-        self._responses[endpoint] = response
-
-    def set_default_response(self, response: APIResponse) -> None:
-        """设置默认响应"""
-        self._default_response = response
-
-    def get_request_history(self) -> list:
-        """获取请求历史"""
-        return self._request_history.copy()
-
-    def clear_history(self) -> None:
-        """清除请求历史"""
-        self._request_history.clear()
-
-    async def request(
-        self, endpoint: str, params: Optional[Dict[str, Any]] = None
-    ) -> APIResponse:
-        self._request_history.append({"endpoint": endpoint, "params": params})
-        return self._responses.get(endpoint, self._default_response)

@@ -98,6 +98,9 @@ class LifecycleManager:
     async def _core_execution(self):
         """核心执行流"""
         try:
+            # 0. 绑定事件循环（支持跨线程发布）
+            self.event_bus.bind_loop()
+
             # 1. 加载服务
             await self.services.load_all()
 
@@ -108,7 +111,7 @@ class LifecycleManager:
 
             self.api = BotAPI(router.send, service_manager=self.services)
             self.dispatcher = EventDispatcher(self.event_bus, self.api)
-            router.set_event_callback(self.dispatcher)
+            router.set_event_dispatcher(self.dispatcher)
 
             # 3. 加载插件
             if self.plugin_loader:

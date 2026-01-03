@@ -5,6 +5,7 @@
 """
 
 import asyncio
+import concurrent.futures
 import re
 import uuid
 import traceback
@@ -56,6 +57,27 @@ class EventBus:
         self._regex: List[Tuple] = []
         self.default_timeout = default_timeout
         self._handler_meta: Dict[uuid.UUID, Dict] = {}
+        # 主事件循环引用（用于跨线程发布）
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
+
+    def bind_loop(self, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
+        """
+        绑定事件循环
+
+        在异步上下文中调用此方法绑定当前事件循环，以支持跨线程发布。
+        如果不传参数，则自动获取当前运行的事件循环。
+
+        Args:
+            loop: 事件循环，None 则自动获取
+        """
+        if loop is None:
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                LOG.warning("无法获取运行中的事件循环，跨线程发布将不可用")
+                return
+        self._loop = loop
+        LOG.debug("EventBus 已绑定事件循环")
 
     # ==================== 订阅管理 ====================
 
@@ -164,6 +186,58 @@ class EventBus:
 
         return event._results.copy()
 
+    def publish_threadsafe(
+        self, event: NcatBotEvent
+    ) -> Optional[concurrent.futures.Future]:
+        """
+        线程安全的事件发布（非阻塞）
+
+        从非异步线程中安全地发布事件到主事件循环。
+        此方法立即返回一个 Future，不会阻塞调用线程。
+
+        Args:
+            event: 要发布的事件
+
+        Returns:
+            Future 对象，可用于获取结果或检查状态；
+            如果事件循环不可用则返回 None
+        """
+        if self._loop is None or self._loop.is_closed():
+            LOG.warning("事件循环不可用，无法发布事件")
+            return None
+
+        return asyncio.run_coroutine_threadsafe(self.publish(event), self._loop)
+
+    def publish_threadsafe_wait(
+        self,
+        event: NcatBotEvent,
+        timeout: Optional[float] = 5.0,
+    ) -> Optional[List[Any]]:
+        """
+        线程安全的事件发布（阻塞等待结果）
+
+        从非异步线程中安全地发布事件，并阻塞等待所有处理器执行完成。
+
+        Args:
+            event: 要发布的事件
+            timeout: 等待超时时间（秒），None 表示无限等待
+
+        Returns:
+            处理器返回结果列表；如果超时或事件循环不可用则返回 None
+        """
+        future = self.publish_threadsafe(event)
+        if future is None:
+            return None
+
+        try:
+            return future.result(timeout=timeout)
+        except concurrent.futures.TimeoutError:
+            LOG.error(f"事件发布超时: {event.type}")
+            return None
+        except Exception as e:
+            LOG.error(f"事件发布失败: {e}")
+            return None
+
     async def _run_handler(self, handler: Callable, event: NcatBotEvent) -> Any:
         """
         执行处理器
@@ -220,6 +294,7 @@ class EventBus:
         self._exact.clear()
         self._regex.clear()
         self._handler_meta.clear()
+        self._loop = None
         LOG.info("EventBus 已关闭，所有处理器已清理")
 
 

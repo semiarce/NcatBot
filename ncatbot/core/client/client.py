@@ -118,7 +118,7 @@ class BotClient(EventRegistry, LifecycleManager):
 
             # 事件分发器
             self.dispatcher = EventDispatcher(self.event_bus, self.api)
-            router.set_event_callback(self.dispatcher)
+            router.set_event_dispatcher(self.dispatcher)
 
     def _register_builtin_handlers(self):
         """注册内置处理器"""

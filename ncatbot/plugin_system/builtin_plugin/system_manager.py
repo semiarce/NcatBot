@@ -4,13 +4,13 @@
 提供 NcatBot 核心功能：
 - 消息事件路由
 - 命令/过滤器分发
-- 插件热重载（通过 FileWatcherService）
+- 插件热重载（订阅 FileWatcherService 事件）
 - 系统状态查询
 - 权限管理
 """
 
 import asyncio
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 import psutil
 
@@ -30,9 +30,6 @@ from ncatbot.core.service.builtin.unified_registry import (
 from ncatbot.utils import get_log, PermissionGroup
 
 from ..builtin_mixin import NcatBotPlugin
-
-if TYPE_CHECKING:
-    from ncatbot.core.service.builtin import FileWatcherService
 
 LOG = get_log("SystemManager")
 
@@ -66,11 +63,13 @@ class SystemManager(NcatBotPlugin):
             timeout=900,
         )
 
-        # 设置文件监视服务的回调
-        file_watcher: "FileWatcherService" = self.services.file_watcher
-        if file_watcher:
-            file_watcher.set_reload_callback(self._on_plugin_reload_requested)
-            LOG.info("已注册插件热重载回调")
+        # 订阅插件文件变化事件（由 FileWatcherService 发布）
+        self.event_bus.subscribe(
+            "ncatbot.plugin_file_changed",
+            self._handle_plugin_file_changed,
+            timeout=60,
+        )
+        LOG.info("已订阅插件文件变化事件")
 
     async def on_unload(self) -> None:
         """插件卸载"""
@@ -78,25 +77,24 @@ class SystemManager(NcatBotPlugin):
         pass
 
     # ------------------------------------------------------------------
-    # 热重载回调
+    # 热重载事件处理
     # ------------------------------------------------------------------
 
-    async def _on_plugin_reload_requested(self, plugin_folder: str) -> bool:
+    async def _handle_plugin_file_changed(self, event: NcatBotEvent) -> None:
         """
-        插件热重载回调
+        处理插件文件变化事件
 
-        由 FileWatcherService 在检测到文件变化时调用。
-
-        Args:
-            plugin_folder: 发生变化的插件文件夹名
-
-        Returns:
-            是否成功处理
+        由 FileWatcherService 发布，在主事件循环中执行。
         """
+        plugin_folder = event.data.get("plugin_folder")
+        if not plugin_folder:
+            LOG.warning("插件文件变化事件缺少 plugin_folder")
+            return
+
         plugin_name = self._loader.get_plugin_name_by_folder_name(plugin_folder)
         if plugin_name is None:
             LOG.warning(f"无法找到插件目录 {plugin_folder} 对应的插件名称")
-            return False
+            return
 
         try:
             # 卸载插件
@@ -109,10 +107,8 @@ class SystemManager(NcatBotPlugin):
             # 加载插件
             await self._loader.load_plugin(plugin_name)
             LOG.info(f"已加载插件: {plugin_name}")
-            return True
         except Exception as e:
             LOG.error(f"热重载插件 {plugin_name} 失败: {e}")
-            return False
 
     # ------------------------------------------------------------------
     # 消息事件处理

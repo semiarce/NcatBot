@@ -45,6 +45,8 @@ class NapCatWebSocket:
         self._message_callback = message_callback
         self._running = False
         self._listen_task: Optional[asyncio.Task] = None
+        self._send_lock = asyncio.Lock()
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
 
     # ------------------------------------------------------------------
     # 连接管理
@@ -57,6 +59,7 @@ class NapCatWebSocket:
             uri, close_timeout=0.2, max_size=2**30, open_timeout=1
         )
         self._running = True
+        self._loop = asyncio.get_running_loop()
         LOG.info("WebSocket 已连接")
 
     async def disconnect(self) -> None:
@@ -105,14 +108,15 @@ class NapCatWebSocket:
 
     async def send(self, data: dict) -> None:
         """
-        发送数据
+        发送数据（协程安全），线程不安全
 
         Args:
             data: 要发送的数据字典
         """
-        if not self._client:
-            raise ConnectionError("WebSocket 未连接")
-        await self._client.send(json.dumps(data))
+        async with self._send_lock:
+            if not self._client:
+                raise ConnectionError("WebSocket 未连接")
+            await self._client.send(json.dumps(data))
 
     # ------------------------------------------------------------------
     # 消息接收

@@ -1,35 +1,31 @@
 """
 文件监视服务
 
-监视插件目录中的文件变化，通过回调通知需要热重载的插件。
+监视插件目录中的文件变化，通过事件发布通知需要热重载的插件。
 """
 
-import asyncio
 import os
 import threading
 import time
 from pathlib import Path
-from typing import Callable, Optional, Set, Dict, Awaitable
+from typing import Optional, Set, Dict
 
 from ncatbot.core.service.base import BaseService
 from ncatbot.utils import get_log
 
 LOG = get_log("FileWatcher")
 
-# 回调类型：接收插件目录名，返回是否成功处理
-ReloadCallback = Callable[[str], Awaitable[bool]]
-
 
 class FileWatcherService(BaseService):
     """
     文件监视服务
 
-    监视插件目录中的 .py 文件变化，当检测到变化时通过回调通知。
+    监视插件目录中的 .py 文件变化，当检测到变化时发布事件通知。
 
     使用方式：
-    1. 服务启动后调用 set_reload_callback() 注册回调
-    2. 当插件目录中的文件发生变化时，服务会调用回调函数
-    3. 回调函数负责实际的插件卸载/加载操作
+    1. 服务启动后自动监视已添加的目录
+    2. 当插件目录中的文件发生变化时，服务发布 ncatbot.plugin_file_changed 事件
+    3. 订阅者（如 SystemManager）处理实际的插件卸载/加载操作
     """
 
     name = "file_watcher"
@@ -42,9 +38,6 @@ class FileWatcherService(BaseService):
     FAST_DEBOUNCE_DELAY = 0.02  # debug 模式防抖延迟
 
     def __init__(self, **config_args):
-        """
-        Args:
-        """
         super().__init__(**config_args)
 
         # 文件监视状态
@@ -61,9 +54,6 @@ class FileWatcherService(BaseService):
         self._last_process_time: float = 0
         self._first_scan_done = False
 
-        # 回调函数
-        self._reload_callback: Optional[ReloadCallback] = None
-
         # 暂停控制（用于测试隔离）
         self._paused = threading.Event()
         self._paused.set()  # 初始状态：未暂停（可运行）
@@ -74,7 +64,6 @@ class FileWatcherService(BaseService):
 
     async def on_load(self) -> None:
         """启动文件监视"""
-        # 添加主插件目录
         # 根据 debug 模式自动选择间隔
         is_test_mode = getattr(self.service_manager, "_test_mode", False)
         self._watch_interval = (
@@ -107,18 +96,6 @@ class FileWatcherService(BaseService):
     # 公开接口
     # ------------------------------------------------------------------
 
-    def set_reload_callback(self, callback: ReloadCallback) -> None:
-        """
-        设置热重载回调函数
-
-        当检测到插件目录中的文件变化时，会调用此回调。
-
-        Args:
-            callback: 异步回调函数，接收插件目录名作为参数
-        """
-        self._reload_callback = callback
-        LOG.debug("已设置热重载回调")
-
     @property
     def is_watching(self) -> bool:
         """是否正在监视"""
@@ -141,7 +118,7 @@ class FileWatcherService(BaseService):
         """
         暂停文件变化处理
 
-        watcher 线程仍在运行和扫描，但不会触发回调。
+        watcher 线程仍在运行和扫描，但不会触发事件发布。
         用于测试时防止文件重置触发意外的重载。
         """
         self._paused.clear()
@@ -240,30 +217,32 @@ class FileWatcherService(BaseService):
             self._pending_dirs.clear()
             self._last_process_time = current_time
 
-        if not self._reload_callback:
-            LOG.warning("未设置热重载回调，跳过处理")
-            return
-
         LOG.info(f"处理修改的插件目录: {dirs_to_process}")
 
         for plugin_dir in dirs_to_process:
-            self._trigger_reload(plugin_dir)
+            self._publish_reload_event(plugin_dir)
 
-    def _trigger_reload(self, plugin_dir: str) -> None:
-        """触发重载回调"""
-        if self._reload_callback is None:
-            LOG.warning(f"无热重载回调，跳过插件 {plugin_dir}")
+    def _publish_reload_event(self, plugin_dir: str) -> None:
+        """发布插件重载事件（线程安全）"""
+        # 通过 bot_client 获取事件总线
+        bot_client = getattr(self.service_manager, "bot_client", None)
+        if bot_client is None:
+            LOG.warning("BotClient 不可用，跳过发布事件")
             return
 
-        callback = self._reload_callback
+        event_bus = getattr(bot_client, "event_bus", None)
+        if event_bus is None:
+            LOG.warning("事件总线不可用，跳过发布事件")
+            return
 
-        async def run_callback():
-            try:
-                await callback(plugin_dir)
-            except Exception as e:
-                LOG.error(f"热重载插件 {plugin_dir} 失败: {e}")
+        from ncatbot.core.client.ncatbot_event import NcatBotEvent
 
-        try:
-            asyncio.run(run_callback())
-        except Exception as e:
-            LOG.error(f"执行热重载回调失败: {e}")
+        event = NcatBotEvent(
+            type="ncatbot.plugin_file_changed",
+            data={"plugin_folder": plugin_dir},
+        )
+
+        # 使用 EventBus 提供的线程安全接口（阻塞等待结果）
+        result = event_bus.publish_threadsafe_wait(event, timeout=5.0)
+        if result is None:
+            LOG.error(f"发布插件重载事件失败: {plugin_dir}")

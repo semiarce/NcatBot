@@ -8,12 +8,12 @@ from __future__ import annotations
 
 from typing import Optional, TYPE_CHECKING, Union
 
+from ncatbot.utils import get_log
 from .utils import (
     APIComponent,
     APIReturnStatus,
     generate_sync_methods,
     require_exactly_one,
-    get_log,
 )
 
 if TYPE_CHECKING:

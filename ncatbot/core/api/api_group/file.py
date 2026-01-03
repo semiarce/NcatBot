@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Union
 
-from ..utils import APIComponent, APIReturnStatus, get_log
+from ncatbot.utils import get_log
+from ..utils import APIComponent, APIReturnStatus
 
 if TYPE_CHECKING:
     from ncatbot.core import File

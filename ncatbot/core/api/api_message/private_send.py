@@ -8,12 +8,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional, Union
 
+from ncatbot.utils import get_log
 from ...event import MessageArray, PlainText, Image, Record, File
-from ..utils import (
-    APIComponent,
-    MessageAPIReturnStatus,
-    get_log,
-)
+from ..utils import APIComponent, MessageAPIReturnStatus
 from .validation import validate_msg
 
 if TYPE_CHECKING:

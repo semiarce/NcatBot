@@ -28,12 +28,6 @@ class TestFileWatcherService:
         assert file_watcher is not None
         assert file_watcher.is_watching
 
-    @pytest.mark.asyncio
-    async def test_service_has_callback_set(self, test_suite: E2ETestSuite):
-        """测试服务已设置回调（由 SystemManager 设置）"""
-        file_watcher = test_suite.services.file_watcher
-        assert file_watcher._reload_callback is not None
-
 
 class TestPluginHotReload:
     """插件热重载测试"""

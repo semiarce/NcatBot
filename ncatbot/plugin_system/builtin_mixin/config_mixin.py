@@ -11,7 +11,7 @@
 """
 
 from typing import Any, Dict, Callable, TYPE_CHECKING, Optional
-from ncatbot.utils import get_log, run_coroutine
+from ncatbot.utils import get_log
 
 if TYPE_CHECKING:
     from ncatbot.core.service import ServiceManager
@@ -163,9 +163,8 @@ class ConfigMixin:
 
             # 触发变更回调
             if old_value != new_value:
-                config_item = configs.get(name)
-                if config_item and config_item.on_change:
-                    run_coroutine(config_item.on_change, old_value, new_value)
+                # TODO: 支持安全的 on_change 回调
+                pass
 
             return (old_value, new_value)
         except Exception as e:

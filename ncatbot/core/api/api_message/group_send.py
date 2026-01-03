@@ -7,12 +7,9 @@
 from __future__ import annotations
 
 from typing import List, Optional, Union, TYPE_CHECKING
+from ncatbot.utils import get_log
 from ...event import MessageArray, Record, File
-from ..utils import (
-    APIComponent,
-    MessageAPIReturnStatus,
-    get_log,
-)
+from ..utils import APIComponent, MessageAPIReturnStatus
 from .validation import validate_msg
 
 if TYPE_CHECKING:
