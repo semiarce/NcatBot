@@ -5,7 +5,6 @@ NcatBot 插件基类
 事件系统接口由 BasePlugin 提供。
 """
 
-import inspect
 from pathlib import Path
 from typing import final, Any, TYPE_CHECKING
 
@@ -71,21 +70,10 @@ class NcatBotPlugin(BasePlugin, TimeTaskMixin, ConfigMixin):
 
         # 初始化内部状态
         self._handlers_id = set()
-        self.services = service_manager or ServiceManager()
-
-        # 计算路径
-        self.main_file = Path(inspect.getmodule(self.__class__).__file__).resolve()
-        base_plugin_dir = Path(config.plugins_dir).resolve()
-
-        try:
-            relative_parts = self.main_file.relative_to(base_plugin_dir).parts
-            self.source_dir = base_plugin_dir / relative_parts[0]
-        except ValueError:
-            self.source_dir = self.main_file.parent
+        self.services = service_manager
 
         self.workspace = Path(config.plugins_data_dir) / self.name
         self._legacy_data_file = self.workspace / f"{self.name}.yaml"
-        self.first_load = not self._legacy_data_file.exists()
 
     # ------------------------------------------------------------------
     # 生命周期方法

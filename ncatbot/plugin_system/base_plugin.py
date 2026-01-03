@@ -16,7 +16,6 @@ from ncatbot.core.service import ServiceManager
 
 if TYPE_CHECKING:
     from .builtin_mixin.ncatbot_plugin import NcatBotPlugin
-    from .loader import PluginLoader
     from ncatbot.core.service.builtin import (
         RBACService,
         PluginConfigService,
@@ -41,23 +40,23 @@ class BasePlugin:
     author: str = "Unknown"
     description: str = "这个作者很懒且神秘，没有写一点点描述，真是一个神秘的插件"
     dependencies: Dict[str, str] = {}
-    config: "PluginConfig"
 
     # -------- 运行时属性 --------
-    first_load: bool = True
-    main_file: Path
-    source_dir: Path
-    workspace: Path
-    services: ServiceManager
-    api: "BotAPI"
-    data: Dict[str, Any]  # 持久化数据字典
+    workspace: Path  # 插件工作目录, 不知道有什么用
+    config: "PluginConfig"  # 持久化配置对象, __onload__ 时调用有关服务自动加载
+    data: Dict[str, Any]  # 持久化数据字典, __onload__ 时调用有关服务自动加载
+
+    # -------- 外部注入的属性 -------
+    services: ServiceManager  # 用于访问服务, 可见, 由 PluginLoader 在 init 时注入
+    api: "BotAPI"  # 访问 Bot API, 可见, 由 PluginLoader 在 init 时注入
+    _event_bus: (
+        EventBus  # 用于发布数据和订阅事件, 不可见, 由 PluginLoader 在 init 时注入
+    )
 
     # -------- 内部属性 --------
     _debug: bool
-    _event_bus: EventBus
-    _handlers_id: Set[UUID]
-    _loader: "PluginLoader"
-    _legacy_data_file: Path
+    _handlers_id: Set[UUID]  # 用于跟踪已注册的处理器 ID
+    _legacy_data_file: Path  # 旧版数据文件路径（用于数据迁移）
 
     # ------------------------------------------------------------------
     # 生命周期方法（子类重写）
