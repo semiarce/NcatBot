@@ -75,6 +75,9 @@ class CommandSpec:
     彻底分析函数后得到的命令标识器，用于指导参数传递。
     """
 
+    name: str
+    plugin_name: str
+
     def __init__(
         self,
         options: List[OptionSpec],
@@ -88,12 +91,10 @@ class CommandSpec:
         self.params: List[ParameterSpec] = params
         self.param_types: List[type] = param_types
         self.func: Callable = func
-        self.plugin_name: Optional[str] = None
 
         # 必须外部重新设置的属性
         self.aliases: List[str] = []
         self.description: Optional[str] = None
-        self.name: Optional[str] = None
         self.prefixes: List[str] = []
 
     def find_option(self, name: str) -> Optional[OptionSpec]:

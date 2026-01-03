@@ -35,6 +35,10 @@ class FilterRegistry:
     def set_current_plugin_name(cls, plugin_name: str):
         cls._current_plugin_name = plugin_name
 
+    @classmethod
+    def get_plugin_name(cls, full_name: str) -> str:
+        return full_name.split("::")[0]
+
     def register_filter(
         self,
         name: str,
@@ -127,6 +131,7 @@ class FilterRegistry:
 
     group_filter = group_filter
     private_filter = private_filter
+
 
 # 全局单例
 filter_registry = FilterRegistry()

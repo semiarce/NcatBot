@@ -3,7 +3,7 @@
 负责命令预处理、解析、参数绑定、执行。
 """
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, Callable, TYPE_CHECKING
 
 from ncatbot.utils import get_log
 from .trigger.binder import ArgumentBinder, BindResult
@@ -12,7 +12,7 @@ from .trigger.resolver import CommandResolver
 from .command_system.lexer.tokenizer import StringTokenizer, Token
 
 if TYPE_CHECKING:
-    from ncatbot.core import MessageEvent
+    from ncatbot.core import MessageEvent, BotClient
     from .executor import FunctionExecutor
 
 LOG = get_log("CommandRunner")
@@ -32,10 +32,8 @@ class CommandRunner:
         self,
         prefixes: List[str],
         executor: "FunctionExecutor",
-        event_bus=None,
     ):
         self._executor = executor
-        self._event_bus = event_bus
         self._binder = ArgumentBinder()
 
         # 初始化预处理器
@@ -62,11 +60,19 @@ class CommandRunner:
         """获取解析器"""
         return self._resolver
 
-    def set_event_bus(self, event_bus) -> None:
-        """设置事件总线"""
-        self._event_bus = event_bus
+    def get_plugin_instance_if_needed(
+        self,
+        bot_client: "BotClient",
+        func: Callable,
+        name: str,
+    ):
+        """获取命令所属插件实例（如果适用）"""
+        plugin_class = bot_client.get_plugin_class_by_name(name)
+        if func in plugin_class.__dict__.values():
+            return bot_client.get_plugin(plugin_class)
+        return None
 
-    async def run(self, event: "MessageEvent") -> bool:
+    async def run(self, event: "MessageEvent", bot_client: "BotClient") -> bool:
         """运行命令处理
 
         Args:
@@ -118,8 +124,11 @@ class CommandRunner:
 
         # 执行命令
         try:
+            plugin = self.get_plugin_instance_if_needed(
+                bot_client, func, match.command.plugin_name
+            )
             await self._executor.execute(
-                func, event, *bind_result.args, **bind_result.named_args
+                func, plugin, event, *bind_result.args, **bind_result.named_args
             )
         except Exception as e:
             LOG.exception(f"命令 {func.__name__} 执行失败: {e}")

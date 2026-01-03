@@ -65,12 +65,9 @@ class BotClient(EventRegistry, LifecycleManager):
 
     _initialized = False
 
-    def __init__(self, max_workers: int = 16):
+    def __init__(self):
         """
         初始化 Bot 客户端
-
-        Args:
-            max_workers: 兼容参数，已废弃
         """
         if BotClient._initialized:
             raise NcatBotError("BotClient 实例只能创建一次")

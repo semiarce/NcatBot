@@ -3,7 +3,7 @@
 负责命令和过滤器的统一管理功能。
 """
 
-from typing import Dict, Callable, TYPE_CHECKING, List, Tuple
+from typing import Dict, Callable, TYPE_CHECKING, List, Tuple, Optional
 
 from ncatbot.utils import get_log
 from ...base import BaseService
@@ -16,6 +16,7 @@ from .command_system.utils import CommandSpec
 
 if TYPE_CHECKING:
     from ncatbot.core import MessageEvent, BaseEvent
+    from ncatbot.plugin_system import BasePlugin
 
 LOG = get_log("UnifiedRegistryService")
 
@@ -43,6 +44,13 @@ class UnifiedRegistryService(BaseService):
         self._initialized = False
         self.prefixes: List[str] = []
 
+    def get_plugin_instance_if_needed(
+        self, plugin_name: str, func: Callable
+    ) -> Optional["BasePlugin"]:
+        return self._command_runner.get_plugin_instance_if_needed(
+            self.service_manager.bot_client, func, plugin_name
+        )
+
     # ==========================================================================
     # region 生命周期
     # ==========================================================================
@@ -50,7 +58,6 @@ class UnifiedRegistryService(BaseService):
     async def on_load(self) -> None:
         """服务加载时的初始化"""
         self._executor = FunctionExecutor()
-        self._executor.set_plugin_loader(self.plugin_loader)
         LOG.info("统一注册服务已加载")
 
     async def on_close(self) -> None:
@@ -68,13 +75,6 @@ class UnifiedRegistryService(BaseService):
         event_registry.set_current_plugin_name(plugin_name)
         command_registry.set_current_plugin_name(plugin_name)
         filter_registry.set_current_plugin_name(plugin_name)
-
-    @property
-    def plugins(self) -> List:
-        """获取已加载的插件列表"""
-        if self._executor:
-            return self._executor.plugins
-        return []
 
     def handle_plugin_unload(self, plugin_name: str) -> None:
         """处理插件卸载，清理相关缓存"""
@@ -110,10 +110,11 @@ class UnifiedRegistryService(BaseService):
         """遍历执行纯过滤器函数（不含命令函数）"""
         if not self._executor:
             return
-        for func in filter_registry._function_filters.values():
+        for full_name, func in filter_registry._function_filters.items():
             if getattr(func, "__is_command__", False):
                 continue
-            await self._executor.execute(func, event)
+
+            await self._executor.execute(func, self.service_manager.bot_client, event)
 
     # ==========================================================================
     # region 事件分发
@@ -122,25 +123,31 @@ class UnifiedRegistryService(BaseService):
     async def handle_message_event(self, event: "MessageEvent") -> None:
         """处理消息事件（命令和过滤器）"""
         self.initialize_if_needed()
-        await self._command_runner.run(event)
+        await self._command_runner.run(event, self.service_manager.bot_client)  # type: ignore
         await self.run_pure_filters(event)
 
     async def handle_notice_event(self, event: "BaseEvent") -> bool:
         """处理通知事件"""
-        for func in self.event_registry.notice_handlers:
-            await self._executor.execute(func, event)
+        for func, plugin_name in self.event_registry.notice_handlers.items():
+            await self._executor.execute(
+                func, self.get_plugin_instance_if_needed(plugin_name, func), event
+            )
         return True
 
     async def handle_request_event(self, event: "BaseEvent") -> bool:
         """处理请求事件"""
-        for func in self.event_registry.request_handlers:
-            await self._executor.execute(func, event)
+        for func, plugin_name in self.event_registry.request_handlers.items():
+            await self._executor.execute(
+                func, self.get_plugin_instance_if_needed(plugin_name, func), event
+            )
         return True
 
     async def handle_meta_event(self, event: "BaseEvent") -> bool:
         """处理元事件"""
-        for func in self.event_registry.meta_handlers:
-            await self._executor.execute(func, event)
+        for func, plugin_name in self.event_registry.meta_handlers.items():
+            await self._executor.execute(
+                func, self.get_plugin_instance_if_needed(plugin_name, func), event
+            )
         return True
 
     async def handle_legacy_event(self, event_data: "BaseEvent") -> bool:
@@ -175,7 +182,6 @@ class UnifiedRegistryService(BaseService):
         self._command_runner = CommandRunner(
             prefixes=self.prefixes,
             executor=self._executor,
-            event_bus=self.event_bus,
         )
 
         # 构建命令索引
@@ -235,8 +241,6 @@ class UnifiedRegistryService(BaseService):
 
     def clear(self) -> None:
         """清理缓存"""
-        if hasattr(self, "_executor") and self._executor:
-            self._executor.clear_cache()
         if hasattr(self, "_command_runner") and self._command_runner:
             self._command_runner.clear()
         self._initialized = False

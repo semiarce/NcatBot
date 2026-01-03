@@ -34,13 +34,13 @@ class TestEventRegistryInit:
 
     def test_default_init(self, registry):
         """测试默认初始化"""
-        assert registry._notice_handlers == {}
-        assert registry._request_handlers == {}
+        assert registry.notice_handlers == {}
+        assert registry.request_handlers == {}
 
     def test_handlers_properties_empty(self, registry):
         """测试空处理器列表"""
-        assert registry.notice_handlers == []
-        assert registry.request_handlers == []
+        assert registry.notice_handlers == {}
+        assert registry.request_handlers == {}
 
 
 # =============================================================================
@@ -91,7 +91,7 @@ class TestHandlerRegistration:
 
         registry.notice_handler(handler)
 
-        assert registry._notice_handlers[handler] == "test_plugin"
+        assert registry.notice_handlers[handler] == "test_plugin"
 
         # 清理
         EventRegistry.set_current_plugin_name("")
@@ -105,7 +105,7 @@ class TestHandlerRegistration:
 class TestPluginRevocation:
     """测试插件撤销"""
 
-    def test_revoke_plugin_notice_handlers(self, registry):
+    def test_revoke_pluginnotice_handlers(self, registry):
         """测试撤销插件的 notice 处理器"""
         EventRegistry.set_current_plugin_name("plugin_a")
 
@@ -137,7 +137,7 @@ class TestPluginRevocation:
         # 清理
         EventRegistry.set_current_plugin_name("")
 
-    def test_revoke_plugin_request_handlers(self, registry):
+    def test_revoke_pluginrequest_handlers(self, registry):
         """测试撤销插件的 request 处理器"""
         EventRegistry.set_current_plugin_name("plugin_x")
 

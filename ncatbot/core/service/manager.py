@@ -17,10 +17,8 @@ if TYPE_CHECKING:
         UnifiedRegistryService,
         FileWatcherService,
         PluginDataService,
-        TimeTaskService,
     )
     from ncatbot.core.client import BotClient
-    from ncatbot.plugin_system.loader import PluginLoader
 
 LOG = get_log("ServiceManager")
 
@@ -48,7 +46,6 @@ class ServiceManager:
         await manager.load_all()
 
         # 类型安全的访问（IDE 提示支持）
-        router = manager.message_router  # 类型: MessageRouter
         preupload = manager.preupload  # 类型: PreUploadService
         ```
     """
@@ -79,11 +76,6 @@ class ServiceManager:
     def bot_client(self) -> Optional["BotClient"]:
         """获取 BotClient"""
         return self._bot_client
-
-    @property
-    def plugin_loader(self) -> Optional["PluginLoader"]:
-        """获取 PluginLoader"""
-        return self._bot_client.plugin_loader  # type: ignore
 
     # -------------------------------------------------------------------------
     # 内置服务属性（支持 IDE 类型提示）
@@ -121,13 +113,8 @@ class ServiceManager:
 
     @property
     def plugin_data(self) -> "PluginDataService":
-        """插件数据持久化服务"""
+        """插件数据服务"""
         return self._services.get("plugin_data")  # type: ignore
-
-    @property
-    def time_task(self) -> "TimeTaskService":
-        """定时任务服务"""
-        return self._services.get("time_task")  # type: ignore
 
     # -------------------------------------------------------------------------
     # 服务管理方法

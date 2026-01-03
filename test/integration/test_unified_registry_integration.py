@@ -117,7 +117,7 @@ class TestExecutorIntegration:
         passing_handler.__filters__ = [PassFilter()]
 
         mock_event = Mock()
-        result = await executor.execute(passing_handler, mock_event)
+        result = await executor.execute(passing_handler, None, mock_event)
 
         assert result == "passed"
 
@@ -127,7 +127,7 @@ class TestExecutorIntegration:
 
         failing_handler.__filters__ = [FailFilter()]
 
-        result = await executor.execute(failing_handler, mock_event)
+        result = await executor.execute(failing_handler, None, mock_event)
 
         assert result is False
 
@@ -147,8 +147,8 @@ class TestExecutorIntegration:
 
         mock_event = Mock()
 
-        await executor.execute(async_handler, mock_event)
-        await executor.execute(sync_handler, mock_event)
+        await executor.execute(async_handler, None, mock_event)
+        await executor.execute(sync_handler, None, mock_event)
 
         assert results == ["async", "sync"]
 
@@ -193,7 +193,7 @@ class TestCommandRunnerIntegration:
         event.message = Mock()
         event.message.message = [PlainText(text="/unknown_command")]
 
-        result = await runner.run(event)
+        result = await runner.run(event, Mock())
 
         # 没有注册命令，应该返回 False
         assert result is False
@@ -317,7 +317,7 @@ class TestErrorHandlingIntegration:
         mock_event = Mock()
 
         # 应该捕获异常并返回 False
-        result = await executor.execute(failing_handler, mock_event)
+        result = await executor.execute(failing_handler, None, mock_event)
 
         assert result is False
 
@@ -354,20 +354,3 @@ class TestPerformance:
 
         # 1000 次分词应该在合理时间内完成
         assert elapsed < 5.0  # 5 秒上限
-
-    def test_executor_cache_effectiveness(self):
-        """测试执行器缓存有效性"""
-        executor = FunctionExecutor()
-
-        def handler():
-            pass
-
-        mock_plugin = Mock()
-
-        # 首次查找
-        executor._func_plugin_map[handler] = mock_plugin
-
-        # 多次查找应该使用缓存
-        for _ in range(100):
-            result = executor.find_plugin_for_function(handler)
-            assert result is mock_plugin

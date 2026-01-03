@@ -11,7 +11,6 @@ from ncatbot.utils import get_log
 if TYPE_CHECKING:
     from .manager import ServiceManager
     from ncatbot.core.client import BotClient
-    from ncatbot.plugin_system.loader import PluginLoader
 
 LOG = get_log("Service")
 
@@ -97,13 +96,6 @@ class BaseService(ABC):
         """获取 BotClient 实例"""
         if self.service_manager:
             return self.service_manager.bot_client
-        return None
-
-    @property
-    def plugin_loader(self) -> Optional["PluginLoader"]:
-        """获取插件加载器"""
-        if self.bot_client:
-            return self.bot_client.plugin_loader
         return None
 
     @property

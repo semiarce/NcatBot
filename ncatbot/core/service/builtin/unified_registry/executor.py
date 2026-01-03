@@ -5,7 +5,7 @@
 
 import asyncio
 import traceback
-from typing import Callable, Dict, List, Optional, TYPE_CHECKING
+from typing import Callable, Optional, TYPE_CHECKING
 
 from ncatbot.utils import get_log
 from .filter_system.validator import FilterValidator
@@ -27,36 +27,11 @@ class FunctionExecutor:
 
     def __init__(self, filter_validator: Optional[FilterValidator] = None):
         self._filter_validator = filter_validator or FilterValidator()
-        self._func_plugin_map: Dict[Callable, object] = {}
-        self._plugin_loader = None
-
-    def set_plugin_loader(self, plugin_loader) -> None:
-        """设置插件加载器"""
-        self._plugin_loader = plugin_loader
-
-    @property
-    def plugins(self) -> List:
-        """获取已加载的插件列表"""
-        if self._plugin_loader:
-            return list(self._plugin_loader.plugins.values())
-        return []
-
-    def find_plugin_for_function(self, func: Callable):
-        """查找函数所属的插件"""
-        if func in self._func_plugin_map:
-            return self._func_plugin_map[func]
-
-        for plugin in self.plugins:
-            plugin_class = plugin.__class__
-            if func in plugin_class.__dict__.values():
-                self._func_plugin_map[func] = plugin
-                return plugin
-
-        return None
 
     async def execute(
         self,
         func: Callable,
+        plugin: Optional[object],
         event,  # MessageEvent 或 BaseEvent
         *args,
         **kwargs,
@@ -72,7 +47,6 @@ class FunctionExecutor:
         Returns:
             函数返回值，验证失败返回 False
         """
-        plugin = self.find_plugin_for_function(func)
 
         try:
             # 过滤器验证
@@ -92,7 +66,3 @@ class FunctionExecutor:
             LOG.error(f"执行函数 {func.__name__} 时发生错误: {e}")
             LOG.info(f"{traceback.format_exc()}")
             return False
-
-    def clear_cache(self) -> None:
-        """清理插件映射缓存"""
-        self._func_plugin_map.clear()

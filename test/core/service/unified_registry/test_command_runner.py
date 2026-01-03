@@ -39,7 +39,6 @@ def runner(mock_executor):
     return CommandRunner(
         prefixes=["/", "!"],
         executor=mock_executor,
-        event_bus=None,
     )
 
 
@@ -74,22 +73,9 @@ class TestCommandRunnerInit:
         )
 
         assert runner._executor is mock_executor
-        assert runner._event_bus is None
         assert runner._binder is not None
         assert runner._preprocessor is not None
         assert runner._resolver is not None
-
-    def test_init_with_event_bus(self, mock_executor):
-        """测试带事件总线初始化"""
-        mock_bus = Mock()
-
-        runner = CommandRunner(
-            prefixes=["/"],
-            executor=mock_executor,
-            event_bus=mock_bus,
-        )
-
-        assert runner._event_bus is mock_bus
 
     def test_init_with_multiple_prefixes(self, mock_executor):
         """测试多前缀初始化"""
@@ -117,14 +103,6 @@ class TestProperties:
         """测试解析器属性"""
         assert isinstance(runner.resolver, CommandResolver)
 
-    def test_set_event_bus(self, runner):
-        """测试设置事件总线"""
-        mock_bus = Mock()
-
-        runner.set_event_bus(mock_bus)
-
-        assert runner._event_bus is mock_bus
-
 
 # =============================================================================
 # 命令运行测试
@@ -141,15 +119,14 @@ class TestCommandExecution:
         event.message = Mock()
         event.message.message = []  # 空消息
 
-        result = await runner.run(event)
-
+        result = await runner.run(event, Mock())
         assert result is False
 
     @pytest.mark.asyncio
     async def test_run_returns_false_no_command_hit(self, runner, mock_message_event):
         """测试无命令匹配返回 False"""
         # 没有注册任何命令，所以不会匹配
-        result = await runner.run(mock_message_event)
+        result = await runner.run(mock_message_event, Mock())
 
         assert result is False
 
@@ -200,6 +177,6 @@ class TestEdgeCases:
         image_segment.__class__.__name__ = "Image"
         event.message.message = [image_segment]
 
-        result = await runner.run(event)
+        result = await runner.run(event, Mock())
 
         assert result is False

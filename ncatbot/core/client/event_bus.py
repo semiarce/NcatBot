@@ -8,7 +8,6 @@ import asyncio
 import concurrent.futures
 import re
 import uuid
-import traceback
 from functools import lru_cache
 from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
 
@@ -251,8 +250,7 @@ class EventBus:
             else:
                 return await asyncio.to_thread(handler, event)
         except Exception as e:
-            LOG.error(f"执行处理程序 {handler.__name__} 时发生错误: {e}")
-            LOG.debug(f"错误堆栈: {traceback.format_exc()}")
+            LOG.exception(f"执行处理程序 {handler.__name__} 时发生错误: {e}")
             raise e
 
     def _collect_handlers(self, event_type: str) -> List[Tuple]:
