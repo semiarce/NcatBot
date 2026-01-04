@@ -2,11 +2,11 @@
 
 import os
 import urllib.parse
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .utils import strong_password_check, generate_strong_password
+from .utils import strong_password_check, generate_strong_token
 
 
 # ==================== 常量 ====================
@@ -17,10 +17,39 @@ DEFAULT_BOT_UIN = "123456"
 DEFAULT_ROOT = "123456"
 
 
+# ==================== 基础配置类 ====================
+
+
+class BaseConfig(BaseModel):
+    """配置基类，提供通用的配置操作方法。"""
+
+    model_config = ConfigDict(validate_assignment=True, extra="allow")
+
+    def get_field_paths(self, prefix: str = "") -> Dict[str, str]:
+        paths = {}
+        for field_name in type(self).model_fields.keys():
+            current_path = f"{prefix}.{field_name}" if prefix else field_name
+            paths[field_name] = current_path
+
+            # 获取值用于递归判断
+            field_value = getattr(self, field_name)
+            
+            # 递归逻辑保持不变
+            if isinstance(field_value, BaseConfig):
+                nested_paths = field_value.get_field_paths(current_path)
+                paths.update(nested_paths)
+
+        return paths
+
+    def to_dict(self) -> dict:
+        """导出为字典。"""
+        return self.model_dump()
+
+
 # ==================== 子配置模型 ====================
 
 
-class PluginConfig(BaseModel):
+class PluginConfig(BaseConfig):
     """插件配置。"""
 
     model_config = ConfigDict(validate_assignment=True, extra="allow")
@@ -41,10 +70,8 @@ class PluginConfig(BaseModel):
             os.makedirs(self.plugins_dir)
 
 
-class NapCatConfig(BaseModel):
+class NapCatConfig(BaseConfig):
     """NapCat 客户端配置。"""
-
-    model_config = ConfigDict(validate_assignment=True, extra="allow")
 
     ws_uri: str = "ws://localhost:3001"
     ws_token: str = DEFAULT_WS_TOKEN
@@ -94,10 +121,6 @@ class NapCatConfig(BaseModel):
         """WebUI 端口。"""
         return urllib.parse.urlparse(self.webui_uri).port
 
-    def to_dict(self) -> dict:
-        """导出为字典，排除计算属性。"""
-        return self.model_dump()
-
     def get_issues(self) -> List[str]:
         """
         返回问题列表。
@@ -128,20 +151,18 @@ class NapCatConfig(BaseModel):
         if can_auto_fix:
             self.fix_security_issues()
             return []
-        
+
         return issues
 
     def fix_security_issues(self) -> None:
-        self.ws_token = generate_strong_password()
-        self.webui_token = generate_strong_password()
+        self.ws_token = generate_strong_token()
+        self.webui_token = generate_strong_token()
 
 # ==================== 主配置模型 ====================
 
 
-class Config(BaseModel):
+class Config(BaseConfig):
     """主配置模型。"""
-
-    model_config = ConfigDict(validate_assignment=True, extra="allow")
 
     napcat: NapCatConfig = Field(default_factory=NapCatConfig)
     plugin: PluginConfig = Field(default_factory=PluginConfig)

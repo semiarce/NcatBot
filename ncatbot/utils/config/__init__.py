@@ -22,7 +22,7 @@
 from .manager import ConfigManager, get_config_manager
 from .models import Config, NapCatConfig, PluginConfig
 from .storage import ConfigStorage, CONFIG_PATH
-from .utils import generate_strong_password, strong_password_check
+from .utils import generate_strong_token, strong_password_check
 
 # 兼容别名：ncatbot_config 指向单例管理器
 ncatbot_config = get_config_manager()
@@ -40,7 +40,7 @@ __all__ = [
     "ConfigStorage",
     # 工具函数
     "strong_password_check",
-    "generate_strong_password",
+    "generate_strong_token",
     # 常量
     "CONFIG_PATH",
 ]

@@ -21,9 +21,11 @@ class TestMessageRouterInit:
 
     def test_init_with_defaults(self):
         """测试默认初始化"""
+        from ncatbot.utils import ncatbot_config
+
         router = MessageRouter()
 
-        assert router._uri is None
+        assert router._uri == ncatbot_config.get_uri_with_token()
         assert router._event_dispatcher is None
         assert router._ws is None
         assert router._pending_futures == {}

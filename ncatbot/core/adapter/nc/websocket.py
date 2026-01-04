@@ -32,7 +32,7 @@ class NapCatWebSocket:
 
     def __init__(
         self,
-        uri: Optional[str] = None,
+        uri: str,
         message_callback: Optional[Callable[[dict], Awaitable[None]]] = None,
     ):
         """
@@ -54,7 +54,7 @@ class NapCatWebSocket:
 
     async def connect(self) -> None:
         """建立 WebSocket 连接"""
-        uri = self._uri or ncatbot_config.get_uri_with_token()
+        uri = self._uri
         self._client = await websockets.connect(
             uri, close_timeout=0.2, max_size=2**30, open_timeout=1
         )
@@ -132,7 +132,7 @@ class NapCatWebSocket:
         if not self._client:
             raise ConnectionError("WebSocket 未连接")
 
-        uri = self._uri or ncatbot_config.get_uri_with_token()
+        uri = self._uri
 
         while self._running:
             try:

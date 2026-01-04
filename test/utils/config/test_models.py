@@ -3,7 +3,6 @@
 import os
 import tempfile
 
-import pytest
 
 from ncatbot.utils.config.models import (
     Config,
@@ -83,17 +82,17 @@ class TestNapCatConfig:
         assert config.ws_host == "192.168.1.1"
         assert config.ws_port == 3002
 
-    def test_validate_security_weak_default_token(self):
+    def test_get_security_issue_weak_default_token(self):
         """弱密码自动修复测试。"""
         config = NapCatConfig(ws_listen_ip="0.0.0.0", ws_token=DEFAULT_WS_TOKEN)
-        issues = config.validate_security(auto_fix=True)
+        issues = config.get_security_issues(auto_fix=True)
         assert len(issues) == 0
         assert config.ws_token != DEFAULT_WS_TOKEN  # 被自动修复
 
-    def test_validate_security_custom_weak_token(self):
+    def test_get_security_issue_custom_weak_token(self):
         """自定义弱密码不自动修复。"""
         config = NapCatConfig(ws_listen_ip="0.0.0.0", ws_token="weak")
-        issues = config.validate_security(auto_fix=True)
+        issues = config.get_security_issues(auto_fix=True)
         assert "WS 令牌强度不足" in issues
 
     def test_validate_assignment(self):
@@ -109,7 +108,7 @@ class TestConfig:
     def test_default_values(self):
         """默认值测试。"""
         config = Config()
-        assert config.bt_uin == DEFAULT_BOT_UIN
+        assert config.bot_uin == DEFAULT_BOT_UIN
         assert config.root == DEFAULT_ROOT
         assert config.debug is False
         assert config.websocket_timeout == 15
@@ -125,8 +124,8 @@ class TestConfig:
 
     def test_qq_number_coercion(self):
         """QQ 号强制转字符串。"""
-        config = Config(bt_uin=123456789, root=987654321)
-        assert config.bt_uin == "123456789"
+        config = Config(bot_uin=123456789, root=987654321)
+        assert config.bot_uin == "123456789"
         assert config.root == "987654321"
 
     def test_timeout_validation(self):
@@ -147,25 +146,25 @@ class TestConfig:
         config = Config()
         assert config.is_default_uin() is True
 
-        config.bt_uin = "999888777"
+        config.bot_uin = "999888777"
         assert config.is_default_uin() is False
 
     def test_model_validate_from_dict(self):
         """从字典创建配置。"""
         data = {
-            "bt_uin": "123456789",
+            "bot_uin": "123456789",
             "napcat": {"ws_uri": "ws://localhost:3001"},
             "plugin": {"plugins_dir": "my_plugins"},
         }
         config = Config.model_validate(data)
-        assert config.bt_uin == "123456789"
+        assert config.bot_uin == "123456789"
         assert config.napcat.ws_uri == "ws://localhost:3001"
         assert config.plugin.plugins_dir == "my_plugins"
 
     def test_model_dump(self):
         """导出配置为字典。"""
-        config = Config(bt_uin="123456789")
+        config = Config(bot_uin="123456789")
         data = config.model_dump()
-        assert data["bt_uin"] == "123456789"
+        assert data["bot_uin"] == "123456789"
         assert "napcat" in data
         assert "plugin" in data
