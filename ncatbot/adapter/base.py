@@ -50,7 +50,8 @@ class BaseAdapter(ABC):
     # ---- 回调 ----
 
     def set_event_callback(
-        self, callback: Callable[["BaseEventData"], Awaitable[None]],
+        self,
+        callback: Callable[["BaseEventData"], Awaitable[None]],
     ) -> None:
         """设置事件数据回调，由异步分发器在启动时调用"""
         self._event_callback = callback

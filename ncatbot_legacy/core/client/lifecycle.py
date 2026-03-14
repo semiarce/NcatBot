@@ -164,9 +164,9 @@ class LifecycleManager:
         if hasattr(self, "registry_engine") and self.registry_engine:
             self.registry_engine.clear()
 
-        # 5. 清理 HandlerDispatcher
-        if hasattr(self, "handler_dispatcher") and self.handler_dispatcher:
-            self.handler_dispatcher.shutdown()
+        # 5. 关闭事件总线
+        if self.event_bus:
+            await self.event_bus.close()
 
         LOG.info("Bot 资源已释放")
 

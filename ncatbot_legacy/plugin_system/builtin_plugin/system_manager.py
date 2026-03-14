@@ -52,16 +52,22 @@ class SystemManager(NcatBotPlugin):
         self.register_handler("ncatbot.message_event", self._handle_message_event)
 
         # 订阅消息事件以触发命令和过滤器处理
-        self.event_bus.subscribe(
-            "re:ncatbot.message_event|ncatbot.message_sent_event",
-            self._handle_unified_registry_message,
-            timeout=900,
-        )
-        self.event_bus.subscribe(
-            "re:ncatbot.notice_event|ncatbot.request_event|ncatbot.meta_event",
-            self._handle_unified_registry_legacy,
-            timeout=900,
-        )
+        for event_type in ("ncatbot.message_event", "ncatbot.message_sent_event"):
+            self.event_bus.subscribe(
+                event_type,
+                self._handle_unified_registry_message,
+                timeout=900,
+            )
+        for event_type in (
+            "ncatbot.notice_event",
+            "ncatbot.request_event",
+            "ncatbot.meta_event",
+        ):
+            self.event_bus.subscribe(
+                event_type,
+                self._handle_unified_registry_legacy,
+                timeout=900,
+            )
 
         # 订阅插件文件变化事件（由 FileWatcherService 发布）
         self.event_bus.subscribe(
@@ -128,7 +134,9 @@ class SystemManager(NcatBotPlugin):
 
     async def _handle_unified_registry_legacy(self, event: NcatBotEvent) -> bool:
         """处理通知和请求事件"""
-        return await self.services.bot_client.registry_engine.handle_legacy_event(event.data)
+        return await self.services.bot_client.registry_engine.handle_legacy_event(
+            event.data
+        )
 
     # ------------------------------------------------------------------
     # 系统命令

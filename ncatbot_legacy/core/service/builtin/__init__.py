@@ -10,7 +10,7 @@ from .rbac import RBACService, PermissionPath, PermissionTrie
 from .plugin_config import PluginConfigService, ConfigItem, PluginConfig
 from .file_watcher import FileWatcherService
 from .plugin_data import PluginDataService
-from .time_task import TimeTaskService
+from .schedule import TimeTaskService
 from .session import SessionManager
 
 __all__ = [
