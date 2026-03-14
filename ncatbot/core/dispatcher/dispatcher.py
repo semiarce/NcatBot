@@ -1,116 +1,202 @@
 """
 异步事件分发器
 
-替代旧的 EventBus + BusEvent 设计。
-只携带数据模型，handler 签名: async def handler(data: BaseEventData, api: IBotAPI) -> None
+纯事件路由：通过 callback 接收事件，广播到所有事件流消费者。
+外部通过 events() / async for / wait_event 消费事件。
 """
 
+from __future__ import annotations
+
 import asyncio
-import uuid
-from dataclasses import dataclass, field
 from typing import (
     Awaitable,
     Callable,
-    Dict,
-    List,
     Optional,
+    Set,
+    Union,
     TYPE_CHECKING,
 )
 
+from ncatbot.types.enums import EventType
 from ncatbot.utils import get_log
 
+from .event import Event
+from .stream import EventStream, _STOP
+
 if TYPE_CHECKING:
-    from ncatbot.api.interface import IBotAPI
     from ncatbot.types import BaseEventData
 
 LOG = get_log("AsyncEventDispatcher")
-
-# 哨兵值：handler 返回此值表示停止传播
-STOP_PROPAGATION = object()
-
-EventHandler = Callable[["BaseEventData", "IBotAPI"], Awaitable[Optional[object]]]
-
-
-@dataclass
-class HandlerEntry:
-    name: str
-    handler: EventHandler
-    priority: int = 0
-    timeout: float = 30.0
-    id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
 
 
 class AsyncEventDispatcher:
     """异步事件分发器
 
-    按 event_type（如 "message.group"、"notice.group_increase"）路由到注册的 handler。
+    纯事件路由器：
+    - 生产端：外部通过 :meth:`callback` 获取回调函数，将 ``BaseEventData`` 喂入。
+    - 消费端：通过 :meth:`events` / ``async for`` / :meth:`wait_event` 消费事件。
+
+    用法::
+
+        dispatcher = AsyncEventDispatcher()
+
+        # 将 callback 交给 adapter
+        adapter.set_event_callback(dispatcher.callback)
+
+        # 消费事件
+        async with dispatcher.events(EventType.MESSAGE) as stream:
+            async for event in stream:
+                print(event.type, event.data)
     """
 
-    def __init__(self, api: "IBotAPI"):
-        self._api = api
-        self._handlers: Dict[str, List[HandlerEntry]] = {}
+    _DEFAULT_STREAM_QUEUE_SIZE = 500
 
-    def subscribe(
+    def __init__(
         self,
-        event_type: str,
-        handler: EventHandler,
-        priority: int = 0,
-        timeout: float = 30.0,
-        name: Optional[str] = None,
-    ) -> str:
-        """注册事件处理器，返回 handler id"""
-        entry = HandlerEntry(
-            name=name or handler.__qualname__,
-            handler=handler,
-            priority=priority,
-            timeout=timeout,
-        )
-        self._handlers.setdefault(event_type, []).append(entry)
-        return entry.id
+        stream_queue_size: int = _DEFAULT_STREAM_QUEUE_SIZE,
+    ):
+        self._stream_queues: Set[asyncio.Queue] = set()
+        self._stream_queue_size = stream_queue_size
+        self._waiters: list[_Waiter] = []
+        self._closed = False
 
-    def unsubscribe(self, handler_id: str) -> bool:
-        """取消注册"""
-        for entries in self._handlers.values():
-            for entry in entries:
-                if entry.id == handler_id:
-                    entries.remove(entry)
-                    return True
-        return False
+    # ---- 生产端 ----
 
-    async def dispatch(self, data: "BaseEventData") -> None:
-        """分发数据模型到匹配的 handler"""
+    @property
+    def callback(self) -> Callable[["BaseEventData"], "Awaitable[None]"]:
+        """返回一个异步回调函数，供外部（如 Adapter）推送事件。
+
+        回调签名: ``async (data: BaseEventData) -> None``
+        """
+        return self._on_event
+
+    async def _on_event(self, data: "BaseEventData") -> None:
+        """接收外部推送的事件数据，resolve 类型后广播。"""
+        if self._closed:
+            return
+
         event_type = self._resolve_type(data)
-        handlers = self._collect_handlers(event_type)
+        event = Event(type=event_type, data=data)
 
-        for entry in sorted(handlers, key=lambda h: -h.priority):
+        self._broadcast(event)
+        self._resolve_waiters(event)
+
+    # ---- 消费端：事件流 ----
+
+    def events(
+        self,
+        event_type: Optional[Union[str, EventType]] = None,
+    ) -> EventStream:
+        """创建事件流。
+
+        Args:
+            event_type: 按类型过滤。
+                - ``EventType`` 枚举: 前缀匹配（如 ``EventType.MESSAGE`` 匹配所有 message 子类型）。
+                - ``str``: 前缀匹配（如 ``"message.group"`` 精确匹配，``"message"`` 匹配所有）。
+                - ``None``: 不过滤，接收全部事件。
+
+        Returns:
+            :class:`EventStream` 异步可迭代对象，支持 ``async with`` / ``async for`` / ``aclose()``。
+        """
+        if self._closed:
+            raise RuntimeError("AsyncEventDispatcher 已关闭")
+
+        queue: asyncio.Queue = asyncio.Queue(maxsize=self._stream_queue_size)
+        self._stream_queues.add(queue)
+        return EventStream(self, queue, event_type)
+
+    def __aiter__(self):
+        return self.events()
+
+    # ---- 消费端：一次性等待 ----
+
+    async def wait_event(
+        self,
+        predicate: Optional[Callable[[Event], bool]] = None,
+        timeout: Optional[float] = None,
+    ) -> Event:
+        """等待下一个满足条件的事件。
+
+        Args:
+            predicate: 过滤函数，``None`` 表示接受任意事件。
+            timeout: 超时秒数，``None`` 表示无限等待。
+
+        Returns:
+            匹配的 :class:`Event` 实例。
+
+        Raises:
+            asyncio.TimeoutError: 超时未等到匹配事件。
+            RuntimeError: dispatcher 已关闭。
+        """
+        if self._closed:
+            raise RuntimeError("AsyncEventDispatcher 已关闭")
+
+        loop = asyncio.get_running_loop()
+        future: asyncio.Future[Event] = loop.create_future()
+        waiter = _Waiter(predicate=predicate, future=future)
+        self._waiters.append(waiter)
+
+        try:
+            if timeout is None:
+                return await future
+            return await asyncio.wait_for(future, timeout)
+        finally:
             try:
-                result = await asyncio.wait_for(
-                    entry.handler(data, self._api),
-                    timeout=entry.timeout,
-                )
-                if result is STOP_PROPAGATION:
-                    break
-            except asyncio.TimeoutError:
-                LOG.warning(f"Handler {entry.name} 超时")
-            except Exception as e:
-                LOG.error(f"Handler {entry.name} 异常: {e}", exc_info=True)
+                self._waiters.remove(waiter)
+            except ValueError:
+                pass
 
-    def _collect_handlers(self, event_type: str) -> List[HandlerEntry]:
-        """收集匹配的 handler（精确匹配 + 前缀匹配）"""
-        result: List[HandlerEntry] = []
+    # ---- 内部方法 ----
 
-        # 精确匹配
-        if event_type in self._handlers:
-            result.extend(self._handlers[event_type])
+    def _unregister_stream(self, queue: asyncio.Queue) -> None:
+        """由 EventStream.aclose() 调用，注销队列。"""
+        self._stream_queues.discard(queue)
 
-        # 前缀匹配（如 "message" 匹配 "message.group"）
-        parts = event_type.split(".")
-        if len(parts) > 1:
-            prefix = parts[0]
-            if prefix in self._handlers:
-                result.extend(self._handlers[prefix])
+    def _broadcast(self, event: Event) -> None:
+        """将事件广播到所有活跃的流队列。"""
+        for queue in tuple(self._stream_queues):
+            if queue.full():
+                try:
+                    queue.get_nowait()
+                except asyncio.QueueEmpty:
+                    pass
+                LOG.debug("事件流队列已满，丢弃最旧事件")
+            try:
+                queue.put_nowait(event)
+            except Exception:
+                LOG.exception("写入事件流队列失败")
 
-        return result
+    def _resolve_waiters(self, event: Event) -> None:
+        """尝试 resolve 所有匹配的一次性 waiter。"""
+        for waiter in tuple(self._waiters):
+            if waiter.future.done():
+                continue
+            try:
+                if waiter.predicate is None or waiter.predicate(event):
+                    waiter.future.set_result(event)
+            except Exception as exc:
+                waiter.future.set_exception(exc)
+
+    async def close(self) -> None:
+        """关闭 dispatcher，终止所有活跃事件流和 waiter。"""
+        if self._closed:
+            return
+        self._closed = True
+
+        # 终止所有 stream
+        for queue in tuple(self._stream_queues):
+            try:
+                queue.put_nowait(_STOP)
+            except Exception:
+                pass
+        self._stream_queues.clear()
+
+        # 终止所有 waiter
+        closed_err = RuntimeError("AsyncEventDispatcher 已关闭")
+        for waiter in self._waiters:
+            if not waiter.future.done():
+                waiter.future.set_exception(closed_err)
+        self._waiters.clear()
 
     @staticmethod
     def _resolve_type(data: "BaseEventData") -> str:
@@ -126,7 +212,6 @@ class AsyncEventDispatcher:
         if hasattr(post_type, "value"):
             post_type = post_type.value
 
-        # 根据 post_type 获取二级键
         secondary_key_map = {
             "message": "message_type",
             "message_sent": "message_type",
@@ -141,11 +226,30 @@ class AsyncEventDispatcher:
             val = getattr(data, attr_name, "")
             secondary = val.value if hasattr(val, "value") else str(val) if val else ""
 
-            # notice 的 notify 子类型需要进一步细分
             if post_type == "notice" and secondary == "notify":
                 sub = getattr(data, "sub_type", "")
-                secondary = sub.value if hasattr(sub, "value") else str(sub) if sub else secondary
+                secondary = (
+                    sub.value
+                    if hasattr(sub, "value")
+                    else str(sub)
+                    if sub
+                    else secondary
+                )
 
         if secondary:
             return f"{post_type}.{secondary}"
         return str(post_type)
+
+
+class _Waiter:
+    """wait_event() 的内部状态。"""
+
+    __slots__ = ("predicate", "future")
+
+    def __init__(
+        self,
+        predicate: Optional[Callable[[Event], bool]],
+        future: asyncio.Future[Event],
+    ):
+        self.predicate = predicate
+        self.future = future
