@@ -8,11 +8,10 @@ from collections import deque
 from typing import Any, Dict, List, Optional, Type, TYPE_CHECKING
 from ncatbot.utils import get_log
 from .base import BaseService, EventCallback
+from .builtin import RBACService, FileWatcherService, TimeTaskService
 
 if TYPE_CHECKING:
-    from .builtin.rbac import RBACService
-    from .builtin.file_watcher import FileWatcherService
-    from .builtin.schedule import TimeTaskService
+    pass
 
 LOG = get_log("ServiceManager")
 
@@ -76,6 +75,12 @@ class ServiceManager:
     # -------------------------------------------------------------------------
     # 服务管理方法
     # -------------------------------------------------------------------------
+
+    def register_builtin(self, *, debug: bool = False) -> None:
+        """注册所有内置服务。"""
+        self.register(RBACService, storage_path="data/rbac.json")
+        self.register(FileWatcherService, debug_mode=debug)
+        self.register(TimeTaskService)
 
     def register(self, service_class: Type[BaseService], **config: Any) -> None:
         """注册服务类"""
