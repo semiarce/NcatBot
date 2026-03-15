@@ -13,7 +13,7 @@ from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .dispatcher import HandlerEntry
-    from ncatbot.api import IBotAPI
+    from ncatbot.api import BotAPIClient
     from ncatbot.core.dispatcher.event import Event
     from ncatbot.service import ServiceManager
 
@@ -40,7 +40,7 @@ class HookContext:
     event: "Event"
     event_type: str
     handler_entry: "HandlerEntry"
-    api: "IBotAPI"
+    api: "BotAPIClient"
     services: Optional["ServiceManager"] = None
     kwargs: Dict[str, Any] = field(default_factory=dict)
     result: Any = None
