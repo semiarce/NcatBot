@@ -12,7 +12,7 @@ from typing import Callable, List, Optional, TYPE_CHECKING
 
 from ncatbot.adapter.mock import MockAdapter, MockBotAPI
 from ncatbot.adapter.mock.api import APICall
-from ncatbot.core.client import BotClient
+from ncatbot.app import BotClient
 from ncatbot.core.dispatcher import AsyncEventDispatcher
 from ncatbot.core.dispatcher.event import Event
 

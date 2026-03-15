@@ -1,5 +1,6 @@
 # 处理群内戳一戳事件
-from ncatbot.core import BotClient, NoticeEvent
+from ncatbot.app import BotClient
+from ncatbot.event import NoticeEvent
 
 bot = BotClient()
 

@@ -1,4 +1,4 @@
-from ncatbot.core import BotClient
+from ncatbot.app import BotClient
 
 bot = BotClient()
 
