@@ -27,7 +27,12 @@ dependencies = [
   "tqdm>=4.60",
   # QR 码生成
   "qrcode",
+  # CLI
+  "click>=8.1",
 ]
+
+[project.scripts]
+ncatbot = "ncatbot.cli:main"
 
 [project.optional-dependencies]
 # 测试依赖
