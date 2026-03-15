@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Union
 
 from ncatbot.types.segment import (
     MessageArray,
@@ -13,6 +13,7 @@ from ncatbot.types.segment import (
     Forward,
     PlainText,
     Music,
+    Video,
 )
 
 if TYPE_CHECKING:
@@ -35,11 +36,12 @@ class MessageSugarMixin:
         text: Optional[str] = None,
         at: Optional[Union[str, int]] = None,
         reply: Optional[Union[str, int]] = None,
-        image: Optional[str] = None,
+        image: Optional[Union[str, Image]] = None,
+        video: Optional[Union[str, Video]] = None,
         rtf: Optional[MessageArray] = None,
     ) -> dict:
         """便捷群消息 — 关键字参数自动组装 MessageArray"""
-        msg = _build_message_array(text=text, at=at, reply=reply, image=image, rtf=rtf)
+        msg = _build_message_array(text=text, at=at, reply=reply, image=image, video=video, rtf=rtf)
         return await self._base.send_group_msg(group_id, msg.to_list())
 
     async def post_private_msg(
@@ -47,11 +49,12 @@ class MessageSugarMixin:
         user_id: Union[str, int],
         text: Optional[str] = None,
         reply: Optional[Union[str, int]] = None,
-        image: Optional[str] = None,
+        image: Optional[Union[str, Image]] = None,
+        video: Optional[Union[str, Video]] = None,
         rtf: Optional[MessageArray] = None,
     ) -> dict:
         """便捷私聊消息"""
-        msg = _build_message_array(text=text, reply=reply, image=image, rtf=rtf)
+        msg = _build_message_array(text=text, reply=reply, image=image, video=video, rtf=rtf)
         return await self._base.send_private_msg(user_id, msg.to_list())
 
     async def post_group_array_msg(
@@ -73,7 +76,7 @@ class MessageSugarMixin:
         msg = MessageArray([PlainText(text=text)])
         return await self._base.send_group_msg(group_id, msg.to_list())
 
-    async def send_group_image(self, group_id: Union[str, int], image: str) -> dict:
+    async def send_group_image(self, group_id: Union[str, int], image: Union[str, Image]) -> dict:
         return await self.post_group_msg(group_id, image=image)
 
     async def send_group_record(self, group_id: Union[str, int], file: str) -> dict:
@@ -86,6 +89,16 @@ class MessageSugarMixin:
         msg = MessageArray([File(file=file, file_name=name)])
         return await self._base.send_group_msg(group_id, msg.to_list())
 
+    async def send_group_video(self, group_id: Union[str, int], video: Union[str, Video]) -> dict:
+        msg = MessageArray().add_video(video)
+        return await self._base.send_group_msg(group_id, msg.to_list())
+
+    async def send_group_sticker(self, group_id: Union[str, int], image: Union[str, Image]) -> dict:
+        """发送群动画表情（sub_type=1 的图片）"""
+        img = _to_sticker(image)
+        msg = MessageArray().add_image(img)
+        return await self._base.send_group_msg(group_id, msg.to_list())
+
     # ---- 私聊消息 sugar ----
 
     async def send_private_text(self, user_id: Union[str, int], text: str) -> dict:
@@ -95,7 +108,7 @@ class MessageSugarMixin:
         msg = MessageArray([PlainText(text=text)])
         return await self._base.send_private_msg(user_id, msg.to_list())
 
-    async def send_private_image(self, user_id: Union[str, int], image: str) -> dict:
+    async def send_private_image(self, user_id: Union[str, int], image: Union[str, Image]) -> dict:
         return await self.post_private_msg(user_id, image=image)
 
     async def send_private_record(self, user_id: Union[str, int], file: str) -> dict:
@@ -106,6 +119,16 @@ class MessageSugarMixin:
         self, user_id: Union[str, int], file: str, name: Optional[str] = None,
     ) -> dict:
         msg = MessageArray([File(file=file, file_name=name)])
+        return await self._base.send_private_msg(user_id, msg.to_list())
+
+    async def send_private_video(self, user_id: Union[str, int], video: Union[str, Video]) -> dict:
+        msg = MessageArray().add_video(video)
+        return await self._base.send_private_msg(user_id, msg.to_list())
+
+    async def send_private_sticker(self, user_id: Union[str, int], image: Union[str, Image]) -> dict:
+        """发送私聊动画表情（sub_type=1 的图片）"""
+        img = _to_sticker(image)
+        msg = MessageArray().add_image(img)
         return await self._base.send_private_msg(user_id, msg.to_list())
 
     async def send_private_dice(self, user_id: Union[str, int], value: int = 1) -> dict:
@@ -134,13 +157,48 @@ class MessageSugarMixin:
             "private", user_id, **forward.to_forward_dict(),
         )
 
+    async def send_group_forward_msg_by_id(
+        self, group_id: Union[str, int], message_ids: List[Union[str, int]],
+    ) -> dict:
+        """通过消息 ID 列表转发群消息
+
+        逐条调用 get_msg 获取消息内容，直接通过 send_group_msg 发送。
+        返回最后一条发送的结果。
+        """
+        result: dict = {}
+        for mid in message_ids:
+            msg_data = await self._base.get_msg(int(mid))
+            if not msg_data:
+                continue
+            raw_segs = msg_data.get("message", [])
+            result = await self._base.send_group_msg(group_id, raw_segs)
+        return result
+
+    async def send_private_forward_msg_by_id(
+        self, user_id: Union[str, int], message_ids: List[Union[str, int]],
+    ) -> dict:
+        """通过消息 ID 列表转发私聊消息
+
+        逐条调用 get_msg 获取消息内容，直接通过 send_private_msg 发送。
+        返回最后一条发送的结果。
+        """
+        result: dict = {}
+        for mid in message_ids:
+            msg_data = await self._base.get_msg(int(mid))
+            if not msg_data:
+                continue
+            raw_segs = msg_data.get("message", [])
+            result = await self._base.send_private_msg(user_id, raw_segs)
+        return result
+
 
 def _build_message_array(
     *,
     text: Optional[str] = None,
     at: Optional[Union[str, int]] = None,
     reply: Optional[Union[str, int]] = None,
-    image: Optional[str] = None,
+    image: Optional[Union[str, Image]] = None,
+    video: Optional[Union[str, Video]] = None,
     rtf: Optional[MessageArray] = None,
 ) -> MessageArray:
     """从关键字参数组装 MessageArray"""
@@ -153,6 +211,16 @@ def _build_message_array(
         msg.add_text(text)
     if image is not None:
         msg.add_image(image)
+    if video is not None:
+        msg.add_video(video)
     if rtf is not None:
         msg = msg + rtf
     return msg
+
+
+def _to_sticker(image: Union[str, Image]) -> Image:
+    """将 str 或 Image 转为 sub_type=1 的动画表情 Image"""
+    if isinstance(image, Image):
+        image.sub_type = 1
+        return image
+    return Image(file=image, sub_type=1)

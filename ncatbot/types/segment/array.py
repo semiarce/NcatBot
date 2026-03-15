@@ -191,6 +191,15 @@ class MessageArray:
             raise TypeError(f"image must be str or Image, got {type(image)}")
         return self
 
+    def add_video(self, video: Union[str, Video]) -> MessageArray:
+        if isinstance(video, Video):
+            self._segments.append(video)
+        elif isinstance(video, str):
+            self._segments.append(Video(file=video))
+        else:
+            raise TypeError(f"video must be str or Video, got {type(video)}")
+        return self
+
     def add_at(self, user_id: Union[str, int]) -> MessageArray:
         self._segments.append(At(qq=str(user_id)))
         return self

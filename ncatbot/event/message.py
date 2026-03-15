@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from ncatbot.types import (
     BaseSender,
     GroupMessageEventData,
     GroupSender,
+    Image,
     MessageArray,
     MessageEventData,
     MessageType,
     Anonymous,
     PrivateMessageEventData,
+    Video,
 )
 
 from .base import BaseEvent
@@ -69,15 +71,37 @@ class MessageEvent(BaseEvent):
     def is_group_msg(self) -> bool:
         return self._data.message_type is MessageType.GROUP
 
-    async def reply(self, text: Any, **kwargs: Any) -> Any:
+    async def reply(
+        self,
+        text: Optional[str] = None,
+        *,
+        at: Optional[Union[str, int]] = None,
+        image: Optional[Union[str, Image]] = None,
+        video: Optional[Union[str, Video]] = None,
+        rtf: Optional[MessageArray] = None,
+        at_sender: bool = True,
+    ) -> Any:
+        msg = MessageArray()
+        msg.add_reply(self._data.message_id)
+        if self._data.message_type is MessageType.GROUP and at_sender:
+            msg.add_at(self._data.user_id)
+        if text is not None:
+            msg.add_text(text)
+        if at is not None:
+            msg.add_at(at)
+        if image is not None:
+            msg.add_image(image)
+        if video is not None:
+            msg.add_video(video)
+        if rtf is not None:
+            msg = msg + rtf
         if self._data.message_type is MessageType.GROUP:
             return await self._api.send_group_msg(
                 group_id=self._data.group_id,  # type: ignore[attr-defined]
-                message=text,
-                **kwargs,
+                message=msg.to_list(),
             )
         return await self._api.send_private_msg(
-            user_id=self._data.user_id, message=text, **kwargs
+            user_id=self._data.user_id, message=msg.to_list(),
         )
 
     async def delete(self) -> Any:

@@ -44,4 +44,7 @@ def parse_segment(raw: Dict[str, Any]) -> MessageSegment:
     target_cls = SEGMENT_MAP.get(seg_type)
     if not target_cls:
         raise ValueError(f"Unknown segment type: {seg_type}")
+    # 子类若覆写了 from_dict（如 Forward），使用其自定义解析逻辑
+    if "from_dict" in target_cls.__dict__:
+        return target_cls.from_dict(raw)
     return target_cls.model_validate(raw.get("data", {}))
