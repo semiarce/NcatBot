@@ -107,3 +107,7 @@ class ForwardConstructor:
     def to_forward(self) -> Forward:
         """构建并返回 Forward 消息段"""
         return Forward(content=self.content)
+
+    def build(self) -> Forward:
+        """构建并返回 Forward 消息段 (to_forward 的别名)"""
+        return self.to_forward()

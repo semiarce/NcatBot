@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import asyncio
+import functools
 import os
 import sys
 import time
@@ -217,8 +218,14 @@ class PluginTestReport:
 # ── 人工交互 ──────────────────────────────────────────────────
 
 
-def ask_verdict(plugin_name: str) -> tuple[str, str]:
-    """向测试者请求判定结果。
+async def _async_input(prompt: str = "") -> str:
+    """在线程池中执行 input()，避免阻塞 asyncio 事件循环。"""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, functools.partial(input, prompt))
+
+
+async def ask_verdict(plugin_name: str) -> tuple[str, str]:
+    """向测试者请求判定结果（异步，不阻塞事件循环）。
 
     Returns:
         (verdict, note)
@@ -226,8 +233,10 @@ def ask_verdict(plugin_name: str) -> tuple[str, str]:
     print()
     while True:
         answer = (
-            input(
-                f"  [{plugin_name}] 测试结果? (Y=通过 / N=失败 / S=跳过 / Q=退出全部): "
+            (
+                await _async_input(
+                    f"  [{plugin_name}] 测试结果? (Y=通过 / N=失败 / S=跳过 / Q=退出全部): "
+                )
             )
             .strip()
             .upper()
@@ -235,7 +244,7 @@ def ask_verdict(plugin_name: str) -> tuple[str, str]:
         if answer in ("Y", "YES"):
             return "PASS", ""
         if answer in ("N", "NO"):
-            note = input("    失败原因 (可选，回车跳过): ").strip()
+            note = (await _async_input("    失败原因 (可选，回车跳过): ")).strip()
             return "FAIL", note
         if answer in ("S", "SKIP"):
             return "SKIP", ""
@@ -358,8 +367,8 @@ async def main() -> int:
             # 展示测试信息
             show_plugin_info(plugin_name, description, folder_name, instructions)
 
-            # 等待人工判定
-            verdict, note = ask_verdict(plugin_name)
+            # 等待人工判定（异步，不阻塞事件循环）
+            verdict, note = await ask_verdict(plugin_name)
 
             elapsed = time.monotonic() - t0
 
