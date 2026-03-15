@@ -5,7 +5,6 @@ from .request import FriendRequestEvent, GroupRequestEvent, RequestEvent
 from .meta import MetaEvent
 from .parser import EventParser
 from .factory import create_entity
-from .bus import BusEvent
 
 __all__ = [
     # base
@@ -26,5 +25,4 @@ __all__ = [
     # infra
     "EventParser",
     "create_entity",
-    "BusEvent",
 ]
