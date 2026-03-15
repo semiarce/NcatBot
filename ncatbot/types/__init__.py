@@ -35,11 +35,13 @@ from .request import (
 )
 from .meta import (
     HeartbeatMetaEventData,
+    HeartbeatTimeoutMetaEventData,
     LifecycleMetaEventData,
     MetaEventData,
 )
 from .sender import BaseSender, GroupSender
 from .misc import Anonymous, FileInfo, Status
+from .helper import ForwardConstructor
 from .segment import (
     SEGMENT_MAP,
     At,
@@ -101,6 +103,7 @@ __all__ = [
     "MetaEventData",
     "LifecycleMetaEventData",
     "HeartbeatMetaEventData",
+    "HeartbeatTimeoutMetaEventData",
     # sender / misc
     "BaseSender",
     "GroupSender",
@@ -129,4 +132,6 @@ __all__ = [
     "Forward",
     "MessageArray",
     "parse_cq_code_to_onebot11",
+    # helper
+    "ForwardConstructor",
 ]

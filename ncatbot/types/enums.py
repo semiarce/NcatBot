@@ -50,6 +50,7 @@ class RequestType(str, Enum):
 class MetaEventType(str, Enum):
     LIFECYCLE = "lifecycle"
     HEARTBEAT = "heartbeat"
+    HEARTBEAT_TIMEOUT = "heartbeat_timeout"
 
 
 class EventType(str, Enum):

@@ -10,6 +10,7 @@ __all__ = [
     "MetaEventData",
     "LifecycleMetaEventData",
     "HeartbeatMetaEventData",
+    "HeartbeatTimeoutMetaEventData",
 ]
 
 
@@ -27,3 +28,11 @@ class HeartbeatMetaEventData(MetaEventData):
     meta_event_type: MetaEventType = Field(default=MetaEventType.HEARTBEAT)
     status: Status
     interval: int
+
+
+class HeartbeatTimeoutMetaEventData(MetaEventData):
+    meta_event_type: MetaEventType = Field(default=MetaEventType.HEARTBEAT_TIMEOUT)
+    time: int = Field(default=0)
+    self_id: str = Field(default="0")
+    last_heartbeat_time: int
+    timeout_seconds: int
