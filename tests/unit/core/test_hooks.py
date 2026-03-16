@@ -25,8 +25,11 @@ from ncatbot.core.registry.builtin_hooks import MessageTypeFilter, PostTypeFilte
 from ncatbot.core.dispatcher.event import Event
 from ncatbot.core.registry.dispatcher import HandlerEntry
 from ncatbot.testing import factory
+from unittest.mock import MagicMock
 
 pytestmark = pytest.mark.asyncio
+
+_mock_api = MagicMock()
 
 
 class SampleBeforeHook(Hook):
@@ -155,7 +158,9 @@ def test_hook_context_fields():
 
     entry = HandlerEntry(func=dummy, event_type="message.group")
 
-    ctx = HookContext(event=event, event_type="message.group", handler_entry=entry)
+    ctx = HookContext(
+        event=event, event_type="message.group", handler_entry=entry, api=_mock_api
+    )
     assert ctx.event is event
     assert ctx.event_type == "message.group"
     assert ctx.handler_entry is entry
@@ -178,6 +183,7 @@ def test_hook_context_error_field():
         event=event,
         event_type="message.group",
         handler_entry=entry,
+        api=_mock_api,
         error=err,
     )
     assert ctx.error is err
@@ -196,7 +202,9 @@ async def test_message_type_filter_group_pass():
         pass
 
     entry = HandlerEntry(func=dummy, event_type="message")
-    ctx = HookContext(event=event, event_type="message.group", handler_entry=entry)
+    ctx = HookContext(
+        event=event, event_type="message.group", handler_entry=entry, api=_mock_api
+    )
 
     result = await f.execute(ctx)
     assert result == HookAction.CONTINUE
@@ -212,7 +220,9 @@ async def test_message_type_filter_group_rejects_private():
         pass
 
     entry = HandlerEntry(func=dummy, event_type="message")
-    ctx = HookContext(event=event, event_type="message.private", handler_entry=entry)
+    ctx = HookContext(
+        event=event, event_type="message.private", handler_entry=entry, api=_mock_api
+    )
 
     result = await f.execute(ctx)
     assert result == HookAction.SKIP
@@ -231,7 +241,9 @@ async def test_post_type_filter():
         pass
 
     entry = HandlerEntry(func=dummy, event_type="message")
-    ctx = HookContext(event=event, event_type="message.group", handler_entry=entry)
+    ctx = HookContext(
+        event=event, event_type="message.group", handler_entry=entry, api=_mock_api
+    )
 
     result = await f.execute(ctx)
     assert result == HookAction.CONTINUE
@@ -248,7 +260,10 @@ async def test_post_type_filter_rejects():
 
     entry = HandlerEntry(func=dummy, event_type="notice")
     ctx = HookContext(
-        event=event, event_type="notice.group_increase", handler_entry=entry
+        event=event,
+        event_type="notice.group_increase",
+        handler_entry=entry,
+        api=_mock_api,
     )
 
     result = await f.execute(ctx)
