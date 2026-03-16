@@ -14,7 +14,7 @@ from ncatbot.adapter.base import BaseAdapter
 from ncatbot.adapter.napcat.adapter import NapCatAdapter
 from ncatbot.api.client import BotAPIClient
 from ncatbot.core.dispatcher import AsyncEventDispatcher
-from ncatbot.core.registry import HandlerDispatcher
+from ncatbot.core.registry import HandlerDispatcher, flush_pending
 from ncatbot.plugin import PluginLoader
 from ncatbot.service import ServiceManager
 from ncatbot.utils import get_log, setup_logging
@@ -214,7 +214,12 @@ class BotClient:
 
     async def _setup_plugins(self) -> None:
         """加载插件并配置热重载。"""
+        
+
         self._plugin_loader.set_handler_dispatcher(self.handler_dispatcher)
+
+        # 非插件模式：将模块级 @registrar.on_*() 收集的 handler 注册到 dispatcher
+        flush_pending(self.handler_dispatcher, "__global__")
 
         def _inject_plugin_deps(plugin, manifest):
             plugin.services = self._service_manager
