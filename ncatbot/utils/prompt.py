@@ -17,7 +17,7 @@ import sys
 from enum import Enum
 from typing import List, Optional
 
-from ncatbot.utils.logger import get_log
+from .logger import get_log
 
 LOG = get_log("Prompt")
 

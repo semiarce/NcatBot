@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from .dispatcher import HandlerEntry
     from ncatbot.api import BotAPIClient
-    from ncatbot.core.dispatcher.event import Event
+    from ..dispatcher.event import Event
     from ncatbot.service import ServiceManager
 
 

@@ -1,3 +1,3 @@
-from ncatbot.app.client import BotClient
+from .client import BotClient
 
 __all__ = ["BotClient"]

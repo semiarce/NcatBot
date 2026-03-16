@@ -17,7 +17,7 @@ from typing import (
     TYPE_CHECKING,
 )
 
-from ncatbot.types.enums import EventType
+from ncatbot.types import EventType
 from ncatbot.utils import get_log
 
 from .event import Event

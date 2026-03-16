@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional
 
 import yaml
 
-from ncatbot.utils.logger import get_early_logger
+from ..logger import get_early_logger
 
 from .models import Config
 

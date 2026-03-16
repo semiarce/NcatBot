@@ -10,8 +10,7 @@ from pathlib import Path
 from typing import Optional
 from urllib.parse import urlparse
 
-from ncatbot.utils import get_log, ncatbot_config
-from ncatbot.utils.prompt import confirm
+from ncatbot.utils import get_log, ncatbot_config, confirm
 from .default_webui_config import config as default_webui_config
 from .platform import PlatformOps
 

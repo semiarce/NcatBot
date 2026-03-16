@@ -18,9 +18,9 @@ from ncatbot.utils import get_log
 from .hook import HookAction, HookContext, HookStage, get_hooks
 
 if TYPE_CHECKING:
-    from ncatbot.api.interface import IBotAPI
-    from ncatbot.core.dispatcher import AsyncEventDispatcher, Event
-    from ncatbot.core.dispatcher.stream import EventStream
+    from ncatbot.api import IBotAPI
+    from ..dispatcher import AsyncEventDispatcher, Event
+    from ..dispatcher.stream import EventStream
     from ncatbot.service import ServiceManager
 
 LOG = get_log("HandlerDispatcher")
@@ -166,7 +166,7 @@ class HandlerDispatcher:
 
     async def _dispatch(self, event: "Event") -> None:
         """接收 Event 并分发到匹配的 handlers。"""
-        from ncatbot.event.factory import create_entity
+        from ncatbot.event import create_entity
 
         event_type = event.type
 

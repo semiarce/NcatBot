@@ -10,7 +10,7 @@ import asyncio
 import time as time_mod
 from typing import Any, Dict, Optional
 
-from ncatbot.plugin.ncatbot_plugin import NcatBotPlugin
+from ...ncatbot_plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 
 LOG = get_log("SystemManager")
@@ -112,7 +112,7 @@ class SystemManagerPlugin(NcatBotPlugin):
 
     async def _emit_heartbeat_timeout(self, elapsed: float, timeout: int) -> None:
         """发出心跳超时事件。"""
-        from ncatbot.types.meta import HeartbeatTimeoutMetaEventData
+        from ncatbot.types import HeartbeatTimeoutMetaEventData
 
         event_data = HeartbeatTimeoutMetaEventData(
             time=int(time_mod.time()),

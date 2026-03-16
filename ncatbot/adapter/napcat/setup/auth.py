@@ -13,7 +13,7 @@ from typing import Optional
 import qrcode
 
 from ncatbot.utils import get_log, ncatbot_config, post_json
-from ncatbot.adapter.napcat.constants import NAPCAT_WEBUI_SALT
+from ..constants import NAPCAT_WEBUI_SALT
 
 LOG = get_log("AuthHandler")
 

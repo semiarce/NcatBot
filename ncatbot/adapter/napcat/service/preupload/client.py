@@ -20,7 +20,7 @@ from .models import (
 )
 
 if TYPE_CHECKING:
-    from ncatbot.adapter.napcat.connection.protocol import OB11Protocol
+    from ...connection.protocol import OB11Protocol
 
 LOG = get_log("StreamUploadClient")
 

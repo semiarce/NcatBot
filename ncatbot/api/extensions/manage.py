@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
-    from ncatbot.api.interface import IBotAPI
+    from ..interface import IBotAPI
 
 
 class ManageExtension:

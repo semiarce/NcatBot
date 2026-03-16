@@ -10,11 +10,11 @@ import functools
 import json
 from typing import Any, Union, cast
 
-from ncatbot.api.interface import IBotAPI
-from ncatbot.api._sugar import MessageSugarMixin
-from ncatbot.api.extensions.manage import ManageExtension
-from ncatbot.api.extensions.info import InfoExtension
-from ncatbot.api.extensions.support import SupportExtension
+from .interface import IBotAPI
+from ._sugar import MessageSugarMixin
+from .extensions.manage import ManageExtension
+from .extensions.info import InfoExtension
+from .extensions.support import SupportExtension
 from ncatbot.utils import get_log
 
 LOG = get_log("BotAPIClient")

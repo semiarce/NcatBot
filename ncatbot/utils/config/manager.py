@@ -3,7 +3,7 @@
 import os
 from typing import List, Optional
 
-from ncatbot.utils.logger import get_early_logger
+from ..logger import get_early_logger
 
 from .models import Config, NapCatConfig, PluginConfig, DEFAULT_BOT_UIN, DEFAULT_ROOT
 from .storage import ConfigStorage

@@ -6,8 +6,8 @@ NapCat 适配器主类
 
 from typing import Optional
 
-from ncatbot.adapter.base import BaseAdapter
-from ncatbot.api.interface import IBotAPI
+from ..base import BaseAdapter
+from ncatbot.api import IBotAPI
 from ncatbot.utils import get_log, ncatbot_config
 
 from .api.bot_api import NapCatBotAPI

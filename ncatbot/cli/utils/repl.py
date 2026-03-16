@@ -13,7 +13,7 @@ def start_repl(ctx: click.Context):
 
     # 尝试读取 bot_uin 作为提示符
     try:
-        from ncatbot.utils.config import get_config_manager
+        from ncatbot.utils import get_config_manager
 
         mgr = get_config_manager()
         bot_uin = mgr.bot_uin

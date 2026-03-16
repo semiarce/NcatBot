@@ -8,8 +8,8 @@ NcatBot 插件基类
   unload (MRO 正序): EventMixin(关流) → TimeTaskMixin(清任务) → RBACMixin → ConfigMixin(存配置) → DataMixin(存数据)
 """
 
-from ncatbot.plugin.base import BasePlugin
-from ncatbot.plugin.mixin import (
+from .base import BasePlugin
+from .mixin import (
     ConfigMixin,
     DataMixin,
     EventMixin,

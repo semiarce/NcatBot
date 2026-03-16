@@ -9,7 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List
 
-from ncatbot.plugin.manifest import PluginManifest
+from ncatbot.plugin import PluginManifest
 from ncatbot.utils import get_log
 
 LOG = get_log("PluginDiscovery")

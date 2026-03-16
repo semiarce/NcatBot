@@ -10,9 +10,8 @@ from typing import Callable, List, Optional, Union, TYPE_CHECKING
 from ncatbot.utils import get_log
 
 if TYPE_CHECKING:
-    from ncatbot.core.dispatcher import AsyncEventDispatcher, Event
-    from ncatbot.core.dispatcher.stream import EventStream
-    from ncatbot.types.enums import EventType
+    from ncatbot.core import AsyncEventDispatcher, Event, EventStream
+    from ncatbot.types import EventType
 
 LOG = get_log("EventMixin")
 

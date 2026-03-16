@@ -6,7 +6,7 @@ import click
 
 
 def _get_manager():
-    from ncatbot.utils.config import get_config_manager
+    from ncatbot.utils import get_config_manager
 
     return get_config_manager()
 

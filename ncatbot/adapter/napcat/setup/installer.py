@@ -15,7 +15,7 @@ import requests
 from tqdm import tqdm
 
 from ncatbot.utils import gen_url_with_proxy, get_json, get_log, ncatbot_config
-from ncatbot.adapter.napcat.constants import INSTALL_SCRIPT_URL, WINDOWS_NAPCAT_DIR
+from ..constants import INSTALL_SCRIPT_URL, WINDOWS_NAPCAT_DIR
 from .platform import PlatformOps, LinuxOps
 
 LOG = get_log("NapCatInstaller")

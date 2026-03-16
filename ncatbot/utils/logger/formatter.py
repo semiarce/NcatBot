@@ -3,7 +3,7 @@
 import os
 import logging
 
-from ncatbot.utils.assets.color import Color
+from ..assets.color import Color
 
 # 项目根目录，用于计算相对路径
 _PROJECT_ROOT = os.path.normcase(

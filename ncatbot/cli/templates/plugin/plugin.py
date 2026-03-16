@@ -12,5 +12,5 @@ class PluginClassName(NcatBotPlugin):
     async def on_load(self):
         self.logger.info(f"{self.name} 已加载")
 
-    async def on_unload(self):
+    async def on_close(self):
         self.logger.info(f"{self.name} 已卸载")

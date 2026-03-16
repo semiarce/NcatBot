@@ -2,7 +2,7 @@
 
 from tqdm import tqdm as tqdm_original
 
-from ncatbot.utils.assets.color import Color
+from ..assets.color import Color
 
 
 class tqdm(tqdm_original):

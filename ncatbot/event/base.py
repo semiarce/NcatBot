@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from ncatbot.types import BaseEventData, PostType
 
 if TYPE_CHECKING:
-    from ncatbot.api.interface import IBotAPI
+    from ncatbot.api import IBotAPI
 
 __all__ = [
     "BaseEvent",

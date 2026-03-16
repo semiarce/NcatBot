@@ -19,7 +19,7 @@ from enum import Enum, auto
 from typing import Any, Callable, Dict, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ncatbot.testing.harness import TestHarness
+    from .harness import TestHarness
     from ncatbot.types import BaseEventData
 
 

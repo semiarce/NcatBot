@@ -20,8 +20,8 @@ if sys.platform == "win32":
     import winreg
 
 from ncatbot.utils import get_log
-from ncatbot.utils.prompt import confirm
-from ncatbot.adapter.napcat.constants import LINUX_NAPCAT_DIR, WINDOWS_NAPCAT_DIR
+from ncatbot.utils import confirm
+from ..constants import LINUX_NAPCAT_DIR, WINDOWS_NAPCAT_DIR
 
 LOG = get_log("NapCatPlatform")
 

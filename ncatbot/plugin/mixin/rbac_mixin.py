@@ -9,8 +9,7 @@ from typing import Optional, TYPE_CHECKING
 from ncatbot.utils import get_log
 
 if TYPE_CHECKING:
-    from ncatbot.service import ServiceManager
-    from ncatbot.service.builtin.rbac import RBACService
+    from ncatbot.service import ServiceManager, RBACService
 
 LOG = get_log("RBACMixin")
 

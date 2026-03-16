@@ -7,7 +7,7 @@ RBAC 服务
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Set
 
-from ncatbot.service.base import BaseService
+from ...base import BaseService
 from .trie import PermissionTrie
 from .storage import (
     save_rbac_data,

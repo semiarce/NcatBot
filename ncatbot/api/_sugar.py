@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, Optional, Union
 
-from ncatbot.types.segment import (
+from ncatbot.types import (
     MessageArray,
     Image,
     Record,
@@ -15,7 +15,7 @@ from ncatbot.types.segment import (
 )
 
 if TYPE_CHECKING:
-    from ncatbot.api.interface import IBotAPI
+    from .interface import IBotAPI
 
 
 class MessageSugarMixin:

@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
 
-from ncatbot.utils.logger import get_log
+from ncatbot.utils import get_log
 
 LOG = get_log("PipHelper")
 

@@ -10,11 +10,9 @@ import asyncio
 from pathlib import Path
 from typing import Optional, TYPE_CHECKING
 
-from ncatbot.adapter.base import BaseAdapter
-from ncatbot.adapter.napcat.adapter import NapCatAdapter
-from ncatbot.api.client import BotAPIClient
-from ncatbot.core.dispatcher import AsyncEventDispatcher
-from ncatbot.core.registry import HandlerDispatcher, flush_pending
+from ncatbot.adapter import BaseAdapter, NapCatAdapter
+from ncatbot.api import BotAPIClient
+from ncatbot.core import AsyncEventDispatcher, HandlerDispatcher, flush_pending
 from ncatbot.plugin import PluginLoader
 from ncatbot.service import ServiceManager
 from ncatbot.utils import get_log, setup_logging

@@ -9,8 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Union, TYPE_CHECKING, fi
 from ncatbot.utils import get_log
 
 if TYPE_CHECKING:
-    from ncatbot.service import ServiceManager
-    from ncatbot.service.builtin.schedule import TimeTaskService
+    from ncatbot.service import ServiceManager, TimeTaskService
 
 LOG = get_log("TimeTaskMixin")
 

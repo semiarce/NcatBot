@@ -19,7 +19,7 @@ from .importer import ModuleImporter
 from .pip_helper import check_requirements, install_packages, format_missing_report
 
 if TYPE_CHECKING:
-    from ncatbot.core.registry.dispatcher import HandlerDispatcher
+    from ncatbot.core import HandlerDispatcher
 
 LOG = get_log("PluginLoader")
 
@@ -150,11 +150,13 @@ class PluginLoader:
 
     async def load_plugin(self, name: str) -> Optional[BasePlugin]:
         """加载单个插件（必须已索引）。"""
-        from ncatbot.core.registry.context import (
+        from ncatbot.core import (
             set_current_plugin,
+        )
+        from ncatbot.core.registry.context import (
             _current_plugin_ctx,
         )
-        from ncatbot.core.registry.registrar import flush_pending, clear_pending
+        from ncatbot.core import flush_pending, clear_pending
 
         manifest = self._indexer.get(name)
         if manifest is None:
@@ -198,7 +200,7 @@ class PluginLoader:
 
     async def unload_plugin(self, name: str) -> bool:
         """卸载单个插件。"""
-        from ncatbot.core.registry.registrar import clear_pending
+        from ncatbot.core import clear_pending
 
         plugin = self.plugins.get(name)
         if plugin is None:
@@ -332,7 +334,7 @@ class PluginLoader:
 
     async def load_builtin_plugins(self) -> None:
         """加载内置插件。"""
-        from ncatbot.plugin.builtin import BUILTIN_PLUGINS
+        from ...plugin.builtin import BUILTIN_PLUGINS
 
         for plugin_class in BUILTIN_PLUGINS:
             name = plugin_class.name
@@ -364,7 +366,7 @@ class PluginLoader:
 
     async def _check_pip_deps_batch(self, manifests: Dict[str, PluginManifest]) -> set:
         """批量检查所有插件的 pip 依赖，返回应跳过的插件名集合。"""
-        from ncatbot.utils.prompt import async_confirm
+        from ncatbot.utils import async_confirm
         from ncatbot.utils import get_config_manager
 
         config = get_config_manager()
@@ -460,7 +462,7 @@ class PluginLoader:
 
     async def _ensure_pip_deps(self, manifest: PluginManifest) -> bool:
         """检查并安装单个插件的 pip 依赖。返回 True 表示满足/已安装。"""
-        from ncatbot.utils.prompt import async_confirm
+        from ncatbot.utils import async_confirm
         from ncatbot.utils import get_config_manager
 
         _, missing = check_requirements(manifest.pip_dependencies)

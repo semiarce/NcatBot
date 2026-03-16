@@ -11,13 +11,13 @@ import asyncio
 from pathlib import Path
 from typing import List, Optional, TYPE_CHECKING
 
-from ncatbot.adapter.mock import MockAdapter
+from ncatbot.adapter import MockAdapter
 from ncatbot.app import BotClient
 
 from .harness import TestHarness
 
 if TYPE_CHECKING:
-    from ncatbot.plugin.base import BasePlugin
+    from ncatbot.plugin import BasePlugin
 
 
 class PluginTestHarness(TestHarness):

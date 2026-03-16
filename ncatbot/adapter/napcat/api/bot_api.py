@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Optional, Union, TYPE_CHECKING
 
-from ncatbot.api.interface import IBotAPI
+from ncatbot.api import IBotAPI
 from ncatbot.utils import get_log
 
 from .message import MessageAPIMixin
@@ -18,7 +18,7 @@ from .query import QueryAPIMixin
 from .file import FileAPIMixin
 
 if TYPE_CHECKING:
-    from ncatbot.adapter.napcat.connection.protocol import OB11Protocol
+    from ..connection.protocol import OB11Protocol
 
 LOG = get_log("NapCatBotAPI")
 
@@ -35,7 +35,7 @@ class NapCatBotAPI(
 
     def __init__(self, protocol: "OB11Protocol"):
         self._protocol = protocol
-        from ncatbot.adapter.napcat.service.preupload import PreUploadService
+        from ..service.preupload import PreUploadService
 
         self._preupload = PreUploadService(protocol)
 

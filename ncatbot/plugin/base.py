@@ -13,11 +13,11 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING
 from ncatbot.utils import get_log
 
 if TYPE_CHECKING:
-    from ncatbot.api.client import BotAPIClient
-    from ncatbot.core.dispatcher import AsyncEventDispatcher
-    from ncatbot.plugin.manifest import PluginManifest
+    from ncatbot.api import BotAPIClient
+    from ncatbot.core import AsyncEventDispatcher
+    from .manifest import PluginManifest
     from ncatbot.service import ServiceManager
-    from ncatbot.plugin.loader.core import PluginLoader
+    from .loader.core import PluginLoader
 
 LOG = get_log("BasePlugin")
 

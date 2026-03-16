@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Callable, Awaitable, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ncatbot.api.interface import IBotAPI
+    from ncatbot.api import IBotAPI
     from ncatbot.types import BaseEventData
 
 

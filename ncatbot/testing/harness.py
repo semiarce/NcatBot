@@ -10,11 +10,9 @@ from __future__ import annotations
 import asyncio
 from typing import Callable, List, Optional, TYPE_CHECKING
 
-from ncatbot.adapter.mock import MockAdapter, MockBotAPI
-from ncatbot.adapter.mock.api import APICall
+from ncatbot.adapter import MockAdapter, MockBotAPI, APICall
 from ncatbot.app import BotClient
-from ncatbot.core.dispatcher import AsyncEventDispatcher
-from ncatbot.core.dispatcher.event import Event
+from ncatbot.core import AsyncEventDispatcher, Event
 
 if TYPE_CHECKING:
     from ncatbot.types import BaseEventData

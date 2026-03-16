@@ -10,8 +10,8 @@ from __future__ import annotations
 import asyncio
 from typing import Optional
 
-from ncatbot.adapter.base import BaseAdapter
-from ncatbot.api.interface import IBotAPI
+from ..base import BaseAdapter
+from ncatbot.api import IBotAPI
 from ncatbot.types import BaseEventData
 
 from .api import MockBotAPI

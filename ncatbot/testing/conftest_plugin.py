@@ -16,7 +16,7 @@ from typing import List
 
 import pytest
 
-from ncatbot.testing.discovery import discover_testable_plugins
+from .discovery import discover_testable_plugins
 
 
 def pytest_addoption(parser):
