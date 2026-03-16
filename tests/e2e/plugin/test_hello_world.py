@@ -82,9 +82,7 @@ async def test_private_hello_reply(examples_dir):
 
 async def test_plugin_unloads(examples_dir):
     """PL-04: 插件卸载后从列表中移除"""
-    harness = PluginTestHarness(
-        plugin_names=[PLUGIN_NAME], plugin_dir=examples_dir
-    )
+    harness = PluginTestHarness(plugin_names=[PLUGIN_NAME], plugin_dir=examples_dir)
     await harness.start()
     assert PLUGIN_NAME in harness.loaded_plugins
 

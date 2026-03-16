@@ -39,46 +39,62 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def set_group_kick(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         reject_add_request: bool = False,
     ) -> None: ...
 
     @abstractmethod
     async def set_group_ban(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         duration: int = 1800,
     ) -> None: ...
 
     @abstractmethod
     async def set_group_whole_ban(
-        self, group_id: Union[str, int], enable: bool = True,
+        self,
+        group_id: Union[str, int],
+        enable: bool = True,
     ) -> None: ...
 
     @abstractmethod
     async def set_group_admin(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         enable: bool = True,
     ) -> None: ...
 
     @abstractmethod
     async def set_group_card(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         card: str = "",
     ) -> None: ...
 
     @abstractmethod
     async def set_group_name(
-        self, group_id: Union[str, int], name: str,
+        self,
+        group_id: Union[str, int],
+        name: str,
     ) -> None: ...
 
     @abstractmethod
     async def set_group_leave(
-        self, group_id: Union[str, int], is_dismiss: bool = False,
+        self,
+        group_id: Union[str, int],
+        is_dismiss: bool = False,
     ) -> None: ...
 
     @abstractmethod
     async def set_group_special_title(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         special_title: str = "",
     ) -> None: ...
 
@@ -86,12 +102,19 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def set_friend_add_request(
-        self, flag: str, approve: bool = True, remark: str = "",
+        self,
+        flag: str,
+        approve: bool = True,
+        remark: str = "",
     ) -> None: ...
 
     @abstractmethod
     async def set_group_add_request(
-        self, flag: str, sub_type: str, approve: bool = True, reason: str = "",
+        self,
+        flag: str,
+        sub_type: str,
+        approve: bool = True,
+        reason: str = "",
     ) -> None: ...
 
     # ---- 信息查询 ----
@@ -113,7 +136,9 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def get_group_member_info(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
     ) -> dict: ...
 
     @abstractmethod
@@ -129,7 +154,11 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def upload_group_file(
-        self, group_id: Union[str, int], file: str, name: str, folder_id: str = "",
+        self,
+        group_id: Union[str, int],
+        file: str,
+        name: str,
+        folder_id: str = "",
     ) -> None: ...
 
     @abstractmethod
@@ -137,12 +166,16 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def get_group_file_url(
-        self, group_id: Union[str, int], file_id: str,
+        self,
+        group_id: Union[str, int],
+        file_id: str,
     ) -> str: ...
 
     @abstractmethod
     async def delete_group_file(
-        self, group_id: Union[str, int], file_id: str,
+        self,
+        group_id: Union[str, int],
+        file_id: str,
     ) -> None: ...
 
     # ---- 辅助功能 ----
@@ -152,5 +185,7 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def send_poke(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
     ) -> None: ...

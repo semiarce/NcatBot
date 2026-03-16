@@ -4,9 +4,11 @@ from typing import Any, Dict, Union
 
 
 class MessageAPIMixin:
-
     async def send_private_msg(
-        self, user_id: Union[str, int], message: list, **kwargs,
+        self,
+        user_id: Union[str, int],
+        message: list,
+        **kwargs,
     ) -> dict:
         params: Dict[str, Any] = {"user_id": int(user_id), "message": message}
         params.update(kwargs)
@@ -14,7 +16,10 @@ class MessageAPIMixin:
         return resp.get("data", {})
 
     async def send_group_msg(
-        self, group_id: Union[str, int], message: list, **kwargs,
+        self,
+        group_id: Union[str, int],
+        message: list,
+        **kwargs,
     ) -> dict:
         params: Dict[str, Any] = {"group_id": int(group_id), "message": message}
         params.update(kwargs)

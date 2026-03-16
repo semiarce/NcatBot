@@ -125,10 +125,11 @@ class MessageArray(MessageArrayDTO):
     @property
     def messages(self) -> List[MessageSegment]:
         return self.message
+
     # -------------------
     # region 构造用接口
     # -------------------
-    
+
     def add_by_list(self, data: List[Union[dict, MessageSegment]]):
         self.message.extend(parse_message_segments(data))
         return self

@@ -67,9 +67,7 @@ class SystemMixin(NapCatBotAPIBase):
         return (data or {}).get("yes", False)
 
     async def can_send_record(self, group_id: Union[str, int]) -> bool:
-        data = await self._call_data(
-            "can_send_record", {"group_id": int(group_id)}
-        )
+        data = await self._call_data("can_send_record", {"group_id": int(group_id)})
         return (data or {}).get("yes", False)
 
     async def ocr_image(self, image: str) -> list:

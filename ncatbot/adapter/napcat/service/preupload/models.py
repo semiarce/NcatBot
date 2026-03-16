@@ -32,6 +32,7 @@ class StreamResponseType(str, Enum):
 @dataclass
 class ChunkInfo:
     """分片信息"""
+
     data: bytes
     index: int
     base64_data: str
@@ -40,6 +41,7 @@ class ChunkInfo:
 @dataclass
 class FileAnalysis:
     """文件分析结果"""
+
     chunks: List[ChunkInfo]
     sha256_hash: str
     total_size: int
@@ -49,6 +51,7 @@ class FileAnalysis:
 @dataclass
 class UploadResult:
     """上传结果"""
+
     success: bool
     file_path: Optional[str] = None
     file_size: Optional[int] = None
@@ -59,6 +62,7 @@ class UploadResult:
 @dataclass
 class PreUploadResult:
     """预上传结果"""
+
     success: bool
     file_path: Optional[str] = None
     original_path: Optional[str] = None

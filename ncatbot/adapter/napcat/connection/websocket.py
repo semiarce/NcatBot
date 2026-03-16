@@ -38,7 +38,10 @@ class NapCatWebSocket:
     async def connect(self) -> None:
         """建立 WebSocket 连接"""
         self._client = await websockets.connect(
-            self._uri, close_timeout=0.2, max_size=2**30, open_timeout=5,
+            self._uri,
+            close_timeout=0.2,
+            max_size=2**30,
+            open_timeout=5,
         )
         self._running = True
         LOG.info("WebSocket 已连接")
@@ -96,7 +99,10 @@ class NapCatWebSocket:
             try:
                 LOG.info(f"重连尝试 {attempt}/{_MAX_RECONNECT_ATTEMPTS}...")
                 self._client = await websockets.connect(
-                    self._uri, close_timeout=0.2, max_size=2**30, open_timeout=5,
+                    self._uri,
+                    close_timeout=0.2,
+                    max_size=2**30,
+                    open_timeout=5,
                 )
                 LOG.info("重连成功")
                 return True

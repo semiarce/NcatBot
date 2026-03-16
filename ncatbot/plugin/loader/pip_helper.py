@@ -97,7 +97,12 @@ def install_packages(requirements: List[str]) -> bool:
             timeout=300,
         )
         if result.returncode != 0:
-            LOG.error("%s 安装失败 (exit %d):\n%s", tool_name, result.returncode, result.stderr)
+            LOG.error(
+                "%s 安装失败 (exit %d):\n%s",
+                tool_name,
+                result.returncode,
+                result.stderr,
+            )
             return False
         LOG.info("依赖安装完成")
         return True
@@ -109,9 +114,7 @@ def install_packages(requirements: List[str]) -> bool:
         return False
 
 
-def format_missing_report(
-    plugin_name: str, missing: List[str]
-) -> str:
+def format_missing_report(plugin_name: str, missing: List[str]) -> str:
     """格式化缺失依赖报告。"""
     items = "\n".join(f"  - {req}" for req in missing)
     return f"插件 [{plugin_name}] 缺失以下 pip 依赖:\n{items}"
@@ -126,12 +129,8 @@ def _validate_requirement(req: str) -> None:
     # 提取包名部分（版本约束之前）
     name_part = re.split(r"[><=!~;@\[]", req, maxsplit=1)[0].strip()
     if not name_part or not _SAFE_NAME_RE.match(name_part):
-        raise ValueError(
-            f"不合法的 pip 依赖声明: {req!r}（仅允许 PyPI 包名+版本约束）"
-        )
+        raise ValueError(f"不合法的 pip 依赖声明: {req!r}（仅允许 PyPI 包名+版本约束）")
 
     # 拒绝 URL 形式
     if "://" in req or req.startswith("/") or req.startswith("\\"):
-        raise ValueError(
-            f"不允许 URL 或本地路径形式的依赖: {req!r}"
-        )
+        raise ValueError(f"不允许 URL 或本地路径形式的依赖: {req!r}")

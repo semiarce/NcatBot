@@ -135,7 +135,9 @@ class BotClient(LifecycleManager):
         self.api = self.adapter.get_api()
 
         # 创建事件分发器
-        self.dispatcher = EventDispatcher(self.event_bus, self.api, services=self.services)
+        self.dispatcher = EventDispatcher(
+            self.event_bus, self.api, services=self.services
+        )
 
         # 将适配器的事件输出连接到分发器
         self.adapter.set_event_callback(self.dispatcher.dispatch)

@@ -36,7 +36,5 @@ class IPrivateAPI(ABC):
     # ==================================================================
 
     @abstractmethod
-    async def set_input_status(
-        self, event_type: int, user_id: Union[str, int]
-    ) -> None:
+    async def set_input_status(self, event_type: int, user_id: Union[str, int]) -> None:
         """设置输入状态"""

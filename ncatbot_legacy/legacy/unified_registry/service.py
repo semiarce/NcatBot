@@ -10,9 +10,15 @@ from ncatbot.core.service.base import BaseService
 from ncatbot.core.service.builtin.unified_registry.executor import FunctionExecutor
 from ncatbot.core.service.builtin.unified_registry.command_runner import CommandRunner
 from ncatbot.core.service.builtin.unified_registry.filter_system import filter_registry
-from ncatbot.core.service.builtin.unified_registry.filter_system.event_registry import event_registry
-from ncatbot.core.service.builtin.unified_registry.command_system.registry.registry import command_registry
-from ncatbot.core.service.builtin.unified_registry.command_system.utils import CommandSpec
+from ncatbot.core.service.builtin.unified_registry.filter_system.event_registry import (
+    event_registry,
+)
+from ncatbot.core.service.builtin.unified_registry.command_system.registry.registry import (
+    command_registry,
+)
+from ncatbot.core.service.builtin.unified_registry.command_system.utils import (
+    CommandSpec,
+)
 
 if TYPE_CHECKING:
     from ncatbot.core import MessageEvent, BaseEvent

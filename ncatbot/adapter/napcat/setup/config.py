@@ -101,7 +101,9 @@ class NapCatConfig:
             target_port = expected_server["port"]
             for server in servers[:]:
                 if server.get("port") == target_port:
-                    if confirm(f"端口 {target_port} 已存在配置, 是否强制覆盖?", default=False):
+                    if confirm(
+                        f"端口 {target_port} 已存在配置, 是否强制覆盖?", default=False
+                    ):
                         servers.remove(server)
                     else:
                         raise ValueError(f"端口 {target_port} 已存在, 请更改端口")

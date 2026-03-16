@@ -101,7 +101,8 @@ class MessageEvent(BaseEvent):
                 message=msg.to_list(),
             )
         return await self._api.send_private_msg(
-            user_id=self._data.user_id, message=msg.to_list(),
+            user_id=self._data.user_id,
+            message=msg.to_list(),
         )
 
     async def delete(self) -> Any:

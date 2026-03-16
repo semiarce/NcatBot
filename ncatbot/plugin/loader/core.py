@@ -362,9 +362,7 @@ class PluginLoader:
     # 内部方法
     # ------------------------------------------------------------------
 
-    async def _check_pip_deps_batch(
-        self, manifests: Dict[str, PluginManifest]
-    ) -> set:
+    async def _check_pip_deps_batch(self, manifests: Dict[str, PluginManifest]) -> set:
         """批量检查所有插件的 pip 依赖，返回应跳过的插件名集合。"""
         from ncatbot.utils.prompt import async_confirm
         from ncatbot.utils import get_config_manager
@@ -400,7 +398,14 @@ class PluginLoader:
         # 构建报告
         report_lines = ["以下插件需要额外安装 pip 依赖:"]
         for req in missing:
-            pkg_name = req.split(">")[0].split("<")[0].split("=")[0].split("!")[0].split("~")[0].strip()
+            pkg_name = (
+                req.split(">")[0]
+                .split("<")[0]
+                .split("=")[0]
+                .split("!")[0]
+                .split("~")[0]
+                .strip()
+            )
             plugins = dep_to_plugins.get(pkg_name, ["?"])
             report_lines.append(f"  - {req} (被 {', '.join(plugins)} 使用)")
         report = "\n".join(report_lines)
@@ -413,7 +418,12 @@ class PluginLoader:
         if not approved:
             # 找出哪些插件受影响
             missing_names = {
-                req.split(">")[0].split("<")[0].split("=")[0].split("!")[0].split("~")[0].strip()
+                req.split(">")[0]
+                .split("<")[0]
+                .split("=")[0]
+                .split("!")[0]
+                .split("~")[0]
+                .strip()
                 for req in missing
             }
             skip = set()
@@ -433,7 +443,12 @@ class PluginLoader:
             return set()
 
         still_missing_names = {
-            req.split(">")[0].split("<")[0].split("=")[0].split("!")[0].split("~")[0].strip()
+            req.split(">")[0]
+            .split("<")[0]
+            .split("=")[0]
+            .split("!")[0]
+            .split("~")[0]
+            .strip()
             for req in still_missing
         }
         skip = set()

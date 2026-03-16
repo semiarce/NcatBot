@@ -71,87 +71,61 @@ class Registrar:
         remove_hooks: Optional[List[Hook]] = None,
     ) -> "Registrar":
         """创建带不同默认 hooks 的新 Registrar"""
-        new_hooks = [
-            h for h in self._default_hooks if h not in (remove_hooks or [])
-        ]
+        new_hooks = [h for h in self._default_hooks if h not in (remove_hooks or [])]
         new_hooks.extend(extra_hooks or [])
         return Registrar(default_hooks=new_hooks)
 
     # ==================== 便捷装饰器 ====================
 
-    def on_group_message(
-        self, priority: int = 0, **metadata: Any
-    ) -> Callable:
+    def on_group_message(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册群消息 handler (通过 BEFORE_CALL Hook 过滤 message_type)"""
 
         def decorator(func: Callable) -> Callable:
             if not hasattr(func, "__hooks__"):
                 func.__hooks__ = []
             func.__hooks__.append(MessageTypeFilter("group"))
-            return self.on(
-                "ncatbot.message_event", priority=priority, **metadata
-            )(func)
+            return self.on("ncatbot.message_event", priority=priority, **metadata)(func)
 
         return decorator
 
-    def on_private_message(
-        self, priority: int = 0, **metadata: Any
-    ) -> Callable:
+    def on_private_message(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册私聊消息 handler (通过 BEFORE_CALL Hook 过滤 message_type)"""
 
         def decorator(func: Callable) -> Callable:
             if not hasattr(func, "__hooks__"):
                 func.__hooks__ = []
             func.__hooks__.append(MessageTypeFilter("private"))
-            return self.on(
-                "ncatbot.message_event", priority=priority, **metadata
-            )(func)
+            return self.on("ncatbot.message_event", priority=priority, **metadata)(func)
 
         return decorator
 
     def on_message(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册所有消息 handler (群+私聊)"""
-        return self.on(
-            "ncatbot.message_event", priority=priority, **metadata
-        )
+        return self.on("ncatbot.message_event", priority=priority, **metadata)
 
-    def on_message_sent(
-        self, priority: int = 0, **metadata: Any
-    ) -> Callable:
+    def on_message_sent(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册消息发送 handler"""
-        return self.on(
-            "ncatbot.message_sent_event", priority=priority, **metadata
-        )
+        return self.on("ncatbot.message_sent_event", priority=priority, **metadata)
 
     def on_notice(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册通知事件 handler"""
-        return self.on(
-            "ncatbot.notice_event", priority=priority, **metadata
-        )
+        return self.on("ncatbot.notice_event", priority=priority, **metadata)
 
     def on_request(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册请求事件 handler"""
-        return self.on(
-            "ncatbot.request_event", priority=priority, **metadata
-        )
+        return self.on("ncatbot.request_event", priority=priority, **metadata)
 
     def on_meta(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册元事件 handler"""
-        return self.on(
-            "ncatbot.meta_event", priority=priority, **metadata
-        )
+        return self.on("ncatbot.meta_event", priority=priority, **metadata)
 
     def on_startup(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册启动事件 handler (lifecycle connect)"""
-        return self.on(
-            "ncatbot.startup", priority=priority, **metadata
-        )
+        return self.on("ncatbot.startup", priority=priority, **metadata)
 
     def on_heartbeat(self, priority: int = 0, **metadata: Any) -> Callable:
         """注册心跳事件 handler"""
-        return self.on(
-            "ncatbot.heartbeat", priority=priority, **metadata
-        )
+        return self.on("ncatbot.heartbeat", priority=priority, **metadata)
 
 
 def flush_pending(dispatcher: "Dispatcher", plugin_name: str) -> int:

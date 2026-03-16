@@ -111,6 +111,7 @@ class NcatBotPlugin(BasePlugin, TimeTaskMixin, ConfigMixin):
 
         # 将 pending handlers 注册到 HandlerDispatcher
         from ncatbot.core.registry import flush_pending
+
         flush_pending(self.services.bot_client.handler_dispatcher, self.name)
 
     @final

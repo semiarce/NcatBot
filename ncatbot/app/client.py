@@ -214,7 +214,6 @@ class BotClient:
 
     async def _setup_plugins(self) -> None:
         """加载插件并配置热重载。"""
-        
 
         self._plugin_loader.set_handler_dispatcher(self.handler_dispatcher)
 

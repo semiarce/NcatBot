@@ -75,9 +75,7 @@ class FileMixin(NapCatBotAPIBase):
             },
         )
 
-    async def trans_group_file(
-        self, group_id: Union[str, int], file_id: str
-    ) -> None:
+    async def trans_group_file(self, group_id: Union[str, int], file_id: str) -> None:
         await self._call(
             "trans_group_file",
             {"group_id": int(group_id), "file_id": file_id},
@@ -113,7 +111,11 @@ class FileMixin(NapCatBotAPIBase):
         return (
             await self._call_data(
                 "get_group_files_by_folder",
-                {"group_id": int(group_id), "folder_id": folder_id, "file_count": file_count},
+                {
+                    "group_id": int(group_id),
+                    "folder_id": folder_id,
+                    "file_count": file_count,
+                },
             )
             or {}
         )
@@ -137,6 +139,5 @@ class FileMixin(NapCatBotAPIBase):
 
     async def get_file(self, file_id: str, file: str) -> dict:
         return (
-            await self._call_data("get_file", {"file_id": file_id, "file": file})
-            or {}
+            await self._call_data("get_file", {"file_id": file_id, "file": file}) or {}
         )

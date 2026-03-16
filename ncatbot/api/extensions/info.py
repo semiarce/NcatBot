@@ -32,7 +32,9 @@ class InfoExtension:
         return await self._api.get_group_list()
 
     async def get_group_member_info(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
     ) -> dict:
         return await self._api.get_group_member_info(group_id, user_id)
 
@@ -49,6 +51,8 @@ class InfoExtension:
         return await self._api.get_group_root_files(group_id)
 
     async def get_group_file_url(
-        self, group_id: Union[str, int], file_id: str,
+        self,
+        group_id: Union[str, int],
+        file_id: str,
     ) -> str:
         return await self._api.get_group_file_url(group_id, file_id)

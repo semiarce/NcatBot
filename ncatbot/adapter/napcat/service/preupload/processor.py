@@ -66,7 +66,7 @@ def get_local_path(file_value: str) -> Optional[str]:
     if not is_local_file(file_value):
         return None
     if file_value.startswith(FILE_PREFIX):
-        return file_value[len(FILE_PREFIX):]
+        return file_value[len(FILE_PREFIX) :]
     return file_value
 
 
@@ -74,7 +74,7 @@ def extract_base64_data(file_value: str) -> Optional[bytes]:
     if not is_base64_data(file_value):
         return None
     try:
-        return b64.b64decode(file_value[len(BASE64_PREFIX):])
+        return b64.b64decode(file_value[len(BASE64_PREFIX) :])
     except Exception:
         return None
 
@@ -125,12 +125,15 @@ class MessagePreUploadProcessor:
             LOG.error(f"消息预处理失败: {e}")
             errors.append(str(e))
             return ProcessResult(
-                success=False, data=result_data,
-                errors=errors, uploaded_count=uploaded_count,
+                success=False,
+                data=result_data,
+                errors=errors,
+                uploaded_count=uploaded_count,
             )
 
     async def process_message_array(
-        self, messages: List[Dict[str, Any]],
+        self,
+        messages: List[Dict[str, Any]],
     ) -> ProcessResult:
         errors: List[str] = []
         total_uploaded = 0
@@ -189,7 +192,9 @@ class MessagePreUploadProcessor:
         return uploaded_count
 
     async def _process_downloadable(
-        self, node: Dict[str, Any], errors: List[str],
+        self,
+        node: Dict[str, Any],
+        errors: List[str],
     ) -> int:
         data = node.get("data", {})
         file_value = data.get("file")

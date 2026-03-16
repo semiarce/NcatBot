@@ -7,6 +7,7 @@ from .models import Config
 
 CONFIG_PATH = os.getenv("NCATBOT_CONFIG_PATH", os.path.join(os.getcwd(), "config.yaml"))
 
+
 class ConfigStorage:
     """配置文件存储管理。"""
 

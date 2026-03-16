@@ -59,13 +59,15 @@ class MessageTypesPlugin(NcatBotPlugin):
         await self.api.post_group_array_msg(event.group_id, msg)
 
     # ---- url 链接格式的图片 ----
-    
+
     @registrar.on_group_command("图片")
     async def on_image_url(self, event: GroupMessageEvent):
         """发送 URL 格式的图片消息"""
         msg = MessageArray()
         msg.add_text("📸 这是一条包含 URL 图片的消息:\n")
-        msg.add_image("https://pic.3gbizhi.com/uploadmark/20260225/0149243f6bbe37c5c5c6e657b4b77762.webp")  # 直接使用文件路径，底层会上传并转换为 URL
+        msg.add_image(
+            "https://pic.3gbizhi.com/uploadmark/20260225/0149243f6bbe37c5c5c6e657b4b77762.webp"
+        )  # 直接使用文件路径，底层会上传并转换为 URL
 
         await self.api.post_group_array_msg(event.group_id, msg)
 
@@ -79,7 +81,9 @@ class MessageTypesPlugin(NcatBotPlugin):
     @registrar.on_group_command("文件视频")
     async def on_file_video(self, event: GroupMessageEvent):
         """发送文件视频消息"""
-        await self.api.send_group_file(event.group_id, str(EXAMPLE_VEDIO), name="示例视频.mp4")
+        await self.api.send_group_file(
+            event.group_id, str(EXAMPLE_VEDIO), name="示例视频.mp4"
+        )
 
     # ---- 动画表情 ----
     @registrar.on_group_command("表情")

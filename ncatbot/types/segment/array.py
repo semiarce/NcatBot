@@ -46,7 +46,9 @@ def parse_cq_code_to_onebot11(
     for match in cq_pattern.finditer(cq_string):
         text_before = cq_string[last_pos : match.start()]
         if text_before:
-            segments.append({"type": "text", "data": {"text": unescape_cq(text_before)}})
+            segments.append(
+                {"type": "text", "data": {"text": unescape_cq(text_before)}}
+            )
         cq_type = match.group(1)
         cq_params_str = match.group(2) or ""
         params: Dict[str, str] = {}

@@ -19,12 +19,18 @@ class SupportExtension:
     # ---- 文件管理 ----
 
     async def upload_group_file(
-        self, group_id: Union[str, int], file: str, name: str, folder_id: str = "",
+        self,
+        group_id: Union[str, int],
+        file: str,
+        name: str,
+        folder_id: str = "",
     ) -> None:
         await self._api.upload_group_file(group_id, file, name, folder_id)
 
     async def delete_group_file(
-        self, group_id: Union[str, int], file_id: str,
+        self,
+        group_id: Union[str, int],
+        file_id: str,
     ) -> None:
         await self._api.delete_group_file(group_id, file_id)
 

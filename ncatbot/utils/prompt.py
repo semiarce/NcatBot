@@ -131,7 +131,9 @@ def select(message: str, choices: List[str], *, default_index: int = 0) -> str:
         print(f"  {marker} [{i + 1}] {choice}")
 
     try:
-        answer = input(f"请选择 [1-{len(choices)}] (默认 {default_index + 1}): ").strip()
+        answer = input(
+            f"请选择 [1-{len(choices)}] (默认 {default_index + 1}): "
+        ).strip()
     except (EOFError, KeyboardInterrupt):
         return choices[default_index]
 

@@ -219,9 +219,7 @@ class IGroupAPI(ABC):
         """移动群文件"""
 
     @abstractmethod
-    async def trans_group_file(
-        self, group_id: Union[str, int], file_id: str
-    ) -> None:
+    async def trans_group_file(self, group_id: Union[str, int], file_id: str) -> None:
         """转存群文件"""
 
     @abstractmethod
@@ -244,9 +242,7 @@ class IGroupAPI(ABC):
         """创建群文件夹"""
 
     @abstractmethod
-    async def delete_group_file(
-        self, group_id: Union[str, int], file_id: str
-    ) -> None:
+    async def delete_group_file(self, group_id: Union[str, int], file_id: str) -> None:
         """删除群文件"""
 
     @abstractmethod
@@ -271,7 +267,5 @@ class IGroupAPI(ABC):
         """获取群文件夹内文件列表"""
 
     @abstractmethod
-    async def get_group_file_url(
-        self, group_id: Union[str, int], file_id: str
-    ) -> str:
+    async def get_group_file_url(self, group_id: Union[str, int], file_id: str) -> str:
         """获取群文件下载链接"""

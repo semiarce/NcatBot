@@ -189,10 +189,7 @@ class MessageMixin(NapCatBotAPIBase):
         file_id: Optional[str] = None,
     ) -> dict:
         return (
-            await self._call_data(
-                "get_image", {"file": file, "file_id": file_id}
-            )
-            or {}
+            await self._call_data("get_image", {"file": file, "file_id": file_id}) or {}
         )
 
     async def fetch_emoji_like(

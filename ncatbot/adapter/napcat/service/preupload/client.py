@@ -56,7 +56,9 @@ class StreamUploadClient:
                 hasher.update(chunk)
                 total_size += len(chunk)
                 base64_data = base64.b64encode(chunk).decode("utf-8")
-                chunks.append(ChunkInfo(data=chunk, index=chunk_index, base64_data=base64_data))
+                chunks.append(
+                    ChunkInfo(data=chunk, index=chunk_index, base64_data=base64_data)
+                )
                 chunk_index += 1
 
         return FileAnalysis(
@@ -76,7 +78,9 @@ class StreamUploadClient:
         while offset < len(data):
             chunk = data[offset : offset + self._chunk_size]
             base64_data = base64.b64encode(chunk).decode("utf-8")
-            chunks.append(ChunkInfo(data=chunk, index=chunk_index, base64_data=base64_data))
+            chunks.append(
+                ChunkInfo(data=chunk, index=chunk_index, base64_data=base64_data)
+            )
             offset += self._chunk_size
             chunk_index += 1
 
@@ -132,10 +136,13 @@ class StreamUploadClient:
                 return UploadResult(success=False, error=error_msg)
 
         # 完成信号
-        response = await self._protocol.call("upload_file_stream", {
-            "stream_id": stream_id,
-            "is_complete": True,
-        })
+        response = await self._protocol.call(
+            "upload_file_stream",
+            {
+                "stream_id": stream_id,
+                "is_complete": True,
+            },
+        )
 
         if response.get("status") != "ok":
             error_msg = response.get("message", "Unknown error")
@@ -153,5 +160,6 @@ class StreamUploadClient:
             )
 
         return UploadResult(
-            success=False, error=f"意外的响应状态: {result_data.get('status')}",
+            success=False,
+            error=f"意外的响应状态: {result_data.get('status')}",
         )

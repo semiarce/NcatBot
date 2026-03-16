@@ -41,11 +41,13 @@ class OB11Protocol:
         self._pending[echo] = future
 
         try:
-            await self._ws.send({
-                "action": action.replace("/", ""),
-                "params": params or {},
-                "echo": echo,
-            })
+            await self._ws.send(
+                {
+                    "action": action.replace("/", ""),
+                    "params": params or {},
+                    "echo": echo,
+                }
+            )
             return await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError:
             raise TimeoutError(f"API 请求超时: {action}")

@@ -43,7 +43,9 @@ class NapCatBotAPI(
     通过 NapCatProtocol 发送并返回结果。
     """
 
-    def __init__(self, protocol: NapCatProtocol, preupload: Optional[PreUploadService] = None):
+    def __init__(
+        self, protocol: NapCatProtocol, preupload: Optional[PreUploadService] = None
+    ):
         super().__init__(protocol, preupload)
 
 

@@ -43,9 +43,7 @@ class AccountMixin(NapCatBotAPIBase):
 
     # ------ 个人资料 ------
 
-    async def set_qq_profile(
-        self, nickname: str, personal_note: str, sex: str
-    ) -> None:
+    async def set_qq_profile(self, nickname: str, personal_note: str, sex: str) -> None:
         sex_mapping = {"未知": 0, "男": 1, "女": 2}
         sex_id = str(sex_mapping.get(sex, 0))
         await self._call(
@@ -58,7 +56,11 @@ class AccountMixin(NapCatBotAPIBase):
     ) -> None:
         await self._call(
             "set_online_status",
-            {"status": status, "ext_status": ext_status, "battery_status": battery_status},
+            {
+                "status": status,
+                "ext_status": ext_status,
+                "battery_status": battery_status,
+            },
         )
 
     async def set_qq_avatar(self, file: str) -> None:
@@ -83,9 +85,7 @@ class AccountMixin(NapCatBotAPIBase):
             {"user_id": int(user_id), "block": block, "both": both},
         )
 
-    async def set_friend_remark(
-        self, user_id: Union[str, int], remark: str
-    ) -> None:
+    async def set_friend_remark(self, user_id: Union[str, int], remark: str) -> None:
         await self._call(
             "set_friend_remark",
             {"user_id": int(user_id), "remark": remark},
@@ -113,13 +113,10 @@ class AccountMixin(NapCatBotAPIBase):
 
     async def nc_get_user_status(self, user_id: Union[str, int]) -> dict:
         return (
-            await self._call_data("nc_get_user_status", {"user_id": int(user_id)})
-            or {}
+            await self._call_data("nc_get_user_status", {"user_id": int(user_id)}) or {}
         )
 
-    async def set_input_status(
-        self, event_type: int, user_id: Union[str, int]
-    ) -> None:
+    async def set_input_status(self, event_type: int, user_id: Union[str, int]) -> None:
         await self._call(
             "set_input_status",
             {"event_type": event_type, "user_id": int(user_id)},

@@ -20,7 +20,9 @@ LOG = get_log("NapCatBotAPI")
 class NapCatBotAPIBase:
     """NapCatBotAPI 基础类，提供内部工具方法"""
 
-    def __init__(self, protocol: NapCatProtocol, preupload: Optional[PreUploadService] = None):
+    def __init__(
+        self, protocol: NapCatProtocol, preupload: Optional[PreUploadService] = None
+    ):
         self._protocol = protocol
         self._preupload = preupload
 

@@ -19,46 +19,62 @@ class ManageExtension:
     # ---- 群管理（原子透传） ----
 
     async def set_group_kick(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         reject_add_request: bool = False,
     ) -> None:
         await self._api.set_group_kick(group_id, user_id, reject_add_request)
 
     async def set_group_ban(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         duration: int = 1800,
     ) -> None:
         await self._api.set_group_ban(group_id, user_id, duration)
 
     async def set_group_whole_ban(
-        self, group_id: Union[str, int], enable: bool = True,
+        self,
+        group_id: Union[str, int],
+        enable: bool = True,
     ) -> None:
         await self._api.set_group_whole_ban(group_id, enable)
 
     async def set_group_admin(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         enable: bool = True,
     ) -> None:
         await self._api.set_group_admin(group_id, user_id, enable)
 
     async def set_group_card(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         card: str = "",
     ) -> None:
         await self._api.set_group_card(group_id, user_id, card)
 
     async def set_group_name(
-        self, group_id: Union[str, int], name: str,
+        self,
+        group_id: Union[str, int],
+        name: str,
     ) -> None:
         await self._api.set_group_name(group_id, name)
 
     async def set_group_leave(
-        self, group_id: Union[str, int], is_dismiss: bool = False,
+        self,
+        group_id: Union[str, int],
+        is_dismiss: bool = False,
     ) -> None:
         await self._api.set_group_leave(group_id, is_dismiss)
 
     async def set_group_special_title(
-        self, group_id: Union[str, int], user_id: Union[str, int],
+        self,
+        group_id: Union[str, int],
+        user_id: Union[str, int],
         special_title: str = "",
     ) -> None:
         await self._api.set_group_special_title(group_id, user_id, special_title)
@@ -66,12 +82,19 @@ class ManageExtension:
     # ---- 账号操作（原子透传） ----
 
     async def set_friend_add_request(
-        self, flag: str, approve: bool = True, remark: str = "",
+        self,
+        flag: str,
+        approve: bool = True,
+        remark: str = "",
     ) -> None:
         await self._api.set_friend_add_request(flag, approve, remark)
 
     async def set_group_add_request(
-        self, flag: str, sub_type: str, approve: bool = True, reason: str = "",
+        self,
+        flag: str,
+        sub_type: str,
+        approve: bool = True,
+        reason: str = "",
     ) -> None:
         await self._api.set_group_add_request(flag, sub_type, approve, reason)
 

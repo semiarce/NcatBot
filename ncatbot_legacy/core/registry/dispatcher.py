@@ -105,9 +105,7 @@ class Dispatcher:
         for event_type in list(self._handlers.keys()):
             original_len = len(self._handlers[event_type])
             self._handlers[event_type] = [
-                e
-                for e in self._handlers[event_type]
-                if e.plugin_name != plugin_name
+                e for e in self._handlers[event_type] if e.plugin_name != plugin_name
             ]
             removed += original_len - len(self._handlers[event_type])
             if not self._handlers[event_type]:
@@ -182,13 +180,9 @@ class Dispatcher:
                         await hook.execute(ctx)
                         handled = True
                     except Exception as hook_err:
-                        LOG.exception(
-                            f"ON_ERROR hook {hook} 自身异常: {hook_err}"
-                        )
+                        LOG.exception(f"ON_ERROR hook {hook} 自身异常: {hook_err}")
                 if not handled:
-                    LOG.exception(
-                        f"Handler {entry.func.__name__} 执行异常: {e}"
-                    )
+                    LOG.exception(f"Handler {entry.func.__name__} 执行异常: {e}")
 
     def _collect_handlers(self, event_type: str) -> List[HandlerEntry]:
         """收集匹配的 handlers (snapshot)"""
@@ -205,9 +199,7 @@ class Dispatcher:
         return result
 
     @staticmethod
-    async def _execute(
-        entry: HandlerEntry, event: Any, **kwargs: Any
-    ) -> Any:
+    async def _execute(entry: HandlerEntry, event: Any, **kwargs: Any) -> Any:
         """执行 handler，注入 plugin 实例 (如果是方法) + kwargs"""
         func = entry.func
         plugin = entry.metadata.get("plugin_instance")

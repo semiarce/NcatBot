@@ -121,9 +121,7 @@ class NapCatService:
         )
 
         # 跳过 WebUI 交互检查
-        if (
-            not ncatbot_config.napcat.enable_webui
-        ):
+        if not ncatbot_config.napcat.enable_webui:
             LOG.warning(
                 f"跳过基于 WebUI 交互的检查, "
                 f"请自行确保 NapCat 已登录正确的 QQ {ncatbot_config.bot_uin}"

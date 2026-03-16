@@ -44,7 +44,9 @@ def show():
     mgr = _get_manager()
     data = mgr.config.to_dict()
     click.echo(header("当前配置:"))
-    click.echo(yaml.dump(data, allow_unicode=True, default_flow_style=False, sort_keys=False))
+    click.echo(
+        yaml.dump(data, allow_unicode=True, default_flow_style=False, sort_keys=False)
+    )
 
 
 @config.command("get")

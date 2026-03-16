@@ -64,9 +64,7 @@ class Forward(MessageSegment):
         if self.content:
             return {
                 "type": "forward",
-                "data": {
-                    "content": [node.to_node_dict() for node in self.content]
-                },
+                "data": {"content": [node.to_node_dict() for node in self.content]},
             }
         if self.id:
             return {"type": "forward", "data": {"id": self.id}}
