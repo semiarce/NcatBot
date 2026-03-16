@@ -15,7 +15,7 @@ seg = PlainText(text="Hello")
 seg.to_dict()  # {"type": "text", "data": {"text": "Hello"}}
 
 seg = parse_segment({"type": "at", "data": {"qq": "123456"}})  # → At(qq='123456')
-```python
+```
 
 ---
 
@@ -62,6 +62,7 @@ seg = parse_segment({"type": "at", "data": {"qq": "123456"}})  # → At(qq='1234
 - [MessageArray 消息数组](3_array.md) — 消息段的容器与链式构造
 - [消息段完整字段表](../../reference/types/1_segments.md) — 所有字段、验证规则、序列化格式
 
+```python
 seg = Music(type="qq", id="12345")        # QQ 音乐
 seg = Music(type="163", id="67890")       # 网易云
 seg = Music(                              # 自定义
@@ -70,7 +71,7 @@ seg = Music(                              # 自定义
     audio="https://music.example.com/song.mp3",
     title="自定义歌曲",
 )
-```python
+```
 
 ### Json — JSON 消息
 
@@ -82,7 +83,7 @@ seg = Music(                              # 自定义
 from ncatbot.types import Json
 
 seg = Json(data='{"app":"com.example","desc":"卡片消息"}')
-```python
+```
 
 ### Markdown — Markdown 消息
 
@@ -94,7 +95,7 @@ seg = Json(data='{"app":"com.example","desc":"卡片消息"}')
 from ncatbot.types import Markdown
 
 seg = Markdown(content="# 标题\n**粗体**\n- 列表项")
-```text
+```
 
 ---
 

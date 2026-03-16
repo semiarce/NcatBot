@@ -17,7 +17,7 @@ docs/
 ├── contributing/      # 贡献指南（面向贡献者）
 └── meta/              # 文档规范（面向 AI Agent）
     └── README.md      # 本文件
-```python
+```
 
 ### 1.2 README.md 的用途与结构
 

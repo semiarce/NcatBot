@@ -22,7 +22,7 @@ member = await self.api.info.get_group_member_info(event.group_id, target.qq)
 
 # 查询消息详情（通过消息 ID）
 msg_data = await self.api.info.get_msg(message_id)
-```python
+```
 
 ### 方法速查
 
@@ -51,7 +51,7 @@ url = await self.api.info.get_group_file_url(group_id, file_id)
 
 # 删除群文件
 await self.api.support.delete_group_file(group_id, file_id)
-```python
+```
 
 > `upload_group_file` 通过群文件系统上传。以消息形式发送文件请用 `self.api.send_group_file()`。
 
@@ -63,7 +63,7 @@ await self.api.support.delete_group_file(group_id, file_id)
 - [消息发送指南](1_messaging.md) — 消息发送方式
     folder_id: str = "",
 ) -> None
-```python
+```text
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -72,7 +72,7 @@ await self.api.support.delete_group_file(group_id, file_id)
 | `name` | `str` | — | 文件显示名称 |
 | `folder_id` | `str` | `""` | 上传到的文件夹 ID，空为根目录 |
 
-```python
+```
 await self.api.support.upload_group_file(
     group_id=123456,
     file="/path/to/report.pdf",
@@ -86,20 +86,20 @@ await self.api.support.upload_group_file(
 
 ### delete_group_file — 删除群文件
 
-```python
+```
 async def delete_group_file(
     self,
     group_id: Union[str, int],
     file_id: str,
 ) -> None
-```python
+```text
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
 | `group_id` | `str \| int` | 群号 |
 | `file_id` | `str` | 文件 ID（通过 `info.get_group_root_files` 获取） |
 
-```python
+```
 # 获取群文件列表 → 找到目标文件 → 删除
 files = await self.api.info.get_group_root_files(group_id)
 for f in files.get("files", []):
@@ -112,20 +112,20 @@ for f in files.get("files", []):
 
 ### send_like — 点赞
 
-```python
+```
 async def send_like(
     self,
     user_id: Union[str, int],
     times: int = 1,
 ) -> None
-```python
+```text
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | `user_id` | `str \| int` | — | 目标用户 QQ |
 | `times` | `int` | `1` | 点赞次数 |
 
-```python
+```
 await self.api.support.send_like(user_id, times=10)
 ```python
 
@@ -137,14 +137,14 @@ await self.api.support.send_like(user_id, times=10)
 
 ### set_friend_add_request — 处理好友请求
 
-```python
+```
 async def set_friend_add_request(
     self,
     flag: str,
     approve: bool = True,
     remark: str = "",
 ) -> None
-```python
+```text
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -152,6 +152,7 @@ async def set_friend_add_request(
 | `approve` | `bool` | `True` | `True` 同意，`False` 拒绝 |
 | `remark` | `str` | `""` | 同意后的备注名 |
 
+```
 ```python
 from ncatbot.event import FriendRequestEvent
 
@@ -163,7 +164,7 @@ async def on_friend_request(self, event: FriendRequestEvent):
         approve=True,
         remark="新朋友",
     )
-```python
+```
 
 ---
 
@@ -177,7 +178,7 @@ async def set_group_add_request(
     approve: bool = True,
     reason: str = "",
 ) -> None
-```python
+```
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -206,7 +207,7 @@ async def on_group_request(self, event: GroupRequestEvent):
             approve=False,
             reason="请联系管理员",
         )
-```python
+```
 
 ---
 
@@ -218,7 +219,7 @@ async def on_group_request(self, event: GroupRequestEvent):
 
 ```text
 INFO  BotAPIClient API调用 send_group_msg 123456 [{"type":"text","data":{"text":"hello"}}]
-```python
+```
 
 日志特点：
 - **自动截断**：参数超过 2000 字符时自动截断并添加 `...`
@@ -240,7 +241,7 @@ async def on_kick(self, event: GroupMessageEvent, target: At = None):
     except Exception as e:
         LOG.error(f"踢人失败: {e}")
         await event.reply("操作失败，请检查 Bot 权限")
-```markdown
+```
 
 **建议**：
 

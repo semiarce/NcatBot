@@ -18,7 +18,7 @@ napcat:
 
 plugin:
   load_plugin: true
-```python
+```
 
 其余字段均有默认值，文件不存在时使用默认配置。完整字段参见下方 [配置字段速查](#配置字段速查)。
 
@@ -36,7 +36,7 @@ print(manager.napcat.ws_uri)      # str
 # 修改 + 保存
 manager.update_value("debug", True)
 manager.save()
-```python
+```
 
 ### 插件配置读写
 
@@ -66,7 +66,7 @@ class WeatherPlugin(NcatBotPlugin):
         """批量更新设置"""
         self.update_config(settings)
         # 例如: {"default_city": "上海", "update_interval": 1800}
-```python
+```
 
 ### 完整配置示例
 
@@ -102,7 +102,7 @@ plugin:
     MyPlugin:
       api_key: sk-xxxx
       max_retries: 3
-```python
+```
 
 ---
 

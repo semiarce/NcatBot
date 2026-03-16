@@ -12,7 +12,7 @@
 
 ```bash
 uv add ncatbot5    # 或 pip install ncatbot5
-```python
+```
 
 ### 2. 创建插件目录
 
@@ -21,7 +21,7 @@ plugins/
 └── hello_world/
     ├── manifest.toml
     └── main.py
-```toml
+```
 
 ### 3. manifest.toml
 
@@ -30,7 +30,7 @@ name = "hello_world"
 version = "1.0.0"
 main = "main.py"
 entry_class = "HelloWorldPlugin"
-```python
+```
 
 ### 4. main.py
 
@@ -61,7 +61,7 @@ class HelloWorldPlugin(NcatBotPlugin):
     @registrar.on_private_command("hello", ignore_case=True)
     async def on_private_hello(self, event: PrivateMessageEvent):
         await event.reply(text="你好！👋")
-```python
+```
 
 ### 5. 入口与运行
 
@@ -71,11 +71,11 @@ from ncatbot.app import BotClient
 bot = BotClient()
 if __name__ == "__main__":
     bot.run()
-```python
+```
 
 ```bash
 python main.py   # 启动 Bot，自动扫描 plugins/
-```python
+```
 
 > 完整入门教程 → [1. 快速入门](1.quick-start.md)
 
@@ -215,7 +215,7 @@ class MyHook(Hook):
     async def execute(self, ctx: HookContext) -> HookAction:
         # 你的逻辑
         return HookAction.CONTINUE  # 或 SKIP
-```python
+```
 
 ---
 

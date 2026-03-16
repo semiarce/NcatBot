@@ -104,38 +104,48 @@ def guess_language(lines: list[str]) -> str:
 
 
 def process_file(md: Path, apply: bool) -> list[dict]:
-    """处理单个文件，返回修改记录。"""
+    """处理单个文件，返回修改记录。
+
+    使用状态机区分开始/关闭围栏，仅对未标注语言的开始围栏进行猜测标注。
+    """
     content = md.read_text(encoding="utf-8", errors="replace")
     lines = content.split("\n")
     changes = []
-
-    i = 0
     new_lines = []
-    while i < len(lines):
-        match = CODE_BLOCK_START.match(lines[i])
-        if match and not match.group(2):
-            indent = match.group(1)
-            rest = match.group(3)
-            block_lines = []
-            j = i + 1
-            while j < len(lines):
-                if re.match(rf"^{re.escape(indent)}```\s*$", lines[j]):
-                    break
-                block_lines.append(lines[j])
-                j += 1
+    in_block = False
 
-            lang = guess_language(block_lines)
-            changes.append(
-                {
-                    "file": str(md.relative_to(PROJECT_ROOT)),
-                    "line": i + 1,
-                    "language": lang,
-                }
-            )
-            new_lines.append(f"{indent}```{lang}{rest}")
+    for i, line in enumerate(lines):
+        match = CODE_BLOCK_START.match(line)
+        if match:
+            if not in_block:
+                # 开始围栏
+                in_block = True
+                if not match.group(2):
+                    # 未标注语言 → 向前扫描内容进行猜测
+                    indent = match.group(1)
+                    rest = match.group(3)
+                    block_lines = []
+                    for j in range(i + 1, len(lines)):
+                        if CODE_BLOCK_START.match(lines[j]):
+                            break
+                        block_lines.append(lines[j])
+                    lang = guess_language(block_lines)
+                    changes.append(
+                        {
+                            "file": str(md.relative_to(PROJECT_ROOT)),
+                            "line": i + 1,
+                            "language": lang,
+                        }
+                    )
+                    new_lines.append(f"{indent}```{lang}{rest}")
+                else:
+                    new_lines.append(line)
+            else:
+                # 关闭围栏 — 原样保留
+                in_block = False
+                new_lines.append(line)
         else:
-            new_lines.append(lines[i])
-        i += 1
+            new_lines.append(line)
 
     if apply and changes:
         md.write_text("\n".join(new_lines), encoding="utf-8")

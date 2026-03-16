@@ -40,7 +40,7 @@
 
 ## 基础用法
 
-```python
+```
 # 可直接复制运行的示例
 ```python
 
@@ -49,7 +49,7 @@
 ## 延伸阅读
 
 - [相关参考](../../reference/.../xxx.md)
-```python
+```
 
 ### 模板 B：参考文档（reference/）
 
@@ -60,7 +60,7 @@
 
 ## 类/函数签名
 
-```python
+```
 class Foo:
     def bar(self, x: int, *, opt: str = "default") -> None: ...
 ```python
@@ -74,7 +74,7 @@ class Foo:
 ## 示例
 
 ## 注意事项
-```python
+```
 
 ### 模板 C：子目录 README.md
 
@@ -91,7 +91,7 @@ class Foo:
 |------|------|------|
 
 ## 推荐阅读顺序
-```python
+```
 
 ## Step 4：同步索引
 
@@ -105,7 +105,7 @@ class Foo:
 
 ```text
 │   ├── 新文件名.md              #   说明
-```python
+```
 
 ## Step 5：验证
 
@@ -140,4 +140,4 @@ class Foo:
 
 ```markdown
 > **已废弃（v5.x）**：请改用 [`NewApi`](./xxx.md#new-api)。
-```text
+```

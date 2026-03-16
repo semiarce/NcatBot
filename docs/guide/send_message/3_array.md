@@ -13,7 +13,7 @@ msg = MessageArray()                                   # 空数组
 msg = MessageArray([PlainText(text="Hello"), At(qq="123456")])  # 传入列表
 msg = MessageArray.from_list([...])                    # 从 OB11 字典列表
 msg = MessageArray.from_any("[CQ:at,qq=123456]Hello")  # 自动解析
-```python
+```
 
 ---
 
@@ -30,7 +30,7 @@ msg = (
     .add_image("https://example.com/img.png")       # 图片
     .add_video("https://example.com/video.mp4")     # 视频
 )
-```python
+```
 
 常用方法：`add_text` / `add_image` / `add_video` / `add_at` / `add_at_all` / `add_reply` / `add_segment`
 
@@ -45,7 +45,7 @@ msg.filter_image()           # [Image, ...]
 msg.filter(Record)           # 按类型泛型过滤
 msg.is_at(123456)            # 是否 @了指定用户
 msg.is_forward_msg()         # 是否包含合并转发
-```python
+```
 
 ---
 
@@ -54,7 +54,7 @@ msg.is_forward_msg()         # 是否包含合并转发
 ```python
 data = msg.to_list()         # → OB11 字典列表
 msg2 = MessageArray.from_list(data)
-```text
+```
 
 `MessageArray` 支持迭代、`len()`、`+` 拼接。
 

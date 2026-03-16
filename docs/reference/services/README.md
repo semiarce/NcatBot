@@ -11,7 +11,7 @@
 ```python
 from ncatbot.service import BaseService, ServiceManager
 from ncatbot.service import RBACService, TimeTaskService, FileWatcherService
-```python
+```
 
 **获取服务实例并调用：**
 
@@ -32,7 +32,7 @@ manager.time_task.add_job("heartbeat", "30s", callback=lambda: print("beat"))
 
 # 关闭
 await manager.close_all()
-```markdown
+```
 
 **目录结构：**
 
@@ -45,7 +45,7 @@ ncatbot/service/
     ├── rbac/            # RBAC 角色权限服务
     ├── schedule/        # 定时任务服务
     └── file_watcher/    # 文件监控服务
-```python
+```
 
 ---
 
@@ -85,7 +85,7 @@ class BaseService(ABC):
     @abstractmethod
     async def on_close(self) -> None:
         """服务关闭时调用 — 释放资源、停止后台线程"""
-```python
+```
 
 **生命周期流程：**
 
@@ -98,7 +98,7 @@ stateDiagram-v2
     note right of Created: emit_event = None
     note right of Loaded: emit_event 已由 ServiceManager 注入
     note right of Closed: emit_event 置空
-```python
+```
 
 > **注意：** `__init__()` 只做轻量级初始化，所有异步资源分配（线程启动、文件 I/O 等）应在 `on_load()` 中完成。
 
@@ -106,7 +106,7 @@ stateDiagram-v2
 
 ```python
 EventCallback = Callable[["BaseEventData"], Awaitable[None]]
-```python
+```
 
 `emit_event` 由 `ServiceManager` 在调用 `load()` 时注入，允许服务向框架事件系统发布自定义事件。服务关闭时自动置为 `None`。
 
@@ -129,7 +129,7 @@ class MyService(BaseService):
 
     async def on_close(self) -> None:
         self._data.clear()
-```python
+```
 
 ---
 
@@ -168,7 +168,7 @@ if manager.has("time_task"):
 
 # 列出所有服务
 print(manager.list_services())  # ['rbac', 'file_watcher', 'time_task']
-```python
+```
 
 **内置服务快捷属性：**
 

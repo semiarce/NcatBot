@@ -17,6 +17,7 @@
 | K | Hook System | K-01 ~ K-07 | `tests/unit/core/` |
 | H | HandlerDispatcher | H-01 ~ H-12 | `tests/unit/core/` |
 | R | Registrar | R-01 ~ R-06 | `tests/unit/core/` |
+| R (plugin) | Registrar × ModuleImporter 去重 | R-10 ~ R-11 | `tests/unit/plugin/` |
 | S (svc) | ServiceManager | S-01 ~ S-08 | `tests/unit/service/` |
 | M | Plugin Mixin | M-01 ~ M-41 | `tests/unit/plugin/` |
 | I | Integration | I-01 ~ I-21 | `tests/integration/` |
@@ -31,8 +32,15 @@
 async def test_dispatcher_routes_group_message(event_dispatcher):
     """D-03: AsyncEventDispatcher 正确路由群消息到 message.group 订阅者"""
     ...
-```python
+```
 
 ## 新增测试编号
 
 在对应前缀的最大序号上 +1。例如现有 D-01 ~ D-09，新增时使用 D-10。
+
+## 已分配编号记录
+
+| 前缀 | 当前最大序号 | 最后更新 |
+|------|-------------|--------|
+| R | R-09 | 2026-03-16：R-07~R-09 堆叠装饰器去重 |
+| R | R-11 | 2026-03-17：R-10~R-11 __init__.py 双重 exec 去重 |

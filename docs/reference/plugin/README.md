@@ -30,7 +30,7 @@ class MyPlugin(NcatBotPlugin):
 
     async def on_close(self):
         pass  # Mixin 钩子自动清理
-```python
+```
 
 > 完整属性和方法参见 [基类详解](1_base_class.md)，Mixin 接口参见 [Mixin 详解](2_mixins.md)。
 
@@ -80,7 +80,7 @@ classDiagram
     NcatBotPlugin --|> RBACMixin
     NcatBotPlugin --|> ConfigMixin
     NcatBotPlugin --|> DataMixin
-```python
+```
 
 ### 继承关系
 
@@ -88,7 +88,7 @@ classDiagram
 class NcatBotPlugin(
     BasePlugin, EventMixin, TimeTaskMixin, RBACMixin, ConfigMixin, DataMixin
 ): ...
-```python
+```
 
 插件开发者应始终继承 `NcatBotPlugin`，而非直接继承 `BasePlugin`。
 
@@ -192,7 +192,7 @@ class NcatBotPlugin(
    EventMixin → TimeTaskMixin → RBACMixin → ConfigMixin → DataMixin
 3. _init_()  — 同步初始化钩子
 4. on_load() — 异步初始化（主业务逻辑）
-```python
+```
 
 ### 卸载顺序
 
@@ -202,7 +202,7 @@ class NcatBotPlugin(
 3. _mixin_unload() — 按 MRO 正序：
    EventMixin(关流) → TimeTaskMixin(清任务) → RBACMixin
    → ConfigMixin(存配置) → DataMixin(存数据)
-```python
+```
 
 ### 生命周期方法一览
 

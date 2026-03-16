@@ -17,7 +17,7 @@ print(result.message_id)  # str
 info = await self.api.info.get_login_info()  # -> LoginInfo
 groups = await self.api.info.get_group_list()  # -> List[GroupInfo]
 member = await self.api.info.get_group_member_info(gid, uid)  # -> GroupMemberInfo
-```python
+```
 
 错误处理：adapter 层自动解析信封，retcode 非零时抛 `APIError`：
 
@@ -32,7 +32,7 @@ except APIPermissionError:
     ...  # 权限不足
 except APIError as e:
     print(e.retcode, e.message)
-```python
+```
 
 ## 消息发送 API
 
@@ -55,7 +55,7 @@ await self.api.mark_all_as_read()
 await self.api.forward_friend_single_msg(user_id, message_id)
 await self.api.forward_group_single_msg(group_id, message_id)
 await self.api.friend_poke(user_id)
-```python
+```
 
 ### Sugar — 群消息
 
@@ -71,7 +71,7 @@ await self.api.send_group_sticker(group_id, Image(file="sticker.gif", sub_type=1
 await self.api.post_group_array_msg(group_id, msg_array)
 await self.api.post_group_forward_msg(group_id, forward)
 await self.api.send_group_forward_msg_by_id(group_id, [msg_id1, msg_id2])
-```python
+```
 
 ### Sugar — 私聊消息
 
@@ -89,7 +89,7 @@ await self.api.send_private_rps(user_id, value=1)
 await self.api.post_private_array_msg(user_id, msg_array)
 await self.api.post_private_forward_msg(user_id, forward)
 await self.api.send_private_forward_msg_by_id(user_id, [msg_id1, msg_id2])
-```python
+```
 
 ## 群管理 API
 
@@ -130,7 +130,7 @@ await self.api.manage.set_self_longnick(long_nick)
 await self.api.manage.set_qq_avatar(file)
 await self.api.manage.set_qq_profile(nickname, company, email, college, personal_note)
 await self.api.manage.set_online_status(status, ext_status=0, custom_status="")
-```python
+```
 
 ## 信息查询 API
 
@@ -177,7 +177,7 @@ recent = await self.api.info.get_recent_contact(count=10)
 
 # OCR
 result = await self.api.info.ocr_image(image)
-```python
+```
 
 ## 辅助操作 API
 
@@ -193,7 +193,7 @@ result = await self.api.support.create_group_file_folder(group_id, name, parent_
 await self.api.support.delete_group_folder(group_id, folder_id)
 await self.api.support.upload_private_file(user_id, file, name)
 result = await self.api.support.download_file(url="", file="", headers="")
-```python
+```
 
 ## 事件实体快捷方法
 
@@ -209,7 +209,7 @@ await event.ban(duration=600)
 # RequestEvent
 await event.approve()
 await event.reject(reason="理由")
-```python
+```
 
 ## API action 名称映射
 

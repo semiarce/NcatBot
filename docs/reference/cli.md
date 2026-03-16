@@ -7,7 +7,7 @@
 ```bash
 ncatbot --help          # 查看所有命令
 ncatbot <command> --help  # 查看单个命令帮助
-```toml
+```
 
 ## 入口点
 
@@ -15,13 +15,13 @@ ncatbot <command> --help  # 查看单个命令帮助
 # pyproject.toml
 [project.scripts]
 ncatbot = "ncatbot.cli:main"
-```bash
+```
 
 也可通过模块方式调用：
 
 ```bash
 python -m ncatbot.cli
-```python
+```
 
 ---
 
@@ -29,7 +29,7 @@ python -m ncatbot.cli
 
 ```bash
 ncatbot [OPTIONS] [COMMAND]
-```python
+```
 
 | 选项 | 说明 |
 |------|------|
@@ -42,7 +42,7 @@ ncatbot [OPTIONS] [COMMAND]
 
 ```bash
 ncatbot init [OPTIONS]
-```python
+```
 
 初始化项目，创建 `config.yaml`、`plugins/` 目录，以及一个以当前计算机用户名命名的模板插件。
 
@@ -65,7 +65,7 @@ ncatbot init [OPTIONS]
 
 ```bash
 ncatbot run [OPTIONS]
-```python
+```
 
 启动 NcatBot（连接 NapCat + 加载插件 + 监听事件）。
 
@@ -79,7 +79,7 @@ ncatbot run [OPTIONS]
 
 ```bash
 ncatbot dev [OPTIONS]
-```python
+```
 
 以开发模式启动（`debug=True` + 热重载）。
 
@@ -91,7 +91,7 @@ ncatbot dev [OPTIONS]
 
 ```bash
 ncatbot config COMMAND
-```python
+```
 
 配置管理命令组。
 
@@ -99,7 +99,7 @@ ncatbot config COMMAND
 
 ```bash
 ncatbot config show
-```python
+```
 
 以 YAML 格式显示当前全部配置。
 
@@ -107,7 +107,7 @@ ncatbot config show
 
 ```bash
 ncatbot config get CONFIG_KEY
-```python
+```
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -117,7 +117,7 @@ ncatbot config get CONFIG_KEY
 
 ```bash
 ncatbot config set CONFIG_KEY CONFIG_VALUE
-```python
+```
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -138,7 +138,7 @@ ncatbot config set CONFIG_KEY CONFIG_VALUE
 
 ```bash
 ncatbot config check
-```python
+```
 
 检查配置安全性和必填项，输出问题列表。
 
@@ -146,7 +146,7 @@ ncatbot config check
 
 ```bash
 ncatbot plugin COMMAND
-```python
+```
 
 插件管理命令组。
 
@@ -154,7 +154,7 @@ ncatbot plugin COMMAND
 
 ```bash
 ncatbot plugin list
-```python
+```
 
 列出已安装插件，显示名称、版本、作者、状态。读取每个插件目录下的 `manifest.toml`。
 
@@ -162,7 +162,7 @@ ncatbot plugin list
 
 ```bash
 ncatbot plugin create NAME
-```python
+```
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -174,7 +174,7 @@ ncatbot plugin create NAME
 
 ```bash
 ncatbot plugin info NAME
-```python
+```
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
@@ -186,7 +186,7 @@ ncatbot plugin info NAME
 
 ```bash
 ncatbot plugin enable NAME
-```python
+```
 
 启用插件：从黑名单移除，若白名单存在则加入白名单。
 
@@ -194,7 +194,7 @@ ncatbot plugin enable NAME
 
 ```bash
 ncatbot plugin disable NAME
-```python
+```
 
 禁用插件：从白名单移除，加入黑名单。
 
@@ -202,7 +202,7 @@ ncatbot plugin disable NAME
 
 ```bash
 ncatbot plugin remove NAME
-```text
+```
 
 | 参数 | 类型 | 说明 |
 |------|------|------|

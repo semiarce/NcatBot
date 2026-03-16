@@ -16,7 +16,7 @@ from ncatbot.plugin import on_group_message, EventContext
 @on_group_message()
 async def handle(ctx: EventContext):
     api = ctx.api  # BotAPIClient 实例
-```python
+```
 
 ### 最常用方法示例
 
@@ -28,7 +28,7 @@ await api.post_group_msg(group_id, text="Hello!", at=user_id)
 
 # 回复消息并附图
 await api.post_group_msg(group_id, text="看这个", reply=msg_id, image="https://example.com/img.png")
-```python
+```
 
 **2. 发送群消息（原始方式）**
 
@@ -38,13 +38,13 @@ result = await api.send_group_msg(group_id, [
     {"type": "text", "data": {"text": "hello"}}
 ])
 print(result["message_id"])
-```python
+```
 
 **3. 撤回消息**
 
 ```python
 await api.delete_msg(message_id)
-```python
+```
 
 ### 架构总览
 
@@ -67,7 +67,7 @@ BotAPIClient
 └── .support                ← SupportExtension（文件管理 / 杂项）
     ├── upload_group_file()
     └── ...
-```python
+```
 
 > **类型别名**：文档中 `Union[str, int]` 简写为 `str | int`。
 

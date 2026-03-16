@@ -31,7 +31,7 @@ async def on_hello(self, event: GroupMessageEvent):
     from ncatbot.types import MessageArray
     msg = MessageArray().add_text("复杂消息 ").add_image("a.png")
     await event.reply(rtf=msg)
-```python
+```
 
 ### 方式二：post_group_msg() — 关键字快捷发送
 
@@ -53,7 +53,7 @@ async def on_send(self, event: GroupMessageEvent):
 
     # 引用回复 + 文字
     await self.api.post_group_msg(gid, text="已收到", reply=event.message_id)
-```python
+```
 
 > 私聊版本为 `post_private_msg(user_id, ...)`，参数相同（无 `at`）。
 
@@ -78,7 +78,7 @@ async def on_fancy(self, event: GroupMessageEvent):
 
     # 也可通过 rtf 参数传入 post_group_msg
     await self.api.post_group_msg(event.group_id, rtf=msg)
-```python
+```
 
 ---
 
@@ -150,7 +150,7 @@ msg = MessageArray()                                    # 空数组
 msg = MessageArray([PlainText(text="Hi"), At(qq="123")]) # 传入列表
 msg = MessageArray.from_list([{"type": "text", "data": {"text": "Hi"}}])  # OB11 字典
 msg = MessageArray.from_any("[CQ:at,qq=123]Hello")       # CQ 码自动解析
-```markdown
+```
 
 **链式添加**
 
@@ -175,7 +175,7 @@ msg.filter_at()             # List[At]
 msg.filter(Record)          # List[Record] — 按类型泛型过滤
 msg.is_at(123456)           # bool — 是否 @了指定用户
 msg.is_forward_msg()        # bool — 是否合并转发
-```toml
+```
 
 **序列化 & 容器操作**
 
@@ -184,7 +184,7 @@ msg.to_list()               # 序列化为 OB11 字典列表
 len(msg)                    # 消息段数量
 for seg in msg: ...         # 迭代
 msg2 = msg + other_msg      # 拼接（返回新 MessageArray）
-```python
+```
 
 ---
 
@@ -195,7 +195,7 @@ NcatBot 遵循 **OneBot v11** 消息协议。每条消息由若干**消息段（
 ```json
 {"type": "text", "data": {"text": "Hello"}}
 {"type": "image", "data": {"file": "https://example.com/img.png"}}
-```json
+```
 
 多个消息段组成**消息数组（MessageArray）**：
 
@@ -204,7 +204,7 @@ NcatBot 遵循 **OneBot v11** 消息协议。每条消息由若干**消息段（
   {"type": "text", "data": {"text": "看这张图 "}},
   {"type": "image", "data": {"file": "https://example.com/img.png"}}
 ]
-```python
+```
 
 ---
 
@@ -260,7 +260,7 @@ classDiagram
     MessageSegment <|-- Json
     MessageSegment <|-- Markdown
     MessageSegment <|-- Forward
-```python
+```
 
 ---
 

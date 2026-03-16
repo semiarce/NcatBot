@@ -49,7 +49,7 @@ plugins/
 ├── 01_hello_world/
 │   ├── manifest.toml
 │   └── main.py
-```python
+```
 
 ## 框架功能覆盖矩阵
 

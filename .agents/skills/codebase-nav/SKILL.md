@@ -13,7 +13,7 @@ description: '导航 NcatBot 代码库：定位代码、理解模块、查阅文
 
 ```text
 1. 分类问题 → 2. 查阅文档 → 3. 锁定模块 → 4. 精准定位（仅在必要时读代码）
-```python
+```
 
 ---
 
@@ -146,7 +146,7 @@ NapCatAdapter（WebSocket 收消息）
   → AsyncEventDispatcher（广播事件）
   → HandlerDispatcher（匹配 handler + 执行 Hook 链）
   → 用户 handler 函数
-```python
+```
 
 ### 出站链路参考
 
@@ -155,7 +155,7 @@ NapCatAdapter（WebSocket 收消息）
   → IBotAPI 接口
   → NapCatBotAPI 实现
   → WebSocket 发送请求
-```python
+```
 
 ---
 

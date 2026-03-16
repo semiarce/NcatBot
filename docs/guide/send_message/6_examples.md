@@ -14,7 +14,7 @@ await self.api.post_group_msg(event.group_id, text="Hello, World! 👋")
 
 # 2. event.reply() 自动引用 + @发送者
 await event.reply(text="你好呀！🎉")
-```python
+```
 
 ### 图文混排（MessageArray）
 
@@ -26,7 +26,7 @@ msg.add_text("📸 这是一条图文混排消息:\n")
 msg.add_image(str(EXAMPLE_IMAGE))  # 本地路径或 URL
 msg.add_text("\n以上是示例图片！")
 await self.api.post_group_array_msg(event.group_id, msg)
-```python
+```
 
 ### 合并转发
 
@@ -42,7 +42,7 @@ fc.attach_message(msg)
 
 forward = fc.build()
 await self.api.post_group_forward_msg(event.group_id, forward)
-```python
+```
 
 ### 回复消息（引用）
 
@@ -56,7 +56,7 @@ await self.api.post_group_msg(event.group_id, text="收到！", reply=event.mess
 # 方式三：MessageArray
 msg = MessageArray().add_reply(event.message_id).add_text("收到！")
 await self.api.post_group_array_msg(event.group_id, msg)
-```python
+```
 
 ---
 
@@ -68,25 +68,25 @@ await self.api.post_group_array_msg(event.group_id, msg)
 msg = MessageArray()
 msg.add_image("https://example.com/photo.jpg")
 await self.api.post_group_array_msg(event.group_id, msg)
-```python
+```
 
 ### 发送视频
 
 ```python
 await self.api.post_group_msg(event.group_id, video="/path/to/video.mp4")
-```python
+```
 
 ### 发送文件
 
 ```python
 await self.api.send_group_file(event.group_id, "/path/to/file.pdf", name="文件名.pdf")
-```python
+```
 
 ### 动画表情
 
 ```python
 await self.api.send_group_sticker(event.group_id, "/path/to/image.jpg")
-```python
+```
 
 ### 嵌套合并转发
 
@@ -108,7 +108,7 @@ outer_fc.attach_forward(inner_forward)  # 关键：嵌套内层
 outer_fc.attach_text("🔸 外层第三条消息")
 
 await self.api.post_group_forward_msg(event.group_id, outer_fc.build())
-```python
+```
 
 ### 提取消息中图片
 
@@ -119,7 +119,7 @@ images = event.message.filter(Image)
 for img in images:
     url = getattr(img, "url", None) or getattr(img, "file", "未知")
     print(url)
-```python
+```
 
 ### @全体成员
 
@@ -128,13 +128,13 @@ msg = MessageArray()
 msg.add_at_all()
 msg.add_text(" 全体注意！")
 await self.api.post_group_array_msg(event.group_id, msg)
-```python
+```
 
 ### 戳一戳
 
 ```python
 await self.api.send_poke(event.group_id, target_user_id)
-```text
+```
 
 ---
 

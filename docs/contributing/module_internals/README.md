@@ -133,7 +133,7 @@ graph TB
     style API fill:#e0f7fa
     style Event fill:#fff9c4
     style Types fill:#f5f5f5
-```markdown
+```
 
 **数据流向**：NapCat → `adapter/` → `core/dispatcher` → `core/registry` → `event/factory` → handler 函数
 

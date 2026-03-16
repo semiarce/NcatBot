@@ -16,7 +16,7 @@ msg = MessageArray().add_text("你好 ").add_at(123456).add_image("https://examp
 
 # 等价写法：直接组合消息段
 msg = MessageArray([PlainText(text="你好 "), At(qq="123456"), Image(file="https://example.com/img.png")])
-```python
+```
 
 API 返回值使用 Pydantic 类型：
 
@@ -28,7 +28,7 @@ print(result.message_id)  # str
 
 info = await api.info.get_login_info()
 print(info.user_id, info.nickname)
-```python
+```
 
 在事件处理器中使用：
 
@@ -45,7 +45,7 @@ async def handler(event):
     if event.message.is_at(bot.self_id):
         reply = MessageArray().add_text("收到！")
         await bot.api.send_group_msg(group_id=event.group_id, message=reply)
-```python
+```
 
 ---
 

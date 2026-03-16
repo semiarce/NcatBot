@@ -12,7 +12,7 @@
 async def send_group_msg(
     self, group_id: Union[str, int], message: list, **kwargs
 ) -> SendMessageResult:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -27,7 +27,7 @@ async def send_group_msg(
 async def send_private_msg(
     self, user_id: Union[str, int], message: list, **kwargs
 ) -> SendMessageResult:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -38,7 +38,7 @@ async def send_private_msg(
 
 ```python
 async def delete_msg(self, message_id: Union[str, int]) -> None:
-```python
+```
 
 撤回消息。**OneBot v11 Action**：`delete_msg`
 
@@ -49,7 +49,7 @@ async def send_forward_msg(
     self, message_type: str, target_id: Union[str, int],
     messages: list, **kwargs,
 ) -> SendMessageResult:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -63,7 +63,7 @@ async def send_forward_msg(
 async def send_poke(
     self, group_id: Union[str, int], user_id: Union[str, int],
 ) -> None:
-```python
+```
 
 戳一戳（NapCat 扩展）。
 
@@ -79,7 +79,7 @@ async def send_poke(
 async def post_group_msg(
     self, group_id, text=None, at=None, reply=None, image=None, video=None, rtf=None,
 ) -> SendMessageResult:
-```python
+```
 
 **便捷群消息** — 组装顺序：reply → at → text → image → video → rtf。
 
@@ -101,7 +101,7 @@ async def post_group_msg(
 ```python
 async def post_group_array_msg(self, group_id, msg: MessageArray) -> SendMessageResult:
 async def post_private_array_msg(self, user_id, msg: MessageArray) -> SendMessageResult:
-```python
+```
 
 ---
 

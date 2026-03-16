@@ -18,21 +18,21 @@ async def on_kick(self, event: GroupMessageEvent, target: At = None):
         return
     await self.api.manage.set_group_kick(event.group_id, target.qq)
     await event.reply(f"已踢出用户 {target.qq}")
-```python
+```
 
 ### 禁言 / 解除禁言
 
 ```python
 await self.api.manage.set_group_ban(event.group_id, target.qq, 60)   # 禁言 60 秒
 await self.api.manage.set_group_ban(event.group_id, target.qq, 0)    # 解除禁言
-```python
+```
 
 ### 全员禁言
 
 ```python
 await self.api.manage.set_group_whole_ban(group_id, True)   # 开启
 await self.api.manage.set_group_whole_ban(group_id, False)  # 关闭
-```python
+```
 
 ---
 
@@ -60,7 +60,7 @@ await self.api.manage.set_group_whole_ban(group_id, False)  # 关闭
 ```python
 # 需要群主权限
 await self.api.manage.set_group_special_title(group_id, user_id, "🏆 最强王者")
-```python
+```
 
 ---
 
@@ -75,7 +75,7 @@ async def kick_and_block(
     user_id: Union[str, int],
     message_id: Optional[Union[str, int]] = None,
 ) -> None
-```python
+```
 
 **功能**：撤回消息 → 踢出用户 → 拒绝再加群（一步到位）。
 
@@ -92,7 +92,7 @@ await self.api.manage.kick_and_block(
     user_id=event.user_id,
     message_id=event.message_id,  # 可选，传入则先撤回
 )
-```text
+```
 
 ---
 

@@ -8,7 +8,7 @@ plugins/my_plugin/
 ├── main.py          # 入口文件
 ├── config.yaml      # 可选：默认配置
 └── ...              # 其他辅助模块
-```toml
+```
 
 ## manifest.toml 完整格式
 
@@ -28,7 +28,7 @@ description = "插件说明"
 
 [pip_dependencies]
 # aiohttp = ">=3.8.0"
-```python
+```
 
 **规则**：
 - `name` 须为合法 Python 标识符（小写字母+下划线）
@@ -62,7 +62,7 @@ async def on_load(self):
 async def on_close(self):
     """卸载时：清理资源、取消后台 task"""
     pass
-```python
+```
 
 **顺序**：加载 `_init_()` → Mixin `_mixin_load()` → `on_load()` | 卸载 `_close_()` → `on_close()` → Mixin `_mixin_unload()`
 
@@ -109,4 +109,4 @@ async with PluginTestHarness(
     assert "my_plugin" in h.loaded_plugins
     plugin = h.get_plugin("my_plugin")
     assert plugin is not None
-```text
+```

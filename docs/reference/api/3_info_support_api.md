@@ -14,7 +14,7 @@
 
 ```python
 async def get_login_info(self) -> LoginInfo:
-```python
+```
 
 **参数**：无
 
@@ -25,7 +25,7 @@ async def get_login_info(self) -> LoginInfo:
 ```python
 info = await api.info.get_login_info()
 print(f"Bot QQ: {info.user_id}")
-```python
+```
 
 ---
 
@@ -33,7 +33,7 @@ print(f"Bot QQ: {info.user_id}")
 
 ```python
 async def get_stranger_info(self, user_id: Union[str, int]) -> StrangerInfo:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -49,7 +49,7 @@ async def get_stranger_info(self, user_id: Union[str, int]) -> StrangerInfo:
 
 ```python
 async def get_friend_list(self) -> List[FriendInfo]:
-```python
+```
 
 **参数**：无
 
@@ -63,7 +63,7 @@ async def get_friend_list(self) -> List[FriendInfo]:
 
 ```python
 async def get_group_info(self, group_id: Union[str, int]) -> GroupInfo:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -79,7 +79,7 @@ async def get_group_info(self, group_id: Union[str, int]) -> GroupInfo:
 
 ```python
 async def get_group_list(self) -> List[GroupInfo]:
-```python
+```
 
 **参数**：无
 
@@ -91,7 +91,7 @@ async def get_group_list(self) -> List[GroupInfo]:
 groups = await api.info.get_group_list()
 for g in groups:
     print(g.group_name)
-```python
+```
 
 ---
 
@@ -101,7 +101,7 @@ for g in groups:
 async def get_group_member_info(
     self, group_id: Union[str, int], user_id: Union[str, int],
 ) -> GroupMemberInfo:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -118,7 +118,7 @@ async def get_group_member_info(
 
 ```python
 async def get_group_member_list(self, group_id: Union[str, int]) -> List[GroupMemberInfo]:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -134,7 +134,7 @@ async def get_group_member_list(self, group_id: Union[str, int]) -> List[GroupMe
 
 ```python
 async def get_msg(self, message_id: Union[str, int]) -> MessageData:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -150,7 +150,7 @@ async def get_msg(self, message_id: Union[str, int]) -> MessageData:
 
 ```python
 async def get_forward_msg(self, message_id: Union[str, int]) -> ForwardMessageData:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -166,7 +166,7 @@ async def get_forward_msg(self, message_id: Union[str, int]) -> ForwardMessageDa
 
 ```python
 async def get_group_root_files(self, group_id: Union[str, int]) -> GroupFileList:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -184,7 +184,7 @@ async def get_group_root_files(self, group_id: Union[str, int]) -> GroupFileList
 async def get_group_file_url(
     self, group_id: Union[str, int], file_id: str,
 ) -> str:
-```python
+```
 
 | 参数 | 类型 | 必填 | 说明 |
 |---|---|---|---|
@@ -197,7 +197,7 @@ async def get_group_file_url(
 
 ```python
 url = await api.info.get_group_file_url(123456, "file_abc123")
-```python
+```
 
 ---
 
@@ -213,7 +213,7 @@ url = await api.info.get_group_file_url(123456, "file_abc123")
 async def upload_group_file(
     self, group_id: Union[str, int], file: str, name: str, folder_id: str = "",
 ) -> None:
-```python
+```
 
 上传群文件。
 
@@ -230,7 +230,7 @@ async def upload_group_file(
 
 ```python
 await api.support.upload_group_file(123456, "/tmp/report.pdf", "月报.pdf")
-```python
+```
 
 ---
 
@@ -240,7 +240,7 @@ await api.support.upload_group_file(123456, "/tmp/report.pdf", "月报.pdf")
 async def delete_group_file(
     self, group_id: Union[str, int], file_id: str,
 ) -> None:
-```python
+```
 
 删除群文件。
 
@@ -259,7 +259,7 @@ async def delete_group_file(
 
 ```python
 async def send_like(self, user_id: Union[str, int], times: int = 1) -> None:
-```python
+```
 
 给用户点赞。
 
@@ -274,4 +274,4 @@ async def send_like(self, user_id: Union[str, int], times: int = 1) -> None:
 
 ```python
 await api.support.send_like(654321, times=10)
-```text
+```

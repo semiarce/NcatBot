@@ -11,14 +11,14 @@
 ```bash
 pip install ncatbot5
 mkdir my-bot && cd my-bot
-```yaml
+```
 
 创建 `config.yaml`：
 
 ```yaml
 bot_uin: "你的QQ号"
 ws_uri: "ws://localhost:3001"
-```python
+```
 
 ### 2. 编写入口文件
 
@@ -37,7 +37,7 @@ async def on_hello(event: GroupMessageEvent):
 
 if __name__ == "__main__":
     bot.run()
-```python
+```
 
 ### 3. 启动
 
@@ -89,7 +89,7 @@ async def on_hello(event: PrivateMessageEvent):
 
 if __name__ == "__main__":
     bot.run()
-```python
+```
 
 > `content: str` 由 CommandHook 自动提取命令后的文本，支持 `str`、`int`、`At` 类型。
 
@@ -112,7 +112,7 @@ async def on_ban(event: GroupMessageEvent, target: At = None, duration: int = 60
 @registrar.on_group_command("设置前缀")
 async def on_set_prefix(event: GroupMessageEvent, new_prefix: str):
     await event.reply(text=f"前缀已更新为: {new_prefix}")
-```python
+```
 
 #### 消息监听 — `on_group_message`
 
@@ -123,7 +123,7 @@ async def on_set_prefix(event: GroupMessageEvent, new_prefix: str):
 async def on_keyword(event: GroupMessageEvent):
     if "关键词" in event.message.text:
         await event.reply(text="检测到关键词！")
-```python
+```
 
 > `priority` 越大越先执行。多个 handler 按优先级排序。
 
@@ -148,7 +148,7 @@ async def on_poke(event: NoticeEvent):
 @registrar.on_friend_request()
 async def on_friend(event: FriendRequestEvent):
     await event.approve()
-```python
+```
 
 #### 多步对话 — `wait_event`
 
@@ -169,7 +169,7 @@ async def on_register(event: GroupMessageEvent):
         await event.reply(text=f"你好，{reply.data.raw_message.strip()}！")
     except asyncio.TimeoutError:
         await event.reply(text="超时，注册已取消")
-```python
+```
 
 ---
 
@@ -184,7 +184,7 @@ plugins/
   hello_world/
     __init__.py       # 插件代码
     manifest.toml     # 插件清单
-```toml
+```
 
 `manifest.toml`：
 
@@ -195,7 +195,7 @@ description = "Hello World 插件"
 author = "you"
 main = "__init__"
 entry_class = "HelloWorldPlugin"
-```python
+```
 
 `__init__.py`：
 
@@ -220,7 +220,7 @@ class HelloWorldPlugin(NcatBotPlugin):
     @registrar.on_private_command("hello", ignore_case=True)
     async def on_private_hello(self, event: PrivateMessageEvent):
         await event.reply(text="你好！")
-```python
+```
 
 > 插件模式的装饰器与非插件模式**完全相同**，只是方法多了 `self` 参数。
 
@@ -239,7 +239,7 @@ class MyPlugin(NcatBotPlugin):
     async def on_stats(self, event: GroupMessageEvent):
         self.data["counter"] += 1
         await event.reply(text=f"调用次数: {self.data['counter']}")
-```python
+```
 
 #### 定时任务
 
@@ -252,7 +252,7 @@ class MyPlugin(NcatBotPlugin):
 
     async def heartbeat(self):  # 方法名 = 任务名
         print("heartbeat!")
-```python
+```
 
 #### Hook 机制
 
@@ -272,7 +272,7 @@ class KeywordFilter(Hook):
 @registrar.on_group_command("echo")
 async def on_echo(self, event: GroupMessageEvent, content: str):
     await event.reply(text=content)
-```python
+```
 
 #### 多步对话（插件模式）
 
@@ -292,7 +292,7 @@ async def on_register(self, event: GroupMessageEvent):
         await event.reply(text=f"注册成功，{name}！")
     except asyncio.TimeoutError:
         await event.reply(text="超时已取消")
-```python
+```
 
 ---
 

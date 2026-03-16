@@ -18,7 +18,7 @@ ncatbot dev
 
 # 进入交互模式（REPL）
 ncatbot
-```python
+```
 
 ## 文档清单
 

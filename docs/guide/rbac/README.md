@@ -40,7 +40,7 @@ class MyPlugin(NcatBotPlugin):
             await event.reply("管理命令执行成功")
         else:
             await event.reply("你没有执行此命令的权限")
-```json
+```
 
 ### 2. 在 `data/rbac.json` 中配置角色与用户
 
@@ -64,7 +64,7 @@ class MyPlugin(NcatBotPlugin):
     }
   }
 }
-```python
+```
 
 ### 3. 权限判定规则
 
@@ -72,7 +72,7 @@ class MyPlugin(NcatBotPlugin):
 黑名单命中 → ❌ 拒绝
 白名单命中 → ✅ 允许
 都不命中   → ❌ 拒绝（默认拒绝）
-```python
+```
 
 > 黑名单优先级始终高于白名单。即使用户通过角色获得了某权限，只要该权限出现在黑名单中，检查结果仍为 `False`。
 
@@ -84,7 +84,7 @@ class MyPlugin(NcatBotPlugin):
 
 ```text
 用户 ──拥有──▶ 角色 ──包含──▶ 权限
-```python
+```
 
 - **用户** 不直接绑定权限，而是关联到角色
 - **角色** 持有白名单 / 黑名单两个权限集
@@ -174,7 +174,7 @@ if self.rbac:
 
     # 直接检查权限
     result = self.rbac.check(user_id, "my_plugin.admin")
-```python
+```
 
 ---
 

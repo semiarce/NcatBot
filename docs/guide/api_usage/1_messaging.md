@@ -20,14 +20,14 @@
 
 ```python
 await event.reply(text="pong!")  # 自动引用 + @发送者
-```python
+```
 
 ### 2. post_group_msg — 关键字发送
 
 ```python
 await self.api.post_group_msg(event.group_id, text="Hello!", at=654321)
 await self.api.post_group_msg(event.group_id, text="看这个", reply=msg_id, image="img.png")
-```python
+```
 
 组装顺序：`reply → at → text → image → video → rtf`
 
@@ -37,13 +37,13 @@ await self.api.post_group_msg(event.group_id, text="看这个", reply=msg_id, im
 from ncatbot.types import MessageArray
 msg = MessageArray().add_text("你好").add_image("img.png")
 await self.api.post_group_array_msg(event.group_id, msg)
-```python
+```
 
 ### 4. 原子 API — OneBot v11 格式
 
 ```python
 await self.api.send_group_msg(123456, [{"type": "text", "data": {"text": "你好"}}])
-```python
+```
 
 ---
 
@@ -57,7 +57,7 @@ await self.api.post_group_forward_msg(group_id, forward)
 
 # 或通过消息 ID 转发已有消息
 await self.api.send_group_forward_msg_by_id(group_id, [msg_id_1, msg_id_2])
-```python
+```
 
 ---
 
@@ -69,7 +69,7 @@ await self.api.delete_msg(result["message_id"])
 
 # 或直接撤回触发事件的消息
 await event.delete()
-```python
+```
 
 ---
 
@@ -87,7 +87,7 @@ await event.delete()
 @registrar.on_group_command("戳我")
 async def on_poke(self, event: GroupMessageEvent):
     await self.api.send_poke(event.group_id, event.user_id)
-```python
+```
 
 ---
 
@@ -108,7 +108,7 @@ async def post_group_msg(
     video: Optional[Union[str, Video]] = None,
     rtf: Optional[MessageArray] = None,
 ) -> dict
-```python
+```
 
 所有关键字参数都是可选的，按需组合：
 
@@ -130,7 +130,7 @@ msg = MessageArray()
 msg.add_text("复杂消息")
 msg.add_image("https://example.com/img.png")
 await self.api.post_group_msg(group_id, rtf=msg)
-```python
+```
 
 ### post_private_msg — 便捷私聊消息
 
@@ -144,7 +144,7 @@ async def post_private_msg(
     video: Optional[Union[str, Video]] = None,
     rtf: Optional[MessageArray] = None,
 ) -> dict
-```python
+```
 
 ### 其他 sugar 方法速查
 

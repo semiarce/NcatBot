@@ -61,7 +61,7 @@
     "run_count": 42,
     "max_runs": None,
 }
-```python
+```
 
 ### 回调机制
 
@@ -76,7 +76,7 @@ flowchart LR
     E -->|不满足| F[跳过]
     E -->|满足| G[callback]
     G --> H[run_count += 1]
-```python
+```
 
 > **插件开发者**通常使用 `TimeTaskMixin.add_scheduled_task(name, interval)`，框架自动查找同名方法作为 callback。也可显式传入 `callback` 参数。
 
@@ -94,8 +94,7 @@ class MyPlugin(NcatBotPlugin):
 # 直接使用服务
 tt = manager.time_task
 tt.add_job("my_task", "10s", callback=lambda: print("tick"))
-```python
-```python
+```
 
 ---
 
@@ -139,7 +138,7 @@ tt.add_job("my_task", "10s", callback=lambda: print("tick"))
 
 ```python
 on_file_changed: Optional[Callable[[str], None]]
-```python
+```
 
 - **参数**：发生变化的插件一级目录名（非完整路径）
 - **触发条件**：`debug_mode=True` 且插件目录下 `.py` 文件发生增删改
@@ -149,14 +148,14 @@ on_file_changed: Optional[Callable[[str], None]]
 
 ```python
 on_config_changed: Optional[Callable[[], None]]
-```python
+```
 
 - 自动监听 `config.yaml` 文件的修改时间（mtime）变化
 - 在 `on_load()` 时自动设置
 
 **文件变化处理流程：**
 
-```mermaid
+```python
 flowchart TD
     A[Watcher 线程] -->|扫描 .py 文件| B{mtime 变化?}
     B -->|否| A
@@ -167,7 +166,7 @@ flowchart TD
     E -->|是| A
     E -->|否| F[on_file_changed 回调]
     F --> A
-```python
+```
 
 ### 完整示例
 
@@ -202,7 +201,7 @@ fw.resume()
 # 查询状态
 print(fw.is_watching)     # True
 print(fw.pending_count)   # 0
-```python
+```
 
 ---
 
@@ -210,7 +209,7 @@ print(fw.pending_count)   # 0
 
 以下展示框架启动时服务层的完整交互流程：
 
-```mermaid
+```text
 sequenceDiagram
     participant App as BotClient
     participant SM as ServiceManager
@@ -248,7 +247,7 @@ sequenceDiagram
     TT-->>SM: 停止调度线程
     SM->>RBAC: on_close()
     RBAC-->>SM: 保存 rbac.json
-```text
+```
 
 ---
 

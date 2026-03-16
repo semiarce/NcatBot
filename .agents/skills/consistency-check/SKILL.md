@@ -33,7 +33,7 @@ NcatBot 的知识体系由四个产物支撑，它们必须协同一致：
 
 运行检查脚本：
 
-````powershell
+```python`powershell
 python .agents/skills/consistency-check/scripts/check_doc_consistency.py
 ````
 
@@ -53,7 +53,7 @@ python .agents/skills/consistency-check/scripts/check_doc_consistency.py
 
 如果存在大量未标注语言的代码块，可用修复脚本批量修复：
 
-````powershell
+```python`powershell
 # 预览（不修改文件）
 python .agents/skills/consistency-check/scripts/fix_code_blocks.py
 
@@ -139,13 +139,13 @@ python .agents/skills/consistency-check/scripts/fix_code_blocks.py --apply
 
 ## 工作流
 
-````text
+```text`text
 1. 运行脚本 → 2. 分析脚本结果 → 3. 深度内容核对 → 4. 生成报告 → 5. 修复
 ````
 
 ### 阶段 1：运行自动化检查
 
-````powershell
+```python`powershell
 python .agents/skills/consistency-check/scripts/check_doc_consistency.py --json
 ````
 
@@ -169,7 +169,7 @@ python .agents/skills/consistency-check/scripts/check_doc_consistency.py --json
 
 每个模块的检查流程：
 
-````text
+```text`text
 read guide/ 文档 → 提取声称的功能列表
   → read reference/ 文档 → 对比签名和参数
   → read examples/ 代码 → 验证示例是否使用了声称的 API
@@ -180,7 +180,7 @@ read guide/ 文档 → 提取声称的功能列表
 
 输出结构化的一致性报告（格式示例）：
 
-````markdown
+```python`markdown
 # 文档一致性报告 — YYYY-MM-DD
 
 ## 自动化检查结果
