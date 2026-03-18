@@ -1,15 +1,10 @@
-"""跨平台通用类型
+"""跨平台通用类型"""
 
-仅导出 common/ 中的平台无关类型。
-QQ 平台类型请从 ncatbot.types.qq 导入。
-NapCat 响应类型请从 ncatbot.types.napcat 导入。
-"""
-
-from .common import (
+from .base import BaseEventData
+from .sender import BaseSender
+from .segment import (
     SEGMENT_MAP,
     At,
-    BaseEventData,
-    BaseSender,
     DownloadableSegment,
     File,
     Image,

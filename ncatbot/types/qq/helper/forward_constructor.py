@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from ..segment import (
+from ncatbot.types.common.segment import (
     File,
-    Forward,
-    ForwardNode,
     Image,
     MessageArray,
     PlainText,
     Video,
 )
+from ..segment import Forward, ForwardNode
 
 __all__ = ["ForwardConstructor"]
 

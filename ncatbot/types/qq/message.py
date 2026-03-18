@@ -1,14 +1,16 @@
+"""QQ 平台消息事件数据模型"""
+
 from __future__ import annotations
 
 from typing import Any, Optional
 
 from pydantic import Field, field_validator
 
-from .base import BaseEventData
-from .enums import MessageType, PostType
+from ncatbot.types.common.base import BaseEventData
+from ncatbot.types.common.segment.array import MessageArray
+from .enums import PostType, MessageType
 from .misc import Anonymous
-from .sender import BaseSender, GroupSender
-from .segment.array import MessageArray
+from .sender import QQSender, GroupSender
 
 __all__ = [
     "MessageEventData",
@@ -18,6 +20,7 @@ __all__ = [
 
 
 class MessageEventData(BaseEventData):
+    platform: str = "qq"
     post_type: PostType = Field(default=PostType.MESSAGE)
     message_type: MessageType
     sub_type: str
@@ -25,7 +28,7 @@ class MessageEventData(BaseEventData):
     user_id: str
     message: MessageArray
     raw_message: str
-    sender: BaseSender
+    sender: QQSender
     font: int = 0
 
     @field_validator("message", mode="before")
@@ -41,7 +44,7 @@ class MessageEventData(BaseEventData):
 class PrivateMessageEventData(MessageEventData):
     message_type: MessageType = Field(default=MessageType.PRIVATE)
     sub_type: str = Field(default="friend")
-    sender: BaseSender
+    sender: QQSender
 
 
 class GroupMessageEventData(MessageEventData):

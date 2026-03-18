@@ -1,9 +1,11 @@
+"""QQ 平台元事件数据模型"""
+
 from __future__ import annotations
 
 from pydantic import Field
 
-from .base import BaseEventData
-from .enums import MetaEventType, PostType
+from ncatbot.types.common.base import BaseEventData
+from .enums import PostType, MetaEventType
 from .misc import Status
 
 __all__ = [
@@ -15,6 +17,7 @@ __all__ = [
 
 
 class MetaEventData(BaseEventData):
+    platform: str = "qq"
     post_type: PostType = Field(default=PostType.META_EVENT)
     meta_event_type: MetaEventType
 

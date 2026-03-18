@@ -1,3 +1,5 @@
+"""QQ 平台专用枚举"""
+
 from enum import Enum
 
 __all__ = [

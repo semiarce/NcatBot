@@ -1,9 +1,7 @@
 from .base import SEGMENT_MAP, MessageSegment, parse_segment
-from .forward import Forward, ForwardNode
+from .text import At, PlainText, Reply
 from .media import DownloadableSegment, File, Image, Record, Video
-from .rich import Json, Location, Markdown, Music, Share
-from .text import At, Face, PlainText, Reply
-from .array import MessageArray, parse_cq_code_to_onebot11
+from .array import MessageArray
 
 __all__ = [
     # base
@@ -12,7 +10,6 @@ __all__ = [
     "parse_segment",
     # text
     "PlainText",
-    "Face",
     "At",
     "Reply",
     # media
@@ -21,16 +18,6 @@ __all__ = [
     "Record",
     "Video",
     "File",
-    # rich
-    "Share",
-    "Location",
-    "Music",
-    "Json",
-    "Markdown",
-    # forward
-    "ForwardNode",
-    "Forward",
     # array
     "MessageArray",
-    "parse_cq_code_to_onebot11",
 ]

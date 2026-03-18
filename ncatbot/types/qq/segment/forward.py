@@ -1,10 +1,12 @@
+"""QQ 专用转发消息段"""
+
 from __future__ import annotations
 
 from typing import Any, ClassVar, Dict, List, Optional
 
 from pydantic import BaseModel, field_validator
 
-from .base import MessageSegment, parse_segment
+from ncatbot.types.common.segment.base import MessageSegment, parse_segment
 
 __all__ = [
     "ForwardNode",

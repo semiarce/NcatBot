@@ -1,11 +1,13 @@
+"""QQ 平台通知事件数据模型"""
+
 from __future__ import annotations
 
 from typing import Literal, Optional
 
 from pydantic import Field
 
-from .base import BaseEventData
-from .enums import NoticeType, NotifySubType, PostType
+from ncatbot.types.common.base import BaseEventData
+from .enums import PostType, NoticeType, NotifySubType
 from .misc import FileInfo
 
 __all__ = [
@@ -26,6 +28,7 @@ __all__ = [
 
 
 class NoticeEventData(BaseEventData):
+    platform: str = "qq"
     post_type: PostType = Field(default=PostType.NOTICE)
     notice_type: NoticeType
     group_id: Optional[str] = None

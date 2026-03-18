@@ -1,6 +1,8 @@
+"""通用媒体类消息段"""
+
 from __future__ import annotations
 
-from typing import Any, ClassVar, Dict, Optional
+from typing import ClassVar, Optional
 
 from .base import MessageSegment
 
@@ -25,23 +27,10 @@ class DownloadableSegment(MessageSegment):
 
 class Image(DownloadableSegment):
     _type: ClassVar[str] = "image"
-    sub_type: int = 0
-    type: Optional[int] = None  # OB11 data.type: 0=normal, 1=flash
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> Image:
-        seg_data = dict(data.get("data", {}))
-        # OB11: data.type 是 0/1，直接作为 type 字段
-        return cls.model_validate(seg_data)
-
-    def to_dict(self) -> Dict[str, Any]:
-        result = super().to_dict()
-        return result
 
 
 class Record(DownloadableSegment):
     _type: ClassVar[str] = "record"
-    magic: Optional[int] = None
 
 
 class Video(DownloadableSegment):

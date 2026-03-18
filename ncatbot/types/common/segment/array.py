@@ -1,6 +1,7 @@
+"""MessageArray — 消息段容器 + 查询 + 链式构造"""
+
 from __future__ import annotations
 
-import re
 from typing import (
     Any,
     Dict,
@@ -17,52 +18,14 @@ from pydantic import GetCoreSchemaHandler
 from pydantic_core import CoreSchema, core_schema
 
 from .base import MessageSegment, parse_segment
-from .forward import Forward
+from .text import At, PlainText, Reply
 from .media import Image, Video
-from .text import At, Face, PlainText, Reply
 
 __all__ = [
     "MessageArray",
-    "parse_cq_code_to_onebot11",
 ]
 
 T = TypeVar("T", bound=MessageSegment)
-
-
-def parse_cq_code_to_onebot11(
-    cq_string: str,
-) -> List[Dict[str, Union[str, Dict[str, str]]]]:
-    """将 CQ 码字符串解析为 OB11 消息数组格式"""
-    cq_pattern = re.compile(r"\[CQ:([^,\]]+)(?:,([^\]]+))?\]")
-    segments: List[Dict[str, Union[str, Dict[str, str]]]] = []
-    last_pos = 0
-    html_unescape_map = {"&amp;": "&", "&#91;": "[", "&#93;": "]", "&#44;": ","}
-
-    def unescape_cq(text: str) -> str:
-        for escaped, unescaped in html_unescape_map.items():
-            text = text.replace(escaped, unescaped)
-        return text
-
-    for match in cq_pattern.finditer(cq_string):
-        text_before = cq_string[last_pos : match.start()]
-        if text_before:
-            segments.append(
-                {"type": "text", "data": {"text": unescape_cq(text_before)}}
-            )
-        cq_type = match.group(1)
-        cq_params_str = match.group(2) or ""
-        params: Dict[str, str] = {}
-        for param in cq_params_str.split(","):
-            if "=" in param:
-                key, value = param.split("=", 1)
-                params[key] = unescape_cq(value)
-        segments.append({"type": cq_type, "data": params})
-        last_pos = match.end()
-
-    text_after = cq_string[last_pos:]
-    if text_after:
-        segments.append({"type": "text", "data": {"text": unescape_cq(text_after)}})
-    return segments
 
 
 def _parse_any(data: Any) -> List[MessageSegment]:
@@ -72,7 +35,7 @@ def _parse_any(data: Any) -> List[MessageSegment]:
     if isinstance(data, dict):
         return [parse_segment(data)]
     if isinstance(data, str):
-        return [parse_segment(seg) for seg in parse_cq_code_to_onebot11(data)]
+        return [PlainText(text=data)]
     if isinstance(data, Iterable):
         result: List[MessageSegment] = []
         for item in data:
@@ -157,9 +120,6 @@ class MessageArray:
     def filter_video(self) -> List[Video]:
         return self.filter(Video)
 
-    def filter_face(self) -> List[Face]:
-        return self.filter(Face)
-
     @property
     def text(self) -> str:
         """拼接所有纯文本段"""
@@ -169,14 +129,11 @@ class MessageArray:
         uid = str(user_id)
         all_at = False
         for at in self.filter(At):
-            if at.qq == uid:
+            if at.user_id == uid:
                 return True
-            if at.qq == "all":
+            if at.user_id == "all":
                 all_at = True
         return not all_except and all_at
-
-    def is_forward_msg(self) -> bool:
-        return len(self.filter(Forward)) > 0
 
     # ---- 链式构造 ----
 
@@ -203,11 +160,11 @@ class MessageArray:
         return self
 
     def add_at(self, user_id: Union[str, int]) -> MessageArray:
-        self._segments.append(At(qq=str(user_id)))
+        self._segments.append(At(user_id=str(user_id)))
         return self
 
     def add_at_all(self) -> MessageArray:
-        self._segments.append(At(qq="all"))
+        self._segments.append(At(user_id="all"))
         return self
 
     def add_reply(self, message_id: Union[str, int]) -> MessageArray:

@@ -1,3 +1,5 @@
+"""QQ 平台杂项类型"""
+
 from __future__ import annotations
 
 from pydantic import BaseModel

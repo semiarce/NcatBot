@@ -1,10 +1,12 @@
+"""QQ 平台请求事件数据模型"""
+
 from __future__ import annotations
 
 from typing import Optional
 
 from pydantic import Field
 
-from .base import BaseEventData
+from ncatbot.types.common.base import BaseEventData
 from .enums import PostType, RequestType
 
 __all__ = [
@@ -15,6 +17,7 @@ __all__ = [
 
 
 class RequestEventData(BaseEventData):
+    platform: str = "qq"
     post_type: PostType = Field(default=PostType.REQUEST)
     request_type: RequestType
     user_id: str

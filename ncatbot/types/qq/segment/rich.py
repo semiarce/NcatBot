@@ -1,8 +1,10 @@
+"""QQ 专用富媒体消息段"""
+
 from __future__ import annotations
 
 from typing import ClassVar, Literal, Optional
 
-from .base import MessageSegment
+from ncatbot.types.common.segment.base import MessageSegment
 
 __all__ = [
     "Share",

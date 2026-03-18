@@ -4,8 +4,6 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, model_validator
 
-from .enums import PostType
-
 __all__ = [
     "BaseEventData",
 ]
@@ -18,7 +16,8 @@ class BaseEventData(BaseModel):
 
     time: int
     self_id: str
-    post_type: PostType
+    post_type: str = ""
+    platform: str = "unknown"
 
     @model_validator(mode="before")
     @classmethod

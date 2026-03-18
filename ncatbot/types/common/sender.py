@@ -6,15 +6,12 @@ from pydantic import BaseModel, model_validator
 
 __all__ = [
     "BaseSender",
-    "GroupSender",
 ]
 
 
 class BaseSender(BaseModel):
     user_id: Optional[str] = None
-    nickname: Optional[str] = "QQ用户"
-    sex: Optional[str] = "unknown"
-    age: Optional[int] = 0
+    nickname: Optional[str] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -24,11 +21,3 @@ class BaseSender(BaseModel):
                 if key.endswith("_id") and isinstance(value, (int, float)):
                     data[key] = str(int(value))
         return data
-
-
-class GroupSender(BaseSender):
-    card: Optional[str] = None
-    area: Optional[str] = None
-    level: Optional[str] = None
-    role: Optional[str] = None
-    title: Optional[str] = None
