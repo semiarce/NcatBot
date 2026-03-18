@@ -190,4 +190,6 @@ plugin:
 
 ## 示例索引
 
-`examples/` 目录包含 15 个从简到繁的完整示例（`01_hello_world/` 至 `15_full_featured_bot/`），可作为开发参考。
+`examples/` 目录按平台分类为 `common/`（7 个通用示例）、`qq/`（9 个 QQ 示例）、`bilibili/`（5 个 Bilibili 示例）、`github/`（2 个占位）、`cross_platform/`（3 个跨平台示例），共 26 个完整示例，可作为开发参考。
+
+Bilibili 适配器支持扫码登录：config.yaml 中 `sessdata` 留空即可在启动时自动弹出二维码，扫码后凭据自动写回配置文件。详见 `docs/guide/api_usage/bilibili/README.md`。

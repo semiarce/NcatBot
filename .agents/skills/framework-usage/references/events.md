@@ -9,10 +9,10 @@ from ncatbot.core import registrar
 from ncatbot.event.qq import GroupMessageEvent, PrivateMessageEvent
 ```
 
-### 完整装饰器列表
+### 跨平台装饰器
 
 | 装饰器 | 匹配事件 |
-|--------|---------|
+|--------|--------|
 | `@registrar.on(event_type, priority=0)` | 任意事件 |
 | `@registrar.on_message()` | 所有消息 |
 | `@registrar.on_group_message()` | 群消息 |
@@ -22,13 +22,47 @@ from ncatbot.event.qq import GroupMessageEvent, PrivateMessageEvent
 | `@registrar.on_group_command(*names)` | 群命令 |
 | `@registrar.on_private_command(*names)` | 私聊命令 |
 | `@registrar.on_notice()` | 所有通知 |
-| `@registrar.on_group_increase()` | 群成员增加 |
-| `@registrar.on_group_decrease()` | 群成员减少 |
-| `@registrar.on_poke()` | 戳一戳 |
 | `@registrar.on_request()` | 所有请求 |
-| `@registrar.on_friend_request()` | 好友请求 |
-| `@registrar.on_group_request()` | 群请求 |
 | `@registrar.on_meta()` | 元事件 |
+
+### QQ 平台装饰器 (`registrar.qq`)
+
+| 装饰器 | 匹配事件 |
+|--------|--------|
+| `@registrar.qq.on_group_increase()` | 群成员增加 |
+| `@registrar.qq.on_group_decrease()` | 群成员减少 |
+| `@registrar.qq.on_group_recall()` | 群消息撤回 |
+| `@registrar.qq.on_group_admin()` | 群管理员变动 |
+| `@registrar.qq.on_group_ban()` | 群禁言 |
+| `@registrar.qq.on_poke()` | 戳一戳 |
+| `@registrar.qq.on_friend_request()` | 好友请求 |
+| `@registrar.qq.on_group_request()` | 群请求 |
+| `@registrar.qq.on_friend_add()` | 好友已添加 |
+
+### Bilibili 平台装饰器 (`registrar.bilibili`)
+
+| 装饰器 | 匹配事件 |
+|--------|--------|
+| `@registrar.bilibili.on_live()` | 所有直播间事件 |
+| `@registrar.bilibili.on_danmu()` | 弹幕消息 |
+| `@registrar.bilibili.on_superchat()` | 醒目留言 (SC) |
+| `@registrar.bilibili.on_gift()` | 礼物 |
+| `@registrar.bilibili.on_guard_buy()` | 大航海 |
+| `@registrar.bilibili.on_interact()` | 互动（进入/关注/分享） |
+| `@registrar.bilibili.on_like()` | 点赞 |
+| `@registrar.bilibili.on_comment()` | 评论 |
+
+### GitHub 平台装饰器 (`registrar.github`)
+
+| 装饰器 | 匹配事件 |
+|--------|--------|
+| `@registrar.github.on_push()` | Push |
+| `@registrar.github.on_issue()` | Issue |
+| `@registrar.github.on_pr()` | Pull Request |
+| `@registrar.github.on_star()` | Star |
+| `@registrar.github.on_fork()` | Fork |
+| `@registrar.github.on_release()` | Release |
+| `@registrar.github.on_comment()` | Comment |
 
 所有装饰器均支持 `platform` 参数，用于限定只接收特定平台的事件：
 
@@ -163,6 +197,8 @@ pred = from_event(event) * P.of(lambda e: int(e.data.raw_message) > 0)
 
 ## 事件实体层
 
+### QQ 事件实体
+
 | 实体类 | 便捷方法 |
 |--------|---------|
 | `MessageEvent` | `reply()`, `delete()`, `is_group_msg()` |
@@ -173,6 +209,27 @@ pred = from_event(event) * P.of(lambda e: int(e.data.raw_message) > 0)
 | `RequestEvent` | `approve()`, `reject()` |
 | `FriendRequestEvent` | `approve()`, `reject()` |
 | `GroupRequestEvent` | `approve()`, `reject()` |
+
+### GitHub 事件实体
+
+```python
+from ncatbot.event.github import (
+    GitHubIssueEvent, GitHubIssueCommentEvent,
+    GitHubPREvent, GitHubPRReviewCommentEvent,
+    GitHubPushEvent, GitHubStarEvent, GitHubForkEvent, GitHubReleaseEvent,
+)
+```
+
+| 实体类 | Traits | 便捷方法 | 关键属性 |
+|--------|--------|---------|---------|
+| `GitHubIssueEvent` | HasSender, Replyable | `reply()` | `issue_number`, `issue_title`, `action`, `labels`, `repo` |
+| `GitHubIssueCommentEvent` | HasSender, Replyable, Deletable | `reply()`, `delete()` | `comment_body`, `issue_number`, `repo` |
+| `GitHubPREvent` | HasSender, Replyable | `reply()` | `pr_number`, `pr_title`, `action`, `merged`, `repo` |
+| `GitHubPRReviewCommentEvent` | HasSender, Replyable, Deletable | `reply()`, `delete()` | `comment_body`, `pr_number`, `path`, `repo` |
+| `GitHubPushEvent` | HasSender | — | `ref`, `before`, `after`, `commits`, `head_commit`, `repo` |
+| `GitHubStarEvent` | HasSender | — | `repo`, `starred_at` |
+| `GitHubForkEvent` | HasSender | — | `repo`, `forkee`, `forkee_full_name` |
+| `GitHubReleaseEvent` | HasSender | — | `release_tag`, `release_name`, `release_body`, `prerelease`, `repo` |
 
 ### Trait 协议（5.2 新增）
 

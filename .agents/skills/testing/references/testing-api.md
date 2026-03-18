@@ -95,11 +95,11 @@ class APICall:
 ## Scenario 链式构建器
 
 ```python
-Scenario(harness)
-    .inject(event_data)          # 注入事件
-    .settle(delay=0.05)          # 等待处理
-    .assert_api_called(action)   # 断言调用
-    .run()                       # 执行链（async）
+scenario = Scenario("test_name")
+scenario.inject(event_data)          # 注入事件
+scenario.settle(delay=0.05)          # 等待处理
+scenario.assert_api_called(action)   # 断言调用
+await scenario.run(harness)           # 执行链（async，传入 harness）
 ```
 
 ## pytest Fixtures（conftest.py 提供）

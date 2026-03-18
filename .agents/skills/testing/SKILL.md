@@ -163,7 +163,7 @@ async def test_plugin_responds_to_command():
     """命令测试：插件正确响应指令"""
     async with PluginTestHarness(
         plugin_names=["hello_world"],
-        plugin_dir=Path("examples/01_hello_world"),
+        plugin_dir=Path("examples/qq/01_hello_world"),
     ) as h:
         await h.inject(group_message("hello", group_id="100"))
         await h.settle()

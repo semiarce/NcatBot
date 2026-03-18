@@ -20,7 +20,7 @@
 | `from ncatbot.core import MessageArray, Image` | `from ncatbot.types import MessageArray, Image` | |
 | `from ncatbot.core import Message, PlainText, At, Image, Record` | `from ncatbot.types import MessageArray, PlainText, At, Image, Record` | `Message` → `MessageArray` |
 | `from ncatbot.core.event.message_segment import Node, Forward` | `from ncatbot.types import ForwardNode, Forward` | `Node` → `ForwardNode` |
-| `from ncatbot.core.helper import ForwardConstructor` | `from ncatbot.types import ForwardConstructor` | |
+| `from ncatbot.core.helper import ForwardConstructor` | `from ncatbot.types.qq import ForwardConstructor` | |
 | `from ncatbot.utils.assets.literals import OFFICIAL_*` | 移除 | 5.0 用装饰器直接注册，不需要事件常量 |
 | （无） | `from ncatbot.core import registrar` | **新增**：5.0 必需 |
 | （无） | `from ncatbot.event.qq import GroupMessageEvent` | **新增**：类型细化 |
@@ -33,7 +33,7 @@
 | `from ncatbot.core import PrivateMessageEvent` | `from ncatbot.event.qq import PrivateMessageEvent` | |
 | `from ncatbot.core import MessageEvent` | `from ncatbot.event.qq import MessageEvent` | |
 | `from ncatbot.core import MessageArray, Image` | `from ncatbot.types import MessageArray, Image` | |
-| `from ncatbot.core.helper import ForwardConstructor` | `from ncatbot.types import ForwardConstructor` | |
+| `from ncatbot.core.helper import ForwardConstructor` | `from ncatbot.types.qq import ForwardConstructor` | |
 | （无） | `from ncatbot.core import registrar` | **新增**：5.0 必需 |
 | （无） | `from ncatbot.event.qq import GroupMessageEvent` | **新增**：类型细化 |
 
@@ -46,5 +46,6 @@
 | `ncatbot.plugin` | 插件基类 | `NcatBotPlugin`, `BasePlugin`, `PluginManifest` |
 | `ncatbot.core` | 注册器、调度器、Hook | `registrar`, `Hook`, `HookStage`, `HookAction` |
 | `ncatbot.event` | 事件类 | `MessageEvent`, `GroupMessageEvent`, `PrivateMessageEvent`, `NoticeEvent`, `RequestEvent` |
-| `ncatbot.types` | 消息段、数据类型 | `MessageArray`, `Image`, `PlainText`, `At`, `ForwardConstructor`, `Forward` |
+| `ncatbot.types` | 通用消息段、数据类型 | `MessageArray`, `Image`, `PlainText`, `At`, `Reply`, `Record`, `Video`, `File` |
+| `ncatbot.types.qq` | QQ 特定类型 | `ForwardConstructor`, `Forward`, `ForwardNode`, `Face`, `Json`, `Markdown` |
 | `ncatbot.utils` | 工具函数 | `get_log` |

@@ -7,15 +7,39 @@
 ```python
 from ncatbot.app import BotClient
 from ncatbot.adapter import NapCatAdapter
+from ncatbot.adapter.github import GitHubAdapter
 
 bot = BotClient(adapters=[
     NapCatAdapter(),           # platform="qq"
+    GitHubAdapter(),           # platform="github"
     # TelegramAdapter(),       # platform="telegram" (未来)
 ])
 bot.run()
 ```
 
 每个适配器的 `platform` 必须唯一，重复会抛 `ValueError`。
+
+### GitHub 适配器配置
+
+GitHub 适配器支持 Webhook 和 Polling 两种模式：
+
+```yaml
+# config.yaml
+adapters:
+  - type: github
+    token: "ghp_xxxx"          # GitHub Personal Access Token
+    repos:
+      - "owner/repo1"
+      - "owner/repo2"
+    mode: webhook              # "webhook"(default) | "polling"
+    # Webhook 模式
+    webhook_host: "0.0.0.0"
+    webhook_port: 8080
+    webhook_path: "/webhook"
+    webhook_secret: "your-secret"
+    # Polling 模式
+    poll_interval: 60.0
+```
 
 ## 多平台 API 访问
 
@@ -25,10 +49,11 @@ await api.send_group_msg(group_id, message)
 
 # 显式平台
 await api.qq.send_group_msg(group_id, message)
+await api.github.create_issue_comment(repo, issue_number, body)
 # await api.platform("telegram").send_message(chat_id, text)
 
 # 查看已注册平台
-print(api.platforms)  # {"qq": <QQAPIClient>, ...}
+print(api.platforms)  # {"qq": <QQAPIClient>, "github": <GitHubBotAPI>, ...}
 ```
 
 ## 平台过滤

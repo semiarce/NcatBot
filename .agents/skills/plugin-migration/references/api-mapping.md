@@ -49,8 +49,8 @@ from ncatbot.core import registrar
 # 通知/请求
 @registrar.on_notice()                          # 所有通知
 @registrar.on_request()                         # 所有请求
-@registrar.on_group_increase()                  # 群成员增加
-@registrar.on_friend_request()                  # 好友请求
+@registrar.qq.on_group_increase()               # 群成员增加
+@registrar.qq.on_friend_request()               # 好友请求
 
 # 通用
 @registrar.on(event_type, priority=0)           # 监听任意事件类型
@@ -195,7 +195,7 @@ await self.api.qq.send_group_image(group_id, image)
 ### ForwardConstructor（不变）
 
 ```python
-from ncatbot.types import ForwardConstructor  # 仅导入路径变更
+from ncatbot.types.qq import ForwardConstructor  # 仅导入路径变更
 
 fcr = ForwardConstructor(self_id, "昵称")
 fcr.attach_image(image_path)

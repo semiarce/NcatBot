@@ -151,7 +151,7 @@ await self.api.qq.messaging.send_group_msg(group_id, msg.to_list())
 
 ```python
 # 方式 1：ForwardConstructor（推荐）
-from ncatbot.types import ForwardConstructor
+from ncatbot.types.qq import ForwardConstructor
 fc = ForwardConstructor()
 fc.add_message(user_id="123", nickname="用户A", content="第一条")
 fc.add_message(user_id="123", nickname="用户A", content="第二条")
@@ -169,6 +169,50 @@ images = event.message.filter_image()        # 所有图片
 if event.message.is_at(event.self_id):       # 是否 @了我
     ...
 ```
+
+## GitHub 平台消息发送
+
+> 参考文档：[guide/send_message/github/](docs/guide/send_message/github/)
+
+GitHub 平台不使用 MessageArray 或消息段，消息以纯文本 / Markdown 发送。
+
+### 通过事件回复
+
+```python
+from ncatbot.event.github import GitHubIssueEvent, GitHubPREvent
+
+@registrar.github.on_issue()
+async def on_issue(self, event: GitHubIssueEvent):
+    await event.reply("感谢反馈！")          # 纯文本或 Markdown
+
+@registrar.github.on_pr()
+async def on_pr(self, event: GitHubPREvent):
+    await event.reply("LGTM! :rocket:")     # 支持 GitHub emoji
+```
+
+### 通过 API 主动发送
+
+```python
+# Issue 评论
+await self.api.github.create_issue_comment("owner/repo", 42, "已处理")
+
+# PR 评论
+await self.api.github.create_pr_comment("owner/repo", 10, "CI 通过")
+
+# 编辑/删除评论
+await self.api.github.update_comment("owner/repo", comment_id, "更新内容")
+await self.api.github.delete_comment("owner/repo", comment_id)
+```
+
+### 与 QQ/Bilibili 的差异
+
+| 特性 | QQ | Bilibili | GitHub |
+|------|-----|----------|--------|
+| 消息格式 | 富文本（消息段） | 纯文本 | 纯文本 / Markdown |
+| At / 图片 / 视频 | ✅ | 部分 | ❌ |
+| MessageArray | ✅ | — | — |
+| `event.reply()` | ✅ | ✅ | ✅ |
+| `event.delete()` | ✅ | ✅ | ✅（仅评论事件） |
 
 ## 常见陷阱
 

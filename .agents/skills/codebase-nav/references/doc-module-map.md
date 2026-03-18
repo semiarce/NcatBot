@@ -17,7 +17,9 @@
 | `guide/plugin/7a.patterns.md` | 多个模块 | 综合 |
 | `guide/plugin/7b.case-studies.md` | 多个模块 | 综合 |
 | `guide/send_message/` | `ncatbot/api/`, `ncatbot/types/common/segment/` | `BotAPIClient`, 消息段 |
+| `guide/send_message/github/` | `ncatbot/adapter/github/api/` | `GitHubBotAPI`, `CommentAPIMixin` |
 | `guide/api_usage/` | `ncatbot/api/` | `BotAPIClient`, extensions |
+| `guide/api_usage/github/` | `ncatbot/adapter/github/api/` | `IssueAPIMixin`, `PRAPIMixin`, `QueryAPIMixin` |
 | `guide/configuration/` | `ncatbot/utils/config/` | `ConfigManager` |
 | `guide/rbac/` | `ncatbot/service/builtin/` | RBAC 服务 |
 | `guide/cli/` | `ncatbot/cli/` | `main.py`, commands |
@@ -31,8 +33,11 @@
 | `reference/api/qq/1_message_api.md` | `ncatbot/api/qq/` | 消息发送方法 |
 | `reference/api/qq/2_manage_api.md` | `ncatbot/api/qq/` | 群管理方法 |
 | `reference/api/qq/3_info_support_api.md` | `ncatbot/api/qq/` | 查询/辅助方法 |
+| `reference/api/github/1_api.md` | `ncatbot/adapter/github/api/` | `GitHubBotAPI` (Issue/Comment/PR/Query Mixin) |
 | `reference/events/1_common.md` | `ncatbot/event/` | 事件类层级 |
+| `reference/events/4_github_events.md` | `ncatbot/event/github/` | GitHub 事件实体类 |
 | `reference/types/1_common_segments.md` | `ncatbot/types/common/segment/` | 消息段类型 |
+| `reference/types/6_github_types.md` | `ncatbot/types/github/` | GitHub 枚举、数据模型、Sender |
 | `reference/types/2_message_array.md` | `ncatbot/types/common/segment/` | `MessageArray` |
 | `reference/types/4_qq_responses.md` | `ncatbot/types/napcat/` | API 响应类型 |
 | `reference/core/1_internals.md` | `ncatbot/core/` | Dispatcher, Registry |
@@ -42,7 +47,7 @@
 | `reference/services/2_config_task_service.md` | `ncatbot/service/builtin/` | Config, Schedule |
 | `reference/adapter/1_connection.md` | `ncatbot/adapter/napcat/connection/` | WebSocket |
 | `reference/adapter/2_protocol.md` | `ncatbot/adapter/napcat/` | OB11Protocol, Parser |
-| `reference/api/README.md` | `ncatbot/api/`, `ncatbot/api/traits/`, `ncatbot/api/qq/`, `ncatbot/api/bilibili/` | `BotAPIClient`, Trait 协议, 平台 API |
+| `reference/api/README.md` | `ncatbot/api/`, `ncatbot/api/traits/`, `ncatbot/api/qq/`, `ncatbot/api/bilibili/`, `ncatbot/adapter/github/api/` | `BotAPIClient`, Trait 协议, 平台 API |
 | `reference/utils/1a_config.md` | `ncatbot/utils/config/`, `ncatbot/utils/` | Config, ConfigManager |
 | `reference/utils/2_decorators_misc.md` | `ncatbot/utils/` | 装饰器工具 |
 | `reference/testing/1_harness.md` | `ncatbot/testing/harness.py` | TestHarness |
@@ -75,6 +80,10 @@
 | 定时任务、Schedule | `reference/services/2_config_task_service.md` |
 | 测试、Test、Harness | `guide/testing/README.md` |
 | 多平台、跨平台、适配器、platform | `guide/multi_platform/README.md` |
+| GitHub、Webhook、Polling、Issue、PR | `guide/api_usage/github/README.md` |
+| GitHub 事件、GitHubIssueEvent、GitHubPREvent | `reference/events/4_github_events.md` |
+| GitHub API、GitHubBotAPI | `reference/api/github/1_api.md` |
+| GitHub 类型、GitHubAction、GitHubRepo | `reference/types/6_github_types.md` |
 | API Trait、IMessaging、IGroupManage | `reference/api/README.md` |
 | event Trait、Replyable、GroupScoped | `reference/events/README.md` |
 | WebSocket、连接、断线 | `reference/adapter/1_connection.md` |

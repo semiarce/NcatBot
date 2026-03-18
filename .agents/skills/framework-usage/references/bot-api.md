@@ -208,6 +208,63 @@ await self.api.qq.file.upload_private_file(user_id, file, name)
 result = await self.api.qq.file.download_file(url="", file="", headers="")
 ```
 
+## GitHub 平台 API
+
+> 参考文档：[guide/api_usage/github/](docs/guide/api_usage/github/), [reference/api/github/1_api.md](docs/reference/api/github/1_api.md)
+
+通过 `self.api.github.*` 访问：
+
+### Issue 操作（IssueAPIMixin）
+
+```python
+await self.api.github.create_issue(repo, title, body="", labels=None, assignees=None)
+await self.api.github.update_issue(repo, issue_number, *, title=None, body=None, state=None, labels=None, assignees=None)
+await self.api.github.close_issue(repo, issue_number)
+await self.api.github.reopen_issue(repo, issue_number)
+await self.api.github.get_issue(repo, issue_number)
+await self.api.github.add_labels(repo, issue_number, labels)
+await self.api.github.remove_label(repo, issue_number, label)
+await self.api.github.set_assignees(repo, issue_number, assignees)
+```
+
+### 评论操作（CommentAPIMixin）
+
+```python
+await self.api.github.create_issue_comment(repo, issue_number, body)
+await self.api.github.update_comment(repo, comment_id, body)
+await self.api.github.delete_comment(repo, comment_id)
+await self.api.github.list_issue_comments(repo, issue_number, page=1, per_page=30)
+```
+
+### PR 操作（PRAPIMixin）
+
+```python
+await self.api.github.create_pr_comment(repo, pr_number, body)
+await self.api.github.merge_pr(repo, pr_number, *, merge_method="merge", commit_title=None, commit_message=None)
+await self.api.github.close_pr(repo, pr_number)
+await self.api.github.request_review(repo, pr_number, reviewers)
+await self.api.github.get_pr(repo, pr_number)
+```
+
+### 查询操作（QueryAPIMixin）
+
+```python
+await self.api.github.get_repo(repo)
+await self.api.github.get_user(username)
+await self.api.github.get_authenticated_user()
+```
+
+### GitHub 事件实体快捷方法
+
+```python
+# GitHubIssueEvent / GitHubPREvent
+await event.reply("评论内容")       # 创建 Issue/PR 评论
+
+# GitHubIssueCommentEvent / GitHubPRReviewCommentEvent
+await event.reply("回复内容")       # 在同一 Issue/PR 下回复
+await event.delete()                # 删除该评论
+```
+
 ## 事件实体快捷方法
 
 ```python

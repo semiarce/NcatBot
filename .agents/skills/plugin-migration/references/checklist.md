@@ -16,7 +16,7 @@
 
 - [ ] 无 `from ncatbot.plugin_system` 的导入（→ `ncatbot.plugin`）
 - [ ] 无 `from ncatbot.core import MessageEvent/Image/MessageArray`（→ `ncatbot.event` / `ncatbot.types`）
-- [ ] 无 `from ncatbot.core.helper import ForwardConstructor`（→ `ncatbot.types`）
+- [ ] 无 `from ncatbot.core.helper import ForwardConstructor`（→ `ncatbot.types.qq`）
 - [ ] 无 `from ncatbot.core.event.message_segment import ...`（→ `ncatbot.types`）
 - [ ] 已添加 `from ncatbot.core import registrar`
 - [ ] 已添加需要的事件类型导入（`from ncatbot.event.qq import GroupMessageEvent` 等）

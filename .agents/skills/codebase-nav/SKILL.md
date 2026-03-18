@@ -119,6 +119,8 @@ description: '导航 NcatBot 代码库：定位代码、理解模块、查阅文
 | 类型 QQ 层 | `ncatbot/types/qq/` | `GroupSender`, `Face`, `Forward` |
 | API Trait | `ncatbot/api/traits/` | `IMessaging`, `IGroupManage`, `IQuery`, `IFileTransfer` |
 | 平台 API | `ncatbot/api/qq/`, `ncatbot/api/bilibili/` | `QQAPIClient`, `IQQAPIClient` |
+| Bilibili 认证 | `ncatbot/adapter/bilibili/auth.py` | `qrcode_login()` 扫码登录 |
+| Bilibili 凭据持久化 | `ncatbot/adapter/bilibili/credential_store.py` | `save_credential_to_config()` |
 | 消息段 | `ncatbot/types/common/segment/` | text / media / array |
 | API 响应类型 | `ncatbot/types/napcat/` | SendMessageResult, GroupInfo, LoginInfo 等 |
 | API 错误 | `ncatbot/api/errors.py` | APIError, APIRequestError 等 |
