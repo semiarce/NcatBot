@@ -26,7 +26,7 @@ import pytest
 
 from ncatbot.adapter.napcat.parser import EventParser
 from ncatbot.types import BaseEventData
-from ncatbot.types.segment.base import parse_segment
+from ncatbot.types.common.segment.base import parse_segment
 
 
 # ── 数据文件发现 ──────────────────────────────────────────────

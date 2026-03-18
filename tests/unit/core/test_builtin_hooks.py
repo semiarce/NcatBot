@@ -364,7 +364,7 @@ async def test_command_at_binding():
     result = await hook.execute(ctx)
     assert result == HookAction.CONTINUE
     assert isinstance(ctx.kwargs["target"], At)
-    assert ctx.kwargs["target"].qq == "12345"
+    assert ctx.kwargs["target"].user_id == "12345"
 
 
 # ======================= K-17: CommandHook int 参数转换 =======================
