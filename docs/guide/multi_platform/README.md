@@ -180,6 +180,7 @@ async def cross_platform(event):
 
 ## 参考
 
+- [适配器登录与使用指南](../adapter/) — 各平台具体的登录、认证、配置流程
 - [架构文档](../../architecture.md) — 整体设计
 - [ADR-005: 多平台架构](../../contributing/design_decisions/1_architecture.md#adr-005多平台架构--组合优于继承) — 设计决策
 - [ADR-006: 多适配器运行时](../../contributing/design_decisions/1_architecture.md#adr-006多适配器运行时) — 运行时设计

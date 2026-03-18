@@ -280,6 +280,7 @@ graph LR
 | `platform: str` | 平台标识，如 `"qq"` / `"bilibili"` |
 | `supported_protocols: List[str]` | 支持的协议列表 |
 | `pip_dependencies: Dict[str, str]` | Python 包依赖声明 |
+| `ensure_deps()` | 检查并安装 pip 依赖，返回是否就绪 |
 | `setup()` | 准备平台环境（安装 / 配置 / 启动） |
 | `connect()` | 建立连接并初始化 API |
 | `disconnect()` | 断开连接，释放资源 |

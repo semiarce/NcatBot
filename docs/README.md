@@ -32,6 +32,12 @@ docs/
 │   │   ├── 1.install-config.md      #     安装与配置
 │   │   ├── 2.non-plugin-mode.md     #     非插件模式启动
 │   │   └── 3.plugin-mode.md         #     插件模式启动
+│   ├── adapter/                     #   适配器登录与使用（5 篇）
+│   │   ├── README.md                #     适配器指南首页 & 对比一览
+│   │   ├── 1_napcat_qq.md           #     NapCat/QQ — Setup/Connect、WebUI 登录
+│   │   ├── 2_bilibili.md            #     Bilibili — 扫码登录、多数据源
+│   │   ├── 3_github.md              #     GitHub — Token、Webhook/Polling、内网穿透
+│   │   └── 4_mock.md                #     Mock — 测试用内存适配器
 │   ├── plugin/                      #   插件开发（11 篇）
 │   │   ├── README.md                #     插件开发首页 & Quick Start
 │   │   ├── 1.quick-start.md         #     快速入门

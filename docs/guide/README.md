@@ -58,6 +58,7 @@
 | 添加权限控制 | [rbac/](rbac/) |
 | 写插件测试 | [testing/](testing/) |
 | 接入多平台 | [multi_platform/](multi_platform/) |
+| 各平台登录与配置 | [adapter/](adapter/) |
 
 ---
 
@@ -66,6 +67,7 @@
 | 目录 | 说明 | 难度 |
 |------|------|------|
 | [quick_start/](quick_start/) | 从零启动 — 安装、配置、两种模式启动 | ⭐ |
+| [adapter/](adapter/) | 适配器登录与使用 — NapCat / Bilibili / GitHub / Mock | ⭐ |
 | [plugin/](plugin/) | 插件开发完整指南（11 篇） | ⭐ - ⭐⭐⭐ |
 | [send_message/](send_message/) | 消息发送 — 消息段、MessageArray、转发、语法糖 | ⭐ |
 | [api_usage/](api_usage/) | Bot API 使用 — 消息、群管理、查询 | ⭐⭐ |
