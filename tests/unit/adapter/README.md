@@ -47,3 +47,15 @@ python -m pytest tests/unit/adapter/test_real_data.py -v
 $env:NCATBOT_TEST_DATA_FILE="path/to/data.txt"
 python -m pytest tests/unit/adapter/test_real_data.py -v
 ```
+
+### AdapterRegistry (`test_registry.py`)
+
+测试适配器注册表的注册、发现、创建、列举和错误处理。
+
+| 规范 ID | 说明 | 验证点 |
+|---------|------|--------|
+| AR-01 | `register()` + `discover()` | 注册后可通过 `discover()` 发现 |
+| AR-02 | `list_available()` | 返回所有已注册适配器名称 |
+| AR-03 | `create()` | 根据 AdapterEntry 创建适配器实例 |
+| AR-04 | `create()` platform 覆盖 | `platform` 参数覆盖默认值 |
+| AR-05 | 未知类型 | 抛 `ValueError` |

@@ -466,36 +466,36 @@ def test_registrar_on_command():
     assert "MessageTypeFilter" not in type_names
 
 
-# ======================= K-21: Registrar 通知/请求便捷方法 =======================
+# ======================= K-21: QQ 平台子注册器 通知/请求便捷方法 =======================
 
 
-def test_registrar_on_group_increase():
-    """K-21: on_group_increase 注册事件类型"""
+def test_registrar_qq_on_group_increase():
+    """K-21: registrar.qq.on_group_increase 注册事件类型"""
     r = Registrar()
 
-    @r.on_group_increase()
+    @r.qq.on_group_increase()
     async def handler(event):
         pass
 
     assert handler.__handler_meta__["event_type"] == "notice.group_increase"
 
 
-def test_registrar_on_friend_request():
-    """K-21: on_friend_request 注册事件类型"""
+def test_registrar_qq_on_friend_request():
+    """K-21: registrar.qq.on_friend_request 注册事件类型"""
     r = Registrar()
 
-    @r.on_friend_request()
+    @r.qq.on_friend_request()
     async def handler(event):
         pass
 
     assert handler.__handler_meta__["event_type"] == "request.friend"
 
 
-def test_registrar_on_poke():
-    """K-21: on_poke 注册事件类型"""
+def test_registrar_qq_on_poke():
+    """K-21: registrar.qq.on_poke 注册事件类型"""
     r = Registrar()
 
-    @r.on_poke()
+    @r.qq.on_poke()
     async def handler(event):
         pass
 

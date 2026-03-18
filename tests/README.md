@@ -7,12 +7,12 @@
 ```
 tests/
 ├── unit/              # 单元测试 — 按模块组织
-│   ├── types/         # 类型系统 (T-01 ~ T-14, S-01 ~ S-10, CQ-01 ~ CQ-08)
+│   ├── types/         # 类型系统 (T-01 ~ T-14, S-01 ~ S-10, CQ-01 ~ CQ-08, N-01 ~ N-05)
 │   ├── event/         # 事件工厂 (E-01 ~ E-07)
-│   ├── api/           # API 客户端 (A-01 ~ A-05)
-│   ├── core/          # 核心分发与注册 (D-01 ~ D-09, K-01 ~ K-07, H-01 ~ H-12, R-01 ~ R-06)
-│   ├── service/       # 服务管理 (S-01 ~ S-08)
-│   ├── plugin/        # 插件 Mixin (M-01 ~ M-41)
+│   ├── api/           # API 客户端 + 错误层级 (A-01 ~ A-04, AE-01 ~ AE-07)
+│   ├── core/          # 核心分发与注册 (D-01 ~ D-09, K-01 ~ K-22, H-01 ~ H-12, R-01 ~ R-09)
+│   ├── service/       # 服务管理 (SM-01 ~ SM-08)
+│   ├── plugin/        # 插件 Mixin + 导入去重 (M-01 ~ M-41, ID-01 ~ ID-02)
 │   ├── adapter/       # 适配器解析 + 注册表 (P-01 ~ P-07, RD-01 ~ RD-03, AR-01 ~ AR-05)
 │   └── config/        # 配置迁移 (CF-01 ~ CF-06)
 ├── integration/       # 集成测试 (I-01 ~ I-21)
@@ -20,9 +20,7 @@ tests/
 │   ├── test_bot_client.py  # BotClient E2E (B-01 ~ B-05)
 │   ├── plugin/        # 插件离线 E2E (PL-01 ~ PL-53)
 │   └── napcat/        # NapCat 真实连接 E2E (NC-01 ~ NC-21)
-├── test_factory.py    # 工厂函数基础验证
-├── test_api_calls.py  # API 调用记录验证
-└── test_event_dispatch.py  # 事件分发路由验证
+└── fixtures/          # 共享测试数据
 ```
 
 ## 运行测试
@@ -62,19 +60,22 @@ python -m pytest tests/unit/adapter/test_real_data.py -v
 | 前缀 | 模块 | 范围 |
 |------|------|------|
 | T | Types / Segments | T-01 ~ T-14 |
-| S (types) | Segment 解析 (parse_segment) | S-01 ~ S-10 |
+| S | Segment 解析 (parse_segment) | S-01 ~ S-10 |
 | CQ | CQ 码解析 | CQ-01 ~ CQ-08 |
+| N | NapCat 类型模型 | N-01 ~ N-05 |
 | E | Event Entity / Factory | E-01 ~ E-07 |
-| A | API Client | A-01 ~ A-05 |
+| A | API Client | A-01 ~ A-04 |
+| AE | API Errors | AE-01 ~ AE-07 |
 | P | EventParser / NapCatEventParser | P-01 ~ P-07 |
 | RD | 真实数据驱动解析 | RD-01 ~ RD-03 |
 | AR | AdapterRegistry | AR-01 ~ AR-05 |
 | CF | Config Migration | CF-01 ~ CF-06 |
 | D | AsyncEventDispatcher | D-01 ~ D-09 |
-| K | Hook System | K-01 ~ K-07 |
+| K | Hook System | K-01 ~ K-22 |
 | H | HandlerDispatcher | H-01 ~ H-12 |
-| R | Registrar | R-01 ~ R-06 |
-| S (svc) | ServiceManager | S-01 ~ S-08 |
+| R | Registrar | R-01 ~ R-09 |
+| ID | Import Dedup (插件导入去重) | ID-01 ~ ID-02 |
+| SM | ServiceManager | SM-01 ~ SM-08 |
 | M | Plugin Mixin | M-01 ~ M-41 |
 | I | Integration | I-01 ~ I-21 |
 | B | BotClient E2E | B-01 ~ B-05 |
