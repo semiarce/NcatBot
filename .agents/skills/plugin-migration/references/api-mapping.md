@@ -182,14 +182,14 @@ await event.reply(text="看图", image="url")
 大部分 BotAPI 方法名称不变：
 
 ```python
-# 以下方法在 4.4/4.5 和 5.0 中签名一致
-await self.api.post_group_msg(group_id, text=..., at=..., reply=..., image=..., rtf=...)
-await self.api.post_private_msg(user_id, text=..., image=...)
-await self.api.post_group_forward_msg(group_id=..., forward=...)
-await self.api.post_private_forward_msg(user_id=..., forward=...)
-await self.api.post_group_array_msg(group_id, msg_array)
-await self.api.send_group_text(group_id, text)
-await self.api.send_group_image(group_id, image)
+# 以下方法在 4.4/4.5 和 5.0 中签名一致（5.2 起需通过 api.qq 访问）
+await self.api.qq.post_group_msg(group_id, text=..., at=..., reply=..., image=..., rtf=...)
+await self.api.qq.post_private_msg(user_id, text=..., image=...)
+await self.api.qq.post_group_forward_msg(group_id=..., forward=...)
+await self.api.qq.post_private_forward_msg(user_id=..., forward=...)
+await self.api.qq.post_group_array_msg(group_id, msg_array)
+await self.api.qq.send_group_text(group_id, text)
+await self.api.qq.send_group_image(group_id, image)
 ```
 
 ### ForwardConstructor（不变）
@@ -201,7 +201,7 @@ fcr = ForwardConstructor(self_id, "昵称")
 fcr.attach_image(image_path)
 fcr.attach_text("文本")
 forward = fcr.to_forward()
-await self.api.post_group_forward_msg(group_id=gid, forward=forward)
+await self.api.qq.post_group_forward_msg(group_id=gid, forward=forward)
 ```
 
 ---

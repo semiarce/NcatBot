@@ -49,6 +49,26 @@
 
 默认值：`user_id="99999"`, `group_id="100200"`, `self_id="10001"`
 
+## MockAdapter 平台参数
+
+TestHarness 和 PluginTestHarness 默认使用 `MockAdapter(platform="qq")`，事件数据工厂函数（`group_message` 等）也默认生成 `platform="qq"` 的数据。这确保 QQ 事件正确路由到 QQ 工厂并创建带有 `reply()` 等方法的实体。
+
+如需测试非 QQ 平台，显式指定 platform：
+
+```python
+adapter = MockAdapter(platform="telegram")
+bot = BotClient(adapter=adapter)
+```
+
+多适配器测试：
+
+```python
+bot = BotClient(adapters=[
+    MockAdapter(platform="qq"),
+    MockAdapter(platform="telegram"),
+])
+```
+
 ## MockBotAPI
 
 | 方法 | 说明 |

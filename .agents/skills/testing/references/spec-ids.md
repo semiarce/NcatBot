@@ -10,9 +10,11 @@
 | S (types) | Segment 解析 (parse_segment) | S-01 ~ S-10 | `tests/unit/types/` |
 | CQ | CQ 码解析 | CQ-01 ~ CQ-08 | `tests/unit/types/` |
 | E | Event Entity / Factory | E-01 ~ E-07 | `tests/unit/event/` |
-| A | API Client | A-01 ~ A-04 | `tests/unit/api/` |
+| A | API Client | A-01 ~ A-05 | `tests/unit/api/` |
 | P | EventParser / NapCatEventParser | P-01 ~ P-07 | `tests/unit/adapter/` |
 | RD | 真实数据驱动解析 | RD-01 ~ RD-03 | `tests/unit/adapter/` |
+| AR | AdapterRegistry | AR-01 ~ AR-05 | `tests/unit/adapter/` |
+| CF | Config Migration | CF-01 ~ CF-06 | `tests/unit/config/` |
 | D | AsyncEventDispatcher | D-01 ~ D-09 | `tests/unit/core/` |
 | K | Hook System | K-01 ~ K-07 | `tests/unit/core/` |
 | H | HandlerDispatcher | H-01 ~ H-12 | `tests/unit/core/` |
@@ -23,6 +25,7 @@
 | I | Integration | I-01 ~ I-21 | `tests/integration/` |
 | B | BotClient E2E | B-01 ~ B-05 | `tests/e2e/` |
 | NC | NapCat E2E | NC-01 ~ NC-21 | `tests/e2e/napcat/` |
+| PL | Plugin E2E | PL-01 ~ PL-53 | `tests/e2e/plugin/` |
 
 ## 命名规范
 
@@ -44,3 +47,6 @@ async def test_dispatcher_routes_group_message(event_dispatcher):
 |------|-------------|--------|
 | R | R-09 | 2026-03-16：R-07~R-09 堆叠装饰器去重 |
 | R | R-11 | 2026-03-17：R-10~R-11 __init__.py 双重 exec 去重 |
+| AR | AR-05 | AdapterRegistry register/discover/create/list/error |
+| CF | CF-06 | Config migration: legacy→new, defaults, coerce, to_dict |
+| PL | PL-53 | Plugin E2E: hello_world/event_handling/hook_filter/dialog/full |
