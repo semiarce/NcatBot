@@ -1,12 +1,16 @@
-"""
-IBotAPI 抽象接口
+"""IQQAPIClient — QQ 平台完整 API 接口
 
-定义与协议无关的 Bot 操作接口，由 Adapter 提供具体实现。
+组合 IAPIClient + 通用 traits + QQ/OB11 专用方法。
+由 NapCatBotAPI 实现。
 """
 
-from abc import ABC, abstractmethod
+from __future__ import annotations
+
+from abc import abstractmethod
 from typing import List, Union
 
+from ncatbot.api.base import IAPIClient
+from ncatbot.api.traits import IMessaging, IGroupManage, IQuery, IFileTransfer
 from ncatbot.types.napcat import (
     BotStatus,
     CreateFolderResult,
@@ -38,10 +42,19 @@ from ncatbot.types.napcat import (
 )
 
 
-class IBotAPI(ABC):
-    """与协议无关的 Bot API 接口"""
+class IQQAPIClient(IAPIClient, IMessaging, IGroupManage, IQuery, IFileTransfer):
+    """QQ 平台 Bot API 接口
 
-    # ---- 消息操作 ----
+    组合:
+    - IAPIClient: platform + call
+    - IMessaging: send_private_msg, send_group_msg, delete_msg, send_forward_msg
+    - IGroupManage: set_group_kick, set_group_ban, ...
+    - IQuery: get_login_info, get_friend_list, ...
+    - IFileTransfer: upload_group_file, download_file
+    加上 QQ/OB11 专用扩展方法。
+    """
+
+    # ---- 消息操作 (IMessaging) ----
 
     @abstractmethod
     async def send_private_msg(
@@ -65,7 +78,7 @@ class IBotAPI(ABC):
         **kwargs,
     ) -> SendMessageResult: ...
 
-    # ---- 群管理 ----
+    # ---- 群管理 (IGroupManage) ----
 
     @abstractmethod
     async def set_group_kick(
@@ -85,9 +98,7 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def set_group_whole_ban(
-        self,
-        group_id: Union[str, int],
-        enable: bool = True,
+        self, group_id: Union[str, int], enable: bool = True
     ) -> None: ...
 
     @abstractmethod
@@ -107,17 +118,11 @@ class IBotAPI(ABC):
     ) -> None: ...
 
     @abstractmethod
-    async def set_group_name(
-        self,
-        group_id: Union[str, int],
-        name: str,
-    ) -> None: ...
+    async def set_group_name(self, group_id: Union[str, int], name: str) -> None: ...
 
     @abstractmethod
     async def set_group_leave(
-        self,
-        group_id: Union[str, int],
-        is_dismiss: bool = False,
+        self, group_id: Union[str, int], is_dismiss: bool = False
     ) -> None: ...
 
     @abstractmethod
@@ -179,19 +184,12 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def set_friend_add_request(
-        self,
-        flag: str,
-        approve: bool = True,
-        remark: str = "",
+        self, flag: str, approve: bool = True, remark: str = ""
     ) -> None: ...
 
     @abstractmethod
     async def set_group_add_request(
-        self,
-        flag: str,
-        sub_type: str,
-        approve: bool = True,
-        reason: str = "",
+        self, flag: str, sub_type: str, approve: bool = True, reason: str = ""
     ) -> None: ...
 
     @abstractmethod
@@ -229,7 +227,7 @@ class IBotAPI(ABC):
     @abstractmethod
     async def ocr_image(self, image: str) -> OcrResult: ...
 
-    # ---- 信息查询 ----
+    # ---- 信息查询 (IQuery) ----
 
     @abstractmethod
     async def get_login_info(self) -> LoginInfo: ...
@@ -248,9 +246,7 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def get_group_member_info(
-        self,
-        group_id: Union[str, int],
-        user_id: Union[str, int],
+        self, group_id: Union[str, int], user_id: Union[str, int]
     ) -> GroupMemberInfo: ...
 
     @abstractmethod
@@ -353,7 +349,7 @@ class IBotAPI(ABC):
     @abstractmethod
     async def get_recent_contact(self, count: int = 10) -> List[RecentContact]: ...
 
-    # ---- 文件操作 ----
+    # ---- 文件操作 (IFileTransfer) ----
 
     @abstractmethod
     async def upload_group_file(
@@ -371,16 +367,12 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def get_group_file_url(
-        self,
-        group_id: Union[str, int],
-        file_id: str,
+        self, group_id: Union[str, int], file_id: str
     ) -> str: ...
 
     @abstractmethod
     async def delete_group_file(
-        self,
-        group_id: Union[str, int],
-        file_id: str,
+        self, group_id: Union[str, int], file_id: str
     ) -> None: ...
 
     @abstractmethod
@@ -436,7 +428,5 @@ class IBotAPI(ABC):
 
     @abstractmethod
     async def send_poke(
-        self,
-        group_id: Union[str, int],
-        user_id: Union[str, int],
+        self, group_id: Union[str, int], user_id: Union[str, int]
     ) -> None: ...

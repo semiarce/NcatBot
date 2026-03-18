@@ -1,4 +1,4 @@
-"""信息查询命名空间 — 所有 get_* 查询操作"""
+"""QQQuery — 信息查询功能分组"""
 
 from __future__ import annotations
 
@@ -31,15 +31,15 @@ from ncatbot.types.napcat import (
 )
 
 if TYPE_CHECKING:
-    from ..interface import IBotAPI
+    from .interface import IQQAPIClient
 
 
-class InfoExtension:
-    """低频查询操作（读操作）"""
+class QQQuery:
+    """所有 get_* 查询操作"""
 
     __slots__ = ("_api",)
 
-    def __init__(self, api: IBotAPI) -> None:
+    def __init__(self, api: IQQAPIClient) -> None:
         self._api = api
 
     async def get_login_info(self) -> LoginInfo:
@@ -58,9 +58,7 @@ class InfoExtension:
         return await self._api.get_group_list()
 
     async def get_group_member_info(
-        self,
-        group_id: Union[str, int],
-        user_id: Union[str, int],
+        self, group_id: Union[str, int], user_id: Union[str, int]
     ) -> GroupMemberInfo:
         return await self._api.get_group_member_info(group_id, user_id)
 
@@ -74,16 +72,6 @@ class InfoExtension:
 
     async def get_forward_msg(self, message_id: Union[str, int]) -> ForwardMessageData:
         return await self._api.get_forward_msg(message_id)
-
-    async def get_group_root_files(self, group_id: Union[str, int]) -> GroupFileList:
-        return await self._api.get_group_root_files(group_id)
-
-    async def get_group_file_url(
-        self,
-        group_id: Union[str, int],
-        file_id: str,
-    ) -> str:
-        return await self._api.get_group_file_url(group_id, file_id)
 
     # ---- 群扩展查询 ----
 
@@ -116,7 +104,13 @@ class InfoExtension:
     async def get_group_info_ex(self, group_id: Union[str, int]) -> GroupInfoEx:
         return await self._api.get_group_info_ex(group_id)
 
-    # ---- 文件扩展查询 ----
+    # ---- 文件查询 ----
+
+    async def get_group_root_files(self, group_id: Union[str, int]) -> GroupFileList:
+        return await self._api.get_group_root_files(group_id)
+
+    async def get_group_file_url(self, group_id: Union[str, int], file_id: str) -> str:
+        return await self._api.get_group_file_url(group_id, file_id)
 
     async def get_group_file_system_info(
         self, group_id: Union[str, int]
@@ -134,7 +128,7 @@ class InfoExtension:
     async def get_file(self, file_id: str) -> FileData:
         return await self._api.get_file(file_id)
 
-    # ---- 消息扩展查询 ----
+    # ---- Emoji 查询 ----
 
     async def fetch_emoji_like(
         self,
@@ -166,8 +160,6 @@ class InfoExtension:
 
     async def get_recent_contact(self, count: int = 10) -> List[RecentContact]:
         return await self._api.get_recent_contact(count)
-
-    # ---- OCR ----
 
     async def ocr_image(self, image: str) -> OcrResult:
         return await self._api.ocr_image(image)

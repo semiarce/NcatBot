@@ -1,22 +1,22 @@
-"""管理操作命名空间 — 群管理 + 账号设置 + 组合 sugar"""
+"""QQManage — 群管理 + 账号操作功能分组"""
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
-    from ..interface import IBotAPI
+    from .interface import IQQAPIClient
 
 
-class ManageExtension:
-    """低频管理操作（写操作）"""
+class QQManage:
+    """群管理 + 账号设置 + 组合 sugar"""
 
     __slots__ = ("_api",)
 
-    def __init__(self, api: IBotAPI) -> None:
+    def __init__(self, api: IQQAPIClient) -> None:
         self._api = api
 
-    # ---- 群管理（原子透传） ----
+    # ---- 群管理 ----
 
     async def set_group_kick(
         self,
@@ -35,9 +35,7 @@ class ManageExtension:
         await self._api.set_group_ban(group_id, user_id, duration)
 
     async def set_group_whole_ban(
-        self,
-        group_id: Union[str, int],
-        enable: bool = True,
+        self, group_id: Union[str, int], enable: bool = True
     ) -> None:
         await self._api.set_group_whole_ban(group_id, enable)
 
@@ -57,17 +55,11 @@ class ManageExtension:
     ) -> None:
         await self._api.set_group_card(group_id, user_id, card)
 
-    async def set_group_name(
-        self,
-        group_id: Union[str, int],
-        name: str,
-    ) -> None:
+    async def set_group_name(self, group_id: Union[str, int], name: str) -> None:
         await self._api.set_group_name(group_id, name)
 
     async def set_group_leave(
-        self,
-        group_id: Union[str, int],
-        is_dismiss: bool = False,
+        self, group_id: Union[str, int], is_dismiss: bool = False
     ) -> None:
         await self._api.set_group_leave(group_id, is_dismiss)
 
@@ -79,32 +71,10 @@ class ManageExtension:
     ) -> None:
         await self._api.set_group_special_title(group_id, user_id, special_title)
 
-    # ---- 账号操作（原子透传） ----
-
-    async def set_friend_add_request(
-        self,
-        flag: str,
-        approve: bool = True,
-        remark: str = "",
-    ) -> None:
-        await self._api.set_friend_add_request(flag, approve, remark)
-
-    async def set_group_add_request(
-        self,
-        flag: str,
-        sub_type: str,
-        approve: bool = True,
-        reason: str = "",
-    ) -> None:
-        await self._api.set_group_add_request(flag, sub_type, approve, reason)
-
     # ---- 群公告 / 精华 / 扩展管理 ----
 
     async def send_group_notice(
-        self,
-        group_id: Union[str, int],
-        content: str,
-        image: str = "",
+        self, group_id: Union[str, int], content: str, image: str = ""
     ) -> None:
         await self._api.send_group_notice(group_id, content, image)
 
@@ -141,6 +111,18 @@ class ManageExtension:
     async def set_group_portrait(self, group_id: Union[str, int], file: str) -> None:
         await self._api.set_group_portrait(group_id, file)
 
+    # ---- 账号操作 ----
+
+    async def set_friend_add_request(
+        self, flag: str, approve: bool = True, remark: str = ""
+    ) -> None:
+        await self._api.set_friend_add_request(flag, approve, remark)
+
+    async def set_group_add_request(
+        self, flag: str, sub_type: str, approve: bool = True, reason: str = ""
+    ) -> None:
+        await self._api.set_group_add_request(flag, sub_type, approve, reason)
+
     # ---- 好友管理 ----
 
     async def set_friend_remark(self, user_id: Union[str, int], remark: str) -> None:
@@ -171,8 +153,6 @@ class ManageExtension:
         self, status: int, ext_status: int = 0, custom_status: str = ""
     ) -> None:
         await self._api.set_online_status(status, ext_status, custom_status)
-
-    # ---- 组合 Sugar ----
 
     # ---- 组合 sugar ----
 
