@@ -15,7 +15,7 @@
 """
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 

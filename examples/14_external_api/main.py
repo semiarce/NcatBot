@@ -19,7 +19,7 @@ from pathlib import Path
 import aiohttp
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 
@@ -88,7 +88,7 @@ class ExternalAPIPlugin(NcatBotPlugin):
     async def on_random_image(self, event: GroupMessageEvent):
         """发送示例图片"""
         if FALLBACK_IMAGE.exists():
-            await self.api.post_group_msg(
+            await self.api.qq.post_group_msg(
                 event.group_id,
                 text="🖼️ 这是一张示例图片:",
                 image=str(FALLBACK_IMAGE),

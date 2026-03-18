@@ -16,7 +16,7 @@
 """
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 
@@ -112,7 +112,7 @@ class ScheduledTasksPlugin(NcatBotPlugin):
         """心跳回调"""
         LOG.info("💓 心跳")
         if self._notify_group:
-            await self.api.post_group_msg(
+            await self.api.qq.post_group_msg(
                 self._notify_group, text="💓 心跳 - 我还活着！"
             )
 

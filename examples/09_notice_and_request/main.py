@@ -14,7 +14,7 @@
 """
 
 from ncatbot.core import registrar
-from ncatbot.event import (
+from ncatbot.event.qq import (
     GroupIncreaseEvent,
     NoticeEvent,
     FriendRequestEvent,
@@ -45,7 +45,7 @@ class NoticeAndRequestPlugin(NcatBotPlugin):
         msg.add_at(event.user_id)
         msg.add_text(" 欢迎加入本群！请仔细阅读群规 📜")
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)
         LOG.info("欢迎新成员 %s 加入群 %s", event.user_id, event.group_id)
 
     @registrar.on_group_decrease()
@@ -57,7 +57,7 @@ class NoticeAndRequestPlugin(NcatBotPlugin):
         )
 
         if event.group_id:
-            await self.api.post_group_msg(
+            await self.api.qq.post_group_msg(
                 event.group_id, text=f"成员 {event.user_id} 已离开群聊 👋"
             )
 
@@ -76,7 +76,7 @@ class NoticeAndRequestPlugin(NcatBotPlugin):
         )
 
         if event.group_id:
-            await self.api.post_group_msg(
+            await self.api.qq.post_group_msg(
                 event.group_id,
                 text=f"有人撤回了一条消息 👀 (操作者: {operator_id})",
             )
@@ -87,7 +87,7 @@ class NoticeAndRequestPlugin(NcatBotPlugin):
         target_id = getattr(event.data, "target_id", None)
         # 如果是戳的 Bot 自己，回戳对方
         if str(target_id) == str(event.self_id) and event.group_id and event.user_id:
-            await self.api.send_poke(event.group_id, event.user_id)
+            await self.api.qq.send_poke(event.group_id, event.user_id)
             LOG.info("被 %s 戳了，已回戳", event.user_id)
 
     # ==================== 请求事件 ====================

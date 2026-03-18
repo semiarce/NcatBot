@@ -20,13 +20,13 @@
 from pathlib import Path
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import (
     Image,
     MessageArray,
-    ForwardConstructor,
 )
+from ncatbot.types.qq import ForwardConstructor
 from ncatbot.utils import get_log
 
 LOG = get_log("MessageTypes")
@@ -56,7 +56,7 @@ class MessageTypesPlugin(NcatBotPlugin):
         msg.add_image(str(EXAMPLE_IMAGE))
         msg.add_text("\n以上是示例图片！")
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)
 
     # ---- url 链接格式的图片 ----
 
@@ -69,19 +69,19 @@ class MessageTypesPlugin(NcatBotPlugin):
             "https://pic.3gbizhi.com/uploadmark/20260225/0149243f6bbe37c5c5c6e657b4b77762.webp"
         )  # 直接使用文件路径，底层会上传并转换为 URL
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)
 
     # ---- 视频 ----
     @registrar.on_group_command("视频")
     async def on_video(self, event: GroupMessageEvent):
         """发送视频消息"""
-        await self.api.post_group_msg(event.group_id, video=str(EXAMPLE_VEDIO))
+        await self.api.qq.post_group_msg(event.group_id, video=str(EXAMPLE_VEDIO))
 
     # ---- 文件视频 ----
     @registrar.on_group_command("文件视频")
     async def on_file_video(self, event: GroupMessageEvent):
         """发送文件视频消息"""
-        await self.api.send_group_file(
+        await self.api.qq.send_group_file(
             event.group_id, str(EXAMPLE_VEDIO), name="示例视频.mp4"
         )
 
@@ -89,7 +89,7 @@ class MessageTypesPlugin(NcatBotPlugin):
     @registrar.on_group_command("表情")
     async def on_sticker(self, event: GroupMessageEvent):
         """发送一个动画表情"""
-        await self.api.send_group_sticker(event.group_id, str(EXAMPLE_IMAGE))
+        await self.api.qq.send_group_sticker(event.group_id, str(EXAMPLE_IMAGE))
 
     # ---- @某人 ----
     @registrar.on_group_command("at我")
@@ -99,7 +99,7 @@ class MessageTypesPlugin(NcatBotPlugin):
         msg.add_at(event.user_id)
         msg.add_text(" 你被 At 了！")
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)
 
     # ---- 合并转发 ----
 
@@ -118,7 +118,7 @@ class MessageTypesPlugin(NcatBotPlugin):
         fc.attach_message(msg)
 
         forward = fc.build()
-        await self.api.post_group_forward_msg(event.group_id, forward)
+        await self.api.qq.post_group_forward_msg(event.group_id, forward)
 
     # ---- 嵌套合并转发 ----
 
@@ -140,7 +140,7 @@ class MessageTypesPlugin(NcatBotPlugin):
         outer_fc.attach_text("🔸 外层第三条消息（在嵌套转发之后）")
 
         forward = outer_fc.build()
-        await self.api.post_group_forward_msg(event.group_id, forward)
+        await self.api.qq.post_group_forward_msg(event.group_id, forward)
 
     # ---- 提取图片 ----
 

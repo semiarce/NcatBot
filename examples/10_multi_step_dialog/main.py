@@ -18,7 +18,7 @@ import asyncio
 
 from ncatbot.core import from_event
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 
@@ -59,34 +59,34 @@ class MultiStepDialogPlugin(NcatBotPlugin):
         try:
             name = await self._wait_user_reply(event)
         except asyncio.TimeoutError:
-            await self.api.post_group_msg(gid, text="⏰ 注册超时，已取消")
+            await self.api.qq.post_group_msg(gid, text="⏰ 注册超时，已取消")
             return
 
         if name == "取消":
-            await self.api.post_group_msg(gid, text="❌ 注册已取消")
+            await self.api.qq.post_group_msg(gid, text="❌ 注册已取消")
             return
 
         # 步骤 2: 询问年龄
-        await self.api.post_group_msg(gid, text=f"好的，{name}！请输入你的年龄：")
+        await self.api.qq.post_group_msg(gid, text=f"好的，{name}！请输入你的年龄：")
 
         try:
             age_str = await self._wait_user_reply(event)
         except asyncio.TimeoutError:
-            await self.api.post_group_msg(gid, text="⏰ 注册超时，已取消")
+            await self.api.qq.post_group_msg(gid, text="⏰ 注册超时，已取消")
             return
 
         if age_str == "取消":
-            await self.api.post_group_msg(gid, text="❌ 注册已取消")
+            await self.api.qq.post_group_msg(gid, text="❌ 注册已取消")
             return
 
         if not age_str.isdigit():
-            await self.api.post_group_msg(gid, text="❌ 年龄必须是数字，注册已取消")
+            await self.api.qq.post_group_msg(gid, text="❌ 年龄必须是数字，注册已取消")
             return
 
         age = int(age_str)
 
         # 步骤 3: 确认
-        await self.api.post_group_msg(
+        await self.api.qq.post_group_msg(
             gid,
             text=f"请确认你的信息:\n  名字: {name}\n  年龄: {age}\n回复「确认」完成注册：",
         )
@@ -94,11 +94,11 @@ class MultiStepDialogPlugin(NcatBotPlugin):
         try:
             confirm = await self._wait_user_reply(event)
         except asyncio.TimeoutError:
-            await self.api.post_group_msg(gid, text="⏰ 确认超时，已取消")
+            await self.api.qq.post_group_msg(gid, text="⏰ 确认超时，已取消")
             return
 
         if confirm != "确认":
-            await self.api.post_group_msg(gid, text="❌ 注册已取消")
+            await self.api.qq.post_group_msg(gid, text="❌ 注册已取消")
             return
 
         # 保存数据
@@ -106,7 +106,7 @@ class MultiStepDialogPlugin(NcatBotPlugin):
             "name": name,
             "age": age,
         }
-        await self.api.post_group_msg(
+        await self.api.qq.post_group_msg(
             gid, text=f"✅ 注册成功！欢迎你，{name}（{age}岁）"
         )
         LOG.info("用户 %s 完成注册: %s, %d岁", uid, name, age)

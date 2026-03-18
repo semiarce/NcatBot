@@ -18,9 +18,9 @@ import time
 from collections import Counter
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
-from ncatbot.types import ForwardConstructor
+from ncatbot.types.qq import ForwardConstructor
 from ncatbot.utils import get_log
 
 LOG = get_log("ScheduledReporter")
@@ -128,7 +128,7 @@ class ScheduledReporterPlugin(NcatBotPlugin):
         stats = self.data.get("daily_stats", {}).get(today, {}).get(group_id, {})
 
         if not stats or stats.get("total", 0) == 0:
-            await self.api.post_group_msg(group_id, text="📊 今天还没有统计数据")
+            await self.api.qq.post_group_msg(group_id, text="📊 今天还没有统计数据")
             return
 
         total = stats["total"]
@@ -162,7 +162,7 @@ class ScheduledReporterPlugin(NcatBotPlugin):
             fc.attach_text("\n".join(word_lines))
 
         forward = fc.build()
-        await self.api.post_group_forward_msg(group_id, forward)
+        await self.api.qq.post_group_forward_msg(group_id, forward)
 
     # ---- 定时回调 ----
 

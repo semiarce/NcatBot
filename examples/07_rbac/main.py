@@ -16,7 +16,7 @@
 """
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import At
 from ncatbot.utils import get_log
@@ -56,7 +56,7 @@ class RBACPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 授权 @xxx")
             return
 
-        target_uid = str(target.qq)
+        target_uid = str(target.user_id)
         if self.rbac:
             self.rbac.assign_role("user", target_uid, "rbac_admin")
             await event.reply(f"已授予用户 {target_uid} 管理员权限 ✅")
@@ -70,7 +70,7 @@ class RBACPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 撤权 @xxx")
             return
 
-        target_uid = str(target.qq)
+        target_uid = str(target.user_id)
         if self.rbac:
             self.rbac.unassign_role("user", target_uid, "rbac_admin")
             await event.reply(f"已移除用户 {target_uid} 的管理员权限 🚫")

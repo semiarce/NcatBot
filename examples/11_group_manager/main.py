@@ -21,7 +21,7 @@
 """
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent, GroupIncreaseEvent
+from ncatbot.event.qq import GroupMessageEvent, GroupIncreaseEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import At, MessageArray
 from ncatbot.utils import get_log
@@ -64,8 +64,8 @@ class GroupManagerPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户")
             return
 
-        await self.api.manage.set_group_kick(event.group_id, target.qq)
-        await event.reply(f"已踢出用户 {target.qq}")
+        await self.api.qq.manage.set_group_kick(event.group_id, target.user_id)
+        await event.reply(f"已踢出用户 {target.user_id}")
 
     @registrar.on_group_command("禁言")
     async def on_ban(
@@ -79,8 +79,8 @@ class GroupManagerPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 禁言 @xxx 60")
             return
 
-        await self.api.manage.set_group_ban(event.group_id, target.qq, duration)
-        await event.reply(f"已禁言 {target.qq}，{duration} 秒")
+        await self.api.qq.manage.set_group_ban(event.group_id, target.user_id, duration)
+        await event.reply(f"已禁言 {target.user_id}，{duration} 秒")
 
     @registrar.on_group_command("解禁")
     async def on_unban(self, event: GroupMessageEvent, target: At = None):
@@ -92,8 +92,8 @@ class GroupManagerPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户")
             return
 
-        await self.api.manage.set_group_ban(event.group_id, target.qq, 0)
-        await event.reply(f"已解除 {target.qq} 的禁言")
+        await self.api.qq.manage.set_group_ban(event.group_id, target.user_id, 0)
+        await event.reply(f"已解除 {target.user_id} 的禁言")
 
     @registrar.on_group_command("全体禁言")
     async def on_mute_all(self, event: GroupMessageEvent):
@@ -101,7 +101,7 @@ class GroupManagerPlugin(NcatBotPlugin):
         if not self._is_admin(event.user_id):
             await event.reply("🚫 你没有管理权限")
             return
-        await self.api.manage.set_group_whole_ban(event.group_id, True)
+        await self.api.qq.manage.set_group_whole_ban(event.group_id, True)
         await event.reply("已开启全体禁言 🔇")
 
     @registrar.on_group_command("解除全体禁言")
@@ -110,7 +110,7 @@ class GroupManagerPlugin(NcatBotPlugin):
         if not self._is_admin(event.user_id):
             await event.reply("🚫 你没有管理权限")
             return
-        await self.api.manage.set_group_whole_ban(event.group_id, False)
+        await self.api.qq.manage.set_group_whole_ban(event.group_id, False)
         await event.reply("已解除全体禁言 🔊")
 
     @registrar.on_group_command("改名片")
@@ -125,8 +125,10 @@ class GroupManagerPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 改名片 @xxx 新名字")
             return
 
-        await self.api.manage.set_group_card(event.group_id, target.qq, new_card)
-        await event.reply(f"已将 {target.qq} 的群名片修改为: {new_card}")
+        await self.api.qq.manage.set_group_card(
+            event.group_id, target.user_id, new_card
+        )
+        await event.reply(f"已将 {target.user_id} 的群名片修改为: {new_card}")
 
     # ==================== 权限管理 ====================
 
@@ -135,7 +137,7 @@ class GroupManagerPlugin(NcatBotPlugin):
         """授予管理权限"""
         if target is None:
             return
-        target_uid = str(target.qq)
+        target_uid = str(target.user_id)
         if self.rbac:
             self.rbac.assign_role("user", target_uid, "gm_admin")
             await event.reply(f"已授予 {target_uid} 群管理权限 ✅")
@@ -158,4 +160,4 @@ class GroupManagerPlugin(NcatBotPlugin):
         msg.add_at(event.user_id)
         msg.add_text(f" {welcome_text}")
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)

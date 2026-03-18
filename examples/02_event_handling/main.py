@@ -15,7 +15,7 @@
 import asyncio
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 
@@ -85,6 +85,6 @@ class EventHandlingPlugin(NcatBotPlugin):
                 ),
                 timeout=15.0,
             )
-            await self.api.post_group_msg(event.group_id, text="操作已确认 ✅")
+            await self.api.qq.post_group_msg(event.group_id, text="操作已确认 ✅")
         except asyncio.TimeoutError:
-            await self.api.post_group_msg(event.group_id, text="操作超时已取消 ⏰")
+            await self.api.qq.post_group_msg(event.group_id, text="操作超时已取消 ⏰")

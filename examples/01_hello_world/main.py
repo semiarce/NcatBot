@@ -14,7 +14,7 @@
 """
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent, PrivateMessageEvent
+from ncatbot.event.qq import GroupMessageEvent, PrivateMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import MessageArray
 from ncatbot.utils import get_log
@@ -37,7 +37,7 @@ class HelloWorldPlugin(NcatBotPlugin):
     @registrar.on_group_command("hello", ignore_case=True)
     async def on_hello(self, event: GroupMessageEvent):
         """收到群消息 'hello' 时回复"""
-        await self.api.post_group_msg(event.group_id, text="Hello, World! 👋")
+        await self.api.qq.post_group_msg(event.group_id, text="Hello, World! 👋")
 
     @registrar.on_group_command("hi", ignore_case=True)
     async def on_hi(self, event: GroupMessageEvent):

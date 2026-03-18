@@ -16,7 +16,7 @@
 """
 
 from ncatbot.core import registrar, Hook, HookAction, HookContext, HookStage, add_hooks
-from ncatbot.event import GroupMessageEvent, PrivateMessageEvent
+from ncatbot.event.qq import GroupMessageEvent, PrivateMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import MessageArray
 from ncatbot.utils import get_log
@@ -77,7 +77,7 @@ class ErrorNotifyHook(Hook):
             try:
                 msg = MessageArray()
                 msg.add_text(f"⚠️ 命令执行出错: {type(error).__name__}")
-                await api.post_group_array_msg(data.group_id, msg)
+                await api.send_group_msg(data.group_id, msg.to_list())
             except Exception:
                 pass
         return HookAction.CONTINUE

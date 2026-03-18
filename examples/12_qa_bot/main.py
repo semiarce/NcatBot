@@ -17,7 +17,7 @@
 import asyncio
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.utils import get_log
 
@@ -60,28 +60,28 @@ class QABotPlugin(NcatBotPlugin):
         try:
             question = await self._wait_reply(gid, uid)
         except asyncio.TimeoutError:
-            await self.api.post_group_msg(gid, text="⏰ 超时，已取消")
+            await self.api.qq.post_group_msg(gid, text="⏰ 超时，已取消")
             return
 
         if question == "取消":
-            await self.api.post_group_msg(gid, text="❌ 已取消")
+            await self.api.qq.post_group_msg(gid, text="❌ 已取消")
             return
 
-        await self.api.post_group_msg(
+        await self.api.qq.post_group_msg(
             gid, text=f"好的，问题是「{question}」\n请输入答案："
         )
         try:
             answer = await self._wait_reply(gid, uid)
         except asyncio.TimeoutError:
-            await self.api.post_group_msg(gid, text="⏰ 超时，已取消")
+            await self.api.qq.post_group_msg(gid, text="⏰ 超时，已取消")
             return
 
         if answer == "取消":
-            await self.api.post_group_msg(gid, text="❌ 已取消")
+            await self.api.qq.post_group_msg(gid, text="❌ 已取消")
             return
 
         self.data.setdefault("qa_pairs", {})[question] = answer
-        await self.api.post_group_msg(
+        await self.api.qq.post_group_msg(
             gid, text=f"✅ 问答已添加:\n  Q: {question}\n  A: {answer}"
         )
         LOG.info("添加问答: %s -> %s", question, answer)

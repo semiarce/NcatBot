@@ -29,7 +29,7 @@ import random
 import time
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent, GroupIncreaseEvent
+from ncatbot.event.qq import GroupMessageEvent, GroupIncreaseEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import At, MessageArray
 from ncatbot.utils import get_log
@@ -125,7 +125,7 @@ class FullFeaturedBotPlugin(NcatBotPlugin):
         msg.add_at(event.user_id)
         msg.add_text(f" 签到成功！获得 {points} 积分 🎉\n当前总积分: {scores[uid]}")
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)
 
     @registrar.on_group_command("积分")
     async def on_score(self, event: GroupMessageEvent):
@@ -231,8 +231,8 @@ class FullFeaturedBotPlugin(NcatBotPlugin):
         if target is None:
             return
 
-        await self.api.manage.set_group_kick(event.group_id, target.qq)
-        await event.reply(f"已踢出 {target.qq}")
+        await self.api.qq.manage.set_group_kick(event.group_id, target.user_id)
+        await event.reply(f"已踢出 {target.user_id}")
 
     @registrar.on_group_command("管理禁言")
     async def on_admin_ban(
@@ -245,15 +245,15 @@ class FullFeaturedBotPlugin(NcatBotPlugin):
         if target is None:
             return
 
-        await self.api.manage.set_group_ban(event.group_id, target.qq, duration)
-        await event.reply(f"已禁言 {target.qq}，{duration} 秒")
+        await self.api.qq.manage.set_group_ban(event.group_id, target.user_id, duration)
+        await event.reply(f"已禁言 {target.user_id}，{duration} 秒")
 
     @registrar.on_group_command("授权")
     async def on_grant(self, event: GroupMessageEvent, target: At = None):
         """授予管理权限"""
         if target is None:
             return
-        uid = str(target.qq)
+        uid = str(target.user_id)
         if self.rbac:
             self.rbac.assign_role("user", uid, "full_bot_admin")
             await event.reply(f"✅ 已授予 {uid} 管理权限")
@@ -296,7 +296,7 @@ class FullFeaturedBotPlugin(NcatBotPlugin):
 
         for gid in self.data.get("morning_groups", []):
             try:
-                await self.api.post_group_msg(gid, text=msg)
+                await self.api.qq.post_group_msg(gid, text=msg)
             except Exception as e:
                 LOG.error("发送早安到群 %s 失败: %s", gid, e)
 
@@ -311,4 +311,4 @@ class FullFeaturedBotPlugin(NcatBotPlugin):
         msg.add_at(event.user_id)
         msg.add_text(f" {welcome}")
 
-        await self.api.post_group_array_msg(event.group_id, msg)
+        await self.api.qq.post_group_array_msg(event.group_id, msg)

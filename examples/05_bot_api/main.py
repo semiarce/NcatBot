@@ -5,7 +5,7 @@
   - self.api 消息发送 (post_group_msg / send_group_image)
   - self.api.manage 群管理 (禁言 / 踢人)
   - self.api.info 信息查询 (群列表 / 成员信息 / 登录信息)
-  - self.api.info.get_msg() 通过消息 ID 查询消息
+  - self.api.qq.query.get_msg() 通过消息 ID 查询消息
   - 消息语法糖 (text / image / at / reply 关键字参数)
   - @registrar.on_group_command() 命令匹配 + At/int 参数绑定
   - 合并转发：通过消息 ID 转发已有消息
@@ -25,7 +25,7 @@
 from pathlib import Path
 
 from ncatbot.core import registrar
-from ncatbot.event import GroupMessageEvent
+from ncatbot.event.qq import GroupMessageEvent
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.types import At, MessageArray, PlainText, Reply
 from ncatbot.utils import get_log
@@ -48,7 +48,7 @@ class BotAPIPlugin(NcatBotPlugin):
     @registrar.on_group_command("查群列表")
     async def on_group_list(self, event: GroupMessageEvent):
         """查询 Bot 加入的群列表"""
-        groups = await self.api.info.get_group_list()
+        groups = await self.api.qq.query.get_group_list()
         if not groups:
             await event.reply("未加入任何群")
             return
@@ -68,7 +68,9 @@ class BotAPIPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 查成员 @xxx")
             return
 
-        info = await self.api.info.get_group_member_info(event.group_id, target.qq)
+        info = await self.api.qq.query.get_group_member_info(
+            event.group_id, target.user_id
+        )
         if not info:
             await event.reply("获取信息失败")
             return
@@ -85,7 +87,7 @@ class BotAPIPlugin(NcatBotPlugin):
     @registrar.on_group_command("查登录信息")
     async def on_login_info(self, event: GroupMessageEvent):
         """查询 Bot 登录信息"""
-        info = await self.api.info.get_login_info()
+        info = await self.api.qq.query.get_login_info()
         await event.reply(
             f"🤖 Bot 信息:\n"
             f"  QQ: {info.get('user_id', '未知')}\n"
@@ -97,7 +99,7 @@ class BotAPIPlugin(NcatBotPlugin):
     @registrar.on_group_command("发图片")
     async def on_send_image(self, event: GroupMessageEvent):
         """发送示例图片"""
-        await self.api.post_group_msg(
+        await self.api.qq.post_group_msg(
             event.group_id,
             text="📸 这是通过语法糖发送的图片:",
             image=str(EXAMPLE_IMAGE),
@@ -106,7 +108,7 @@ class BotAPIPlugin(NcatBotPlugin):
     @registrar.on_group_command("发文件")
     async def on_send_file(self, event: GroupMessageEvent):
         """发送示例文件"""
-        await self.api.send_group_file(
+        await self.api.qq.send_group_file(
             event.group_id,
             str(EXAMPLE_FILE),
             name="示例文件.pdf",
@@ -115,7 +117,7 @@ class BotAPIPlugin(NcatBotPlugin):
     @registrar.on_group_command("戳我")
     async def on_poke(self, event: GroupMessageEvent):
         """戳一戳"""
-        await self.api.send_poke(event.group_id, event.user_id)
+        await self.api.qq.send_poke(event.group_id, event.user_id)
 
     # ==================== 群管理 ====================
 
@@ -128,7 +130,7 @@ class BotAPIPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 禁言 @xxx 60")
             return
 
-        await self.api.manage.set_group_ban(event.group_id, target.qq, duration)
+        await self.api.qq.manage.set_group_ban(event.group_id, target.user_id, duration)
         await event.reply(f"已禁言 {duration} 秒")
 
     @registrar.on_group_command("解禁")
@@ -138,7 +140,7 @@ class BotAPIPlugin(NcatBotPlugin):
             await event.reply("请 @一个用户，例如: 解禁 @xxx")
             return
 
-        await self.api.manage.set_group_ban(event.group_id, target.qq, 0)
+        await self.api.qq.manage.set_group_ban(event.group_id, target.user_id, 0)
         await event.reply("已解除禁言")
 
     # ==================== 转发（通过消息 ID）====================
@@ -155,7 +157,7 @@ class BotAPIPlugin(NcatBotPlugin):
         quoted_msg_id = replies[0].id
 
         # 通过 get_msg 获取被引用消息的详情
-        msg_data = await self.api.info.get_msg(quoted_msg_id)
+        msg_data = await self.api.qq.query.get_msg(quoted_msg_id)
         if not msg_data:
             await event.reply("获取被引用消息失败")
             return
@@ -167,4 +169,4 @@ class BotAPIPlugin(NcatBotPlugin):
         await event.reply(rtf=info)
 
         # 通过消息 ID 直接转发到同一个群
-        await self.api.send_group_forward_msg_by_id(event.group_id, [quoted_msg_id])
+        await self.api.qq.send_group_forward_msg_by_id(event.group_id, [quoted_msg_id])
