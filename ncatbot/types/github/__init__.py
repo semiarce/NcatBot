@@ -9,10 +9,20 @@ from .enums import (
     GitHubUserType,
 )
 from .models import (
+    GitHubBranchRef,
+    GitHubCommentInfo,
     GitHubCommit,
     GitHubForkee,
+    GitHubIssueInfo,
+    GitHubLabelInfo,
+    GitHubMergeResult,
+    GitHubPullRequestInfo,
     GitHubRelease,
+    GitHubReleaseAsset,
+    GitHubReleaseInfo,
     GitHubRepo,
+    GitHubRepoInfo,
+    GitHubUserInfo,
 )
 from .sender import GitHubSender
 from .events import (
@@ -35,11 +45,22 @@ __all__ = [
     "GitHubPRState",
     "GitHubUserType",
     "GitHubMergeMethod",
-    # models
+    # event-embedded models
     "GitHubRepo",
     "GitHubCommit",
     "GitHubRelease",
+    "GitHubReleaseAsset",
     "GitHubForkee",
+    # API response models
+    "GitHubUserInfo",
+    "GitHubLabelInfo",
+    "GitHubBranchRef",
+    "GitHubIssueInfo",
+    "GitHubCommentInfo",
+    "GitHubPullRequestInfo",
+    "GitHubMergeResult",
+    "GitHubReleaseInfo",
+    "GitHubRepoInfo",
     # sender
     "GitHubSender",
     # events

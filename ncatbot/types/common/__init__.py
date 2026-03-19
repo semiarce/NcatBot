@@ -1,5 +1,14 @@
 """跨平台通用类型"""
 
+from .attachment import (
+    Attachment,
+    AttachmentKind,
+    AudioAttachment,
+    FileAttachment,
+    ImageAttachment,
+    VideoAttachment,
+)
+from .attachment_list import AttachmentList
 from .base import BaseEventData
 from .sender import BaseSender
 from .segment import (
@@ -18,6 +27,13 @@ from .segment import (
 )
 
 __all__ = [
+    "Attachment",
+    "AttachmentKind",
+    "AttachmentList",
+    "ImageAttachment",
+    "VideoAttachment",
+    "AudioAttachment",
+    "FileAttachment",
     "BaseEventData",
     "BaseSender",
     # segments

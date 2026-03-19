@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import (
+    TYPE_CHECKING,
     Any,
     Dict,
     Iterable,
@@ -19,7 +20,10 @@ from pydantic_core import CoreSchema, core_schema
 
 from .base import MessageSegment, parse_segment
 from .text import At, PlainText, Reply
-from .media import Image, Video
+from .media import DownloadableSegment, Image, Video
+
+if TYPE_CHECKING:
+    from ncatbot.types.common.attachment_list import AttachmentList
 
 __all__ = [
     "MessageArray",
@@ -119,6 +123,16 @@ class MessageArray:
 
     def filter_video(self) -> List[Video]:
         return self.filter(Video)
+
+    def get_attachments(self) -> "AttachmentList":
+        """提取所有可下载段为 AttachmentList"""
+        from ncatbot.types.common.attachment_list import AttachmentList
+
+        return AttachmentList(
+            seg.to_attachment()
+            for seg in self._segments
+            if isinstance(seg, DownloadableSegment) and (seg.url or seg.file)
+        )
 
     @property
     def text(self) -> str:
