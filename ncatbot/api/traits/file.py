@@ -17,6 +17,13 @@ class IFileTransfer(Protocol):
         folder_id: str = "",
     ) -> None: ...
 
+    async def upload_private_file(
+        self,
+        user_id: Union[str, int],
+        file: str,
+        name: str,
+    ) -> None: ...
+
     async def download_file(
         self, url: str = "", file: str = "", headers: str = ""
     ) -> Any: ...

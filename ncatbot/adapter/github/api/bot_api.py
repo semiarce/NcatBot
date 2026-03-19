@@ -16,6 +16,7 @@ from .issue import IssueAPIMixin
 from .comment import CommentAPIMixin
 from .pr import PRAPIMixin
 from .query import QueryAPIMixin
+from .release import ReleaseAPIMixin
 
 LOG = get_log("GitHubBotAPI")
 
@@ -27,6 +28,7 @@ class GitHubBotAPI(
     CommentAPIMixin,
     PRAPIMixin,
     QueryAPIMixin,
+    ReleaseAPIMixin,
     IGitHubAPIClient,
 ):
     """GitHub 平台 IGitHubAPIClient 实现"""

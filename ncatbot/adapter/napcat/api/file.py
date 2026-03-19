@@ -1,5 +1,7 @@
 """文件操作 API Mixin"""
 
+from __future__ import annotations
+
 from typing import Union
 
 from ncatbot.types.napcat import CreateFolderResult, DownloadResult, GroupFileList

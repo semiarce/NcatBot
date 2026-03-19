@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any, List, Optional
 
+from ncatbot.types.github.models import GitHubIssueInfo, GitHubLabelInfo
+
 
 class IssueAPIMixin:
     """Issue 操作"""
@@ -20,13 +22,14 @@ class IssueAPIMixin:
         body: str = "",
         labels: Optional[List[str]] = None,
         assignees: Optional[List[str]] = None,
-    ) -> dict:
-        data: dict = {"title": title, "body": body}
+    ) -> GitHubIssueInfo:
+        payload: dict = {"title": title, "body": body}
         if labels:
-            data["labels"] = labels
+            payload["labels"] = labels
         if assignees:
-            data["assignees"] = assignees
-        return await self._request("POST", f"/repos/{repo}/issues", json=data)
+            payload["assignees"] = assignees
+        data = await self._request("POST", f"/repos/{repo}/issues", json=payload)
+        return GitHubIssueInfo.model_validate(data)
 
     async def update_issue(
         self,
@@ -38,37 +41,42 @@ class IssueAPIMixin:
         state: Optional[str] = None,
         labels: Optional[List[str]] = None,
         assignees: Optional[List[str]] = None,
-    ) -> dict:
-        data: dict = {}
+    ) -> GitHubIssueInfo:
+        payload: dict = {}
         if title is not None:
-            data["title"] = title
+            payload["title"] = title
         if body is not None:
-            data["body"] = body
+            payload["body"] = body
         if state is not None:
-            data["state"] = state
+            payload["state"] = state
         if labels is not None:
-            data["labels"] = labels
+            payload["labels"] = labels
         if assignees is not None:
-            data["assignees"] = assignees
-        return await self._request(
-            "PATCH", f"/repos/{repo}/issues/{issue_number}", json=data
+            payload["assignees"] = assignees
+        data = await self._request(
+            "PATCH", f"/repos/{repo}/issues/{issue_number}", json=payload
         )
+        return GitHubIssueInfo.model_validate(data)
 
-    async def close_issue(self, repo: str, issue_number: int) -> dict:
+    async def close_issue(self, repo: str, issue_number: int) -> GitHubIssueInfo:
         return await self.update_issue(repo, issue_number, state="closed")
 
-    async def reopen_issue(self, repo: str, issue_number: int) -> dict:
+    async def reopen_issue(self, repo: str, issue_number: int) -> GitHubIssueInfo:
         return await self.update_issue(repo, issue_number, state="open")
 
-    async def get_issue(self, repo: str, issue_number: int) -> dict:
-        return await self._request("GET", f"/repos/{repo}/issues/{issue_number}")
+    async def get_issue(self, repo: str, issue_number: int) -> GitHubIssueInfo:
+        data = await self._request("GET", f"/repos/{repo}/issues/{issue_number}")
+        return GitHubIssueInfo.model_validate(data)
 
-    async def add_labels(self, repo: str, issue_number: int, labels: List[str]) -> list:
-        return await self._request(
+    async def add_labels(
+        self, repo: str, issue_number: int, labels: List[str]
+    ) -> List[GitHubLabelInfo]:
+        data = await self._request(
             "POST",
             f"/repos/{repo}/issues/{issue_number}/labels",
             json={"labels": labels},
         )
+        return [GitHubLabelInfo.model_validate(item) for item in data]
 
     async def remove_label(self, repo: str, issue_number: int, label: str) -> None:
         await self._request(
@@ -77,5 +85,5 @@ class IssueAPIMixin:
 
     async def set_assignees(
         self, repo: str, issue_number: int, assignees: List[str]
-    ) -> dict:
+    ) -> GitHubIssueInfo:
         return await self.update_issue(repo, issue_number, assignees=assignees)
