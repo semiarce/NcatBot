@@ -149,8 +149,8 @@ run()
     └─ _setup_services()         → 内置服务加载
   → _setup_plugins()
     ├─ load_builtin_plugins()
-    ├─ load_all(plugin_dir)
-    └─ setup_hot_reload()        → 仅 debug 模式
+    ├─ load_all(plugins_dir)
+    └─ setup_hot_reload()        → `effective_hot_reload()` 为真时
   → adapter.listen()              → 阻塞监听
   → shutdown()
 ```

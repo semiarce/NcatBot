@@ -122,6 +122,7 @@ Bot:  <输出>
 | 多平台/跨平台/Trait | BotAPIClient 多平台门面, Trait 协议 | [multi-platform.md](./references/multi-platform.md) |
 | 平台登录/适配器配置 | 各适配器登录流程 | [multi-platform.md](./references/multi-platform.md) |
 | 插件结构/生命周期 | manifest + 基类 | [plugin-structure.md](./references/plugin-structure.md) |
+| 内置 `!` 管理命令（热重载/sysinfo/root） | `_system_manager` + `plugin.*` 配置 | `docs/docs/notes/guide/3. 插件开发/12. 内置管理命令.md` |
 | 调试/排错/日志 | 诊断与排查 | [troubleshooting.md](./references/troubleshooting.md) |
 | **功能预览格式与样板** | 端到端预览流程 | [preview-workflow.md](./references/preview-workflow.md) |
 

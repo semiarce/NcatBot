@@ -26,7 +26,7 @@
 | 参数/方法 | 签名 | 说明 |
 |-----------|------|------|
 | `plugin_names` | `list[str]` | 构造参数：要加载的插件名 |
-| `plugin_dir` | `Path` | 构造参数：插件目录 |
+| `plugins_dir` | `Path` | 构造参数：插件根目录 |
 | `skip_builtin` | `bool = True` | 构造参数：是否跳过内置插件 |
 | `skip_pip` | `bool = True` | 构造参数：是否跳过 pip 依赖安装 |
 | `loaded_plugins` | `list[str]` | 已加载插件名列表 |
@@ -147,7 +147,7 @@ await scenario.run(harness)  # 必须传入 harness 实例
 | `api_called` 返回 False | handler 未执行 / `settle` 时间不足 | 改为 `await h.settle(0.1)`；加 `print` 确认 handler 执行 |
 | `asyncio` 警告/报错 | 缺少 `asyncio_mode` 标记 | 文件顶部加 `pytestmark = pytest.mark.asyncio(mode="strict")` |
 | `ImportError` | 测试依赖未安装 | `uv pip install -e ".[test]"` |
-| 插件加载失败 | `plugin_dir` 路径错误 / 缺少 `__init__.py` | 用 `Path(__file__).resolve().parents[N] / "..."` 确保绝对路径 |
+| 插件加载失败 | `plugins_dir` 路径错误 / 缺少 `__init__.py` | 用 `Path(__file__).resolve().parents[N] / "..."` 确保绝对路径 |
 | flaky（偶发失败） | 异步竞态 / settle 时间不稳定 | 用 `wait_event(predicate, timeout=2.0)` 替代固定 delay |
 | Mock 返回值不对 | 未预设 response | `harness.mock_api.set_response("action", {...})` |
 | `platform` 过滤不生效 | 事件 data 与 adapter platform 不一致 | 工厂函数默认 `platform="qq"`；检查自定义事件数据 |

@@ -106,7 +106,7 @@ from ncatbot.testing import PluginTestHarness
 
 async with PluginTestHarness(
     plugin_names=["my_plugin"],
-    plugin_dir=Path("plugins"),
+    plugins_dir=Path("plugins"),
 ) as h:
     assert "my_plugin" in h.loaded_plugins
     plugin = h.get_plugin("my_plugin")

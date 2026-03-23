@@ -111,7 +111,7 @@
 | # | 类型 | 严重度 | 问题摘要 |
 |---|------|--------|---------|
 | D19 | CODE_UNDOC | P1 | `PermissionPath` / `PermissionTrie` 公开导出但无 API 文档 |
-| D20 | CODE_UNDOC | P2 | `ServiceManager.set_debug_mode()` / `set_test_mode()` 未文档化 |
+| D20 | ~~CODE_UNDOC~~ 已失效 | P2 | ~~`ServiceManager.set_debug_mode()` / `set_test_mode()`~~ 已从代码中移除（见 `register_builtin()` / `FileWatcherService` 与全局 `effective_debug`） |
 
 ---
 

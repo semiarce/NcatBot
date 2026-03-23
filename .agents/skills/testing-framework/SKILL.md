@@ -84,13 +84,13 @@ from ncatbot.testing import PluginTestHarness, group_message
 
 pytestmark = pytest.mark.asyncio(mode="strict")
 
-PLUGIN_DIR = Path("plugins/")  # 插件所在目录
+PLUGINS_DIR = Path("plugins/")  # 插件根目录
 
 async def test_my_plugin_responds():
     """PL-02: my_plugin 正确响应 'hello'"""
     async with PluginTestHarness(
         plugin_names=["my_plugin"],
-        plugin_dir=PLUGIN_DIR,
+        plugins_dir=PLUGINS_DIR,
     ) as h:
         await h.inject(group_message("hello", group_id="100"))
         await h.settle()
@@ -118,7 +118,7 @@ from ncatbot.testing import Scenario
 async def test_registration_flow():
     """PL-40: 注册 → 输入名字 → 确认"""
     async with PluginTestHarness(
-        plugin_names=["multi_step_dialog"], plugin_dir=PLUGIN_DIR
+        plugin_names=["multi_step_dialog"], plugins_dir=PLUGINS_DIR
     ) as h:
         await (
             Scenario("registration")
@@ -164,7 +164,7 @@ python -m pytest tests/ --lf -v -o "addopts="
 |------|-----------|---------|
 | handler 没被调用 | 事件类型字符串不匹配 / Hook 拦截 | 检查注册的事件类型，打印 `h.api_calls` |
 | `api_called` 返回 False | settle 时间不够 | 改为 `await h.settle(0.1)` |
-| 插件加载失败 | `plugin_dir` 路径错误或插件缺少 `__init__.py` | 用 `Path(__file__).parents[N] / "..."` 确保绝对路径 |
+| 插件加载失败 | `plugins_dir` 路径错误或插件缺少 `__init__.py` | 用 `Path(__file__).parents[N] / "..."` 确保绝对路径 |
 | flaky（偶发失败） | 异步竞态 | 用 `wait_event()` 替代固定 delay |
 | `'BaseEvent' has no attr 'reply'` | 事件数据缺少 `platform="qq"` | 事件工厂已默认 `platform="qq"`，检查自定义数据是否遗漏 |
 
