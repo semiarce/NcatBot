@@ -2,53 +2,48 @@
 MockAdapter — BaseAdapter 的内存实现
 
 不连接任何外部服务，支持通过 inject_event() 注入事件，
-所有 API 调用被 MockBotAPI 记录。
+按 platform 自动选择对应的 Mock API 实现。
 """
 
 from __future__ import annotations
 
 import asyncio
-from typing import Optional
+from typing import Dict, Optional, Type
 
 from ..base import BaseAdapter
 from ncatbot.api import IAPIClient
 from ncatbot.types import BaseEventData
 
+from .api_base import MockAPIBase
 from .api import MockBotAPI
+from .api_bilibili import MockBiliAPI
+from .api_github import MockGitHubAPI
+
+_MOCK_REGISTRY: Dict[str, Type[MockAPIBase]] = {
+    "qq": MockBotAPI,
+    "bilibili": MockBiliAPI,
+    "github": MockGitHubAPI,
+}
 
 
 class MockAdapter(BaseAdapter):
-    """Mock 适配器 — 用于无网络环境下的集成测试
-
-    使用方式::
-
-        adapter = MockAdapter()
-        bot = BotClient(adapter=adapter)
-
-        # 在 bot 启动后注入事件
-        await adapter.inject_event(some_event_data)
-
-        # 检查 API 调用
-        assert adapter.mock_api.called("send_group_msg")
-
-        # 停止 listen 循环
-        adapter.stop()
-    """
+    """Mock 适配器 — 按 platform 自动选择 Mock API 实现"""
 
     name = "mock"
     description = "Mock 适配器（测试用）"
     supported_protocols = ["mock"]
     platform = "mock"
 
-    def __init__(self, platform: str = "mock", **kwargs) -> None:
+    def __init__(self, platform: str = "qq", **kwargs) -> None:
         super().__init__(**kwargs)
         self.platform = platform
-        self._mock_api = MockBotAPI()
+        mock_cls = _MOCK_REGISTRY.get(platform, MockAPIBase)
+        self._mock_api = mock_cls()
         self._connected = False
         self._stop_event: Optional[asyncio.Event] = None
 
     @property
-    def mock_api(self) -> MockBotAPI:
+    def mock_api(self) -> MockAPIBase:
         return self._mock_api
 
     # ---- 生命周期 ----

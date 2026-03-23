@@ -1,5 +1,12 @@
 from .base import BaseAdapter
-from .mock import MockAdapter, MockBotAPI, APICall
+from .mock import (
+    MockAdapter,
+    MockBotAPI,
+    MockBiliAPI,
+    MockGitHubAPI,
+    MockAPIBase,
+    APICall,
+)
 from .napcat import NapCatAdapter
 from .bilibili import BilibiliAdapter
 from .github import GitHubAdapter
@@ -17,6 +24,9 @@ __all__ = [
     "BaseAdapter",
     "MockAdapter",
     "MockBotAPI",
+    "MockBiliAPI",
+    "MockGitHubAPI",
+    "MockAPIBase",
     "APICall",
     "NapCatAdapter",
     "BilibiliAdapter",
