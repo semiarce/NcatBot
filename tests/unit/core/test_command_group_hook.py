@@ -9,7 +9,7 @@ from ncatbot.core import CommandGroupHook, HookAction
 from ncatbot.core.registry.hook import HookContext
 from ncatbot.core.registry.dispatcher import HandlerEntry
 from ncatbot.core.dispatcher.event import Event
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 def _make_ctx(text: str, handler_func):

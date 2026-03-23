@@ -44,10 +44,10 @@ class TestPostGroupMsg:
 
         assert api.called("send_group_msg")
         call = api.last_call("send_group_msg")
-        group_id, message = call.args
+        group_id = call.params["group_id"]
+        message = call.params["message"]
 
         assert group_id == "12345"
-        # 检查消息段类型顺序：reply → at → text → image
         types = [seg["type"] for seg in message]
         assert "reply" in types
         assert "at" in types
@@ -65,7 +65,8 @@ class TestPostPrivateMsg:
 
         assert api.called("send_private_msg")
         call = api.last_call("send_private_msg")
-        user_id, message = call.args
+        user_id = call.params["user_id"]
+        message = call.params["message"]
         assert user_id == "54321"
         assert any(seg["type"] == "text" for seg in message)
 

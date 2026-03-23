@@ -18,7 +18,9 @@ import pytest
 
 import ncatbot.utils.config.manager as config_manager_mod
 from ncatbot.core.registry.registrar import _pending_handlers
-from ncatbot.testing import PluginTestHarness, group_message, private_message
+from ncatbot.testing import PluginTestHarness
+from ncatbot.testing.assertions import extract_text
+from ncatbot.testing.factories.qq import group_message, private_message
 from ncatbot.utils.config.manager import get_config_manager
 
 PLUGIN_NAME: Final[str] = "manual_reload_probe"
@@ -46,8 +48,8 @@ def _write_minimal_e2e_config(cfg_path: Path) -> None:
 
 def _write_manual_reload_probe_plugin(plugins_root: Path, reply_text: str) -> Path:
     plugins_root = Path(plugins_root).resolve()
-    plugin_dir = plugins_root / PLUGIN_FOLDER
-    plugin_dir.mkdir(parents=True, exist_ok=True)
+    plugins_dir = plugins_root / PLUGIN_FOLDER
+    plugins_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = (
         f'name = "{PLUGIN_NAME}"\n'
@@ -57,9 +59,9 @@ def _write_manual_reload_probe_plugin(plugins_root: Path, reply_text: str) -> Pa
         "author = 'Test'\n"
         "description = 'manual reload E2E probe'\n"
     )
-    (plugin_dir / "manifest.toml").write_text(manifest, encoding="utf-8")
+    (plugins_dir / "manifest.toml").write_text(manifest, encoding="utf-8")
 
-    main_py = plugin_dir / "main.py"
+    main_py = plugins_dir / "main.py"
     main_py.write_text(
         "from ncatbot.core import registrar\n"
         "from ncatbot.event.qq import GroupMessageEvent\n"
@@ -108,7 +110,7 @@ def _apply_e2e_config(tmp_path, monkeypatch) -> None:
 def _last_send_group_text(h: PluginTestHarness) -> str:
     calls = h.mock_api.get_calls("send_group_msg")
     assert calls, "expected send_group_msg"
-    return str(calls[-1].args)
+    return extract_text(calls[-1])
 
 
 # ---- PL-MR-01 ----
@@ -134,7 +136,7 @@ async def test_reload_plugin_updates_reply_from_disk(tmp_path, monkeypatch):
         h.reset_api()
         await h.inject(group_message("ping", group_id="7001", user_id="99999"))
         await h.settle(0.15)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
         assert REPLY_V2 in _last_send_group_text(h)
 
 
@@ -177,7 +179,7 @@ async def test_unload_then_ping_has_no_probe_reply(tmp_path, monkeypatch):
         h.reset_api()
         await h.inject(group_message("ping", group_id="7003", user_id="99999"))
         await h.settle(0.15)
-        assert not h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").not_called()
 
 
 async def test_load_after_unload_restores_reply(tmp_path, monkeypatch):
@@ -219,7 +221,7 @@ async def test_bang_reload_after_disk_edit(tmp_path, monkeypatch):
         await h.settle(0.2)
 
         assert h.mock_api.called("send_private_msg")
-        ack = str(h.mock_api.get_calls("send_private_msg")[-1].args)
+        ack = extract_text(h.mock_api.get_calls("send_private_msg")[-1])
         assert "重载" in ack or PLUGIN_NAME in ack
 
         h.reset_api()

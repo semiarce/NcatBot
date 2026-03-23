@@ -107,7 +107,7 @@ def test_dev_invokes_bot_client(tmp_path):
     mock_bc.return_value.run.assert_called_once()
 
 
-def test_run_rejects_legacy_plugin_dir_option():
+def test_run_rejects_legacy_plugins_dir_option():
     """CX-07: 已废弃的 --plugin-dir 无法解析，防止选项名回归"""
     runner = CliRunner()
     r = runner.invoke(cli, ["run", "--plugin-dir", "x"], catch_exceptions=True)

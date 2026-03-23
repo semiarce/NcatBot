@@ -10,7 +10,8 @@
 
 import pytest
 
-from ncatbot.testing import PluginTestHarness, group_message
+from ncatbot.testing import PluginTestHarness
+from ncatbot.testing.factories.qq import group_message
 
 
 PLUGIN_NAME = "rbac"
@@ -48,7 +49,7 @@ async def test_admin_command_denied_without_permission(examples_dir):
         await h.settle(0.1)
 
         # 应有回复（权限不足提示）
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-32: 授权后可访问 ----
@@ -69,7 +70,7 @@ async def test_admin_command_after_grant(examples_dir):
         await h.inject(group_message("管理命令", group_id="400", user_id="12345"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-33: 权限查询 ----
@@ -83,7 +84,7 @@ async def test_check_permission_command(examples_dir):
         await h.inject(group_message("查权限", group_id="400", user_id="12345"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_rbac_info_command(examples_dir):
@@ -94,4 +95,4 @@ async def test_rbac_info_command(examples_dir):
         await h.inject(group_message("权限信息", group_id="400", user_id="12345"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()

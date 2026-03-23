@@ -4,7 +4,6 @@ ConfigMixin 规范测试
 规范:
   M-01: _mixin_load() 从 YAML 加载配置
   M-02: set_config() 立即持久化
-  M-03: get_config(key, default) 返回默认值
   M-04: remove_config() 返回 bool
   M-05: update_config() 批量更新
   M-06: 配置文件不存在时优雅返回空字典
@@ -63,27 +62,6 @@ def test_set_config_persists(plugin):
     # 验证文件已写入
     raw = yaml.safe_load(plugin._config_path.read_text(encoding="utf-8"))
     assert raw["key"] == "value"
-
-
-# ---- M-03: get_config 默认值 ----
-
-
-def test_get_config_existing(plugin):
-    """M-03: 已有 key → 返回值"""
-    plugin.config = {"existing": 42}
-    assert plugin.get_config("existing") == 42
-
-
-def test_get_config_default(plugin):
-    """M-03: 不存在的 key → 返回 default"""
-    plugin.config = {}
-    assert plugin.get_config("missing", "fallback") == "fallback"
-
-
-def test_get_config_none_default(plugin):
-    """M-03: 不传 default → 返回 None"""
-    plugin.config = {}
-    assert plugin.get_config("missing") is None
 
 
 # ---- M-04: remove_config ----

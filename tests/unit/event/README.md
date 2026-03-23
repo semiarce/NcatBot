@@ -32,5 +32,5 @@
 
 ### 关键实现细节
 
-- `MockBotAPI._record()` 将所有参数存储在 `APICall.args` 元组中（即使使用关键字参数调用）
-- 测试中通过 `call.args[N]` 而非 `call.kwargs` 来验证参数
+- `MockBotAPI._record()` 将所有参数以命名形式存储在 `APICall.params` 字典中
+- 测试中通过 `call.params["key"]` 来验证参数，或使用 `extract_text(call)` 提取文本内容

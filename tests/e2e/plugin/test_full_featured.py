@@ -10,7 +10,8 @@
 
 import pytest
 
-from ncatbot.testing import PluginTestHarness, group_message
+from ncatbot.testing import PluginTestHarness
+from ncatbot.testing.factories.qq import group_message
 
 
 PLUGIN_NAME = "full_featured_bot_qq"
@@ -49,7 +50,7 @@ async def test_sign_in(examples_dir):
         await h.inject(group_message("签到", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
         # 验证 data 中记录了积分
         plugin = h.get_plugin(PLUGIN_NAME)
@@ -73,7 +74,7 @@ async def test_sign_in_duplicate(examples_dir):
         await h.inject(group_message("签到", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg"), "应回复已签到提示"
+        h.assert_api("send_group_msg").called()
 
 
 async def test_score_query(examples_dir):
@@ -84,7 +85,7 @@ async def test_score_query(examples_dir):
         await h.inject(group_message("积分", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-52: Config/Data ----
@@ -120,7 +121,7 @@ async def test_help_command(examples_dir):
         await h.inject(group_message("帮助", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_keyword_add_and_list(examples_dir):
@@ -133,7 +134,7 @@ async def test_keyword_add_and_list(examples_dir):
             group_message("添加关键词 你好=世界", group_id=GROUP_ID, user_id=USER_ID)
         )
         await h.settle(0.1)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
         # 验证 data
         plugin = h.get_plugin(PLUGIN_NAME)
@@ -144,7 +145,7 @@ async def test_keyword_add_and_list(examples_dir):
         # 查看关键词列表
         await h.inject(group_message("关键词列表", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_view_config(examples_dir):
@@ -155,7 +156,7 @@ async def test_view_config(examples_dir):
         await h.inject(group_message("查看配置", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_ranking(examples_dir):
@@ -166,4 +167,4 @@ async def test_ranking(examples_dir):
         await h.inject(group_message("排行榜", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()

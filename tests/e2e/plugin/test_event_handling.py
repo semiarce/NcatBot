@@ -9,7 +9,8 @@
 
 import pytest
 
-from ncatbot.testing import PluginTestHarness, group_message, private_message
+from ncatbot.testing import PluginTestHarness
+from ncatbot.testing.factories.qq import group_message, private_message
 
 
 PLUGIN_NAME = "event_handling_qq"
@@ -33,7 +34,7 @@ async def test_ping_pong(examples_dir):
         await h.inject(group_message("ping", group_id="200", user_id="99"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_status_command(examples_dir):
@@ -44,7 +45,7 @@ async def test_status_command(examples_dir):
         await h.inject(group_message("状态", group_id="200", user_id="99"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-11: 事件流后台消费 ----
@@ -76,7 +77,7 @@ async def test_confirm_test_timeout(examples_dir):
         await h.settle(0.1)
 
         # 应该收到 "请在 15 秒内回复「确认」" 的回复
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_confirm_test_success(examples_dir):
@@ -92,4 +93,4 @@ async def test_confirm_test_success(examples_dir):
         await h.settle(0.2)
 
         # 应有至少 2 次 send_group_msg：提示 + 确认成功
-        assert h.api_call_count("send_group_msg") >= 2
+        assert h.mock_api.call_count("send_group_msg") >= 2

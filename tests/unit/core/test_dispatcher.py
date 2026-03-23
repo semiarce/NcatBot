@@ -18,7 +18,7 @@ import asyncio
 import pytest
 
 from ncatbot.core.dispatcher import AsyncEventDispatcher
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 # ---- D-01: 类型推导 ----

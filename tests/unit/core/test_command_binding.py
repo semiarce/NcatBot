@@ -20,7 +20,7 @@ from ncatbot.core.registry.hook import HookAction, HookContext
 from ncatbot.core.registry.command_hook import CommandHook
 from ncatbot.core.registry.dispatcher import HandlerEntry
 from ncatbot.core.dispatcher.event import Event
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 from ncatbot.types import At
 from ncatbot.types.common.segment.text import PlainText
 from ncatbot.types.common.segment.media import Image

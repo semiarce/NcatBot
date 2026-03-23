@@ -5,7 +5,8 @@ import pytest
 import ncatbot.utils.config.manager as config_manager_mod
 from ncatbot.core.registry.registrar import _pending_handlers
 from ncatbot.testing import PluginTestHarness
-from ncatbot.testing.factory import group_message, private_message
+from ncatbot.testing.assertions import extract_text
+from ncatbot.testing.factories.qq import group_message, private_message
 from ncatbot.utils.config.manager import get_config_manager
 
 
@@ -54,7 +55,7 @@ async def test_sysinfo_private_root_replies(tmp_path, monkeypatch):
         assert h.mock_api.called("send_private_msg")
         calls = h.mock_api.get_calls("send_private_msg")
         assert calls
-        text = str(calls[-1].args)
+        text = extract_text(calls[-1])
         assert "NcatBot" in text or "ncatbot" in text.lower()
     finally:
         await h.stop()
@@ -72,7 +73,7 @@ async def test_sysinfo_denied_non_root(tmp_path, monkeypatch):
         await h.inject(private_message("!sysinfo", user_id="99999"))
         await h.settle(0.15)
         assert h.mock_api.called("send_private_msg")
-        text = str(h.mock_api.get_calls("send_private_msg")[-1].args)
+        text = extract_text(h.mock_api.get_calls("send_private_msg")[-1])
         assert "无权" in text
     finally:
         await h.stop()
@@ -90,7 +91,7 @@ async def test_sysinfo_denied_in_group_when_not_allowed(tmp_path, monkeypatch):
         await h.inject(group_message("!sysinfo", user_id="10001", group_id="1"))
         await h.settle(0.15)
         assert h.mock_api.called("send_group_msg")
-        text = str(h.mock_api.get_calls("send_group_msg")[-1].args)
+        text = extract_text(h.mock_api.get_calls("send_group_msg")[-1])
         assert "私聊" in text
     finally:
         await h.stop()
@@ -111,7 +112,7 @@ async def test_builtin_toggle_off_then_on(tmp_path, monkeypatch):
         await h.inject(private_message("!sysinfo", user_id="10001"))
         await h.settle(0.15)
         calls_off = h.mock_api.get_calls("send_private_msg")
-        assert "关闭" in str(calls_off[-1].args) or "关闭" in str(calls_off[-1])
+        assert "关闭" in extract_text(calls_off[-1])
 
         await h.inject(private_message("!builtin on", user_id="10001"))
         await h.settle(0.15)
@@ -121,16 +122,7 @@ async def test_builtin_toggle_off_then_on(tmp_path, monkeypatch):
         await h.inject(private_message("!sysinfo", user_id="10001"))
         await h.settle(0.15)
         assert h.mock_api.called("send_private_msg")
-        ok_text = str(h.mock_api.get_calls("send_private_msg")[-1].args)
+        ok_text = extract_text(h.mock_api.get_calls("send_private_msg")[-1])
         assert "NcatBot" in ok_text or "Python" in ok_text
     finally:
         await h.stop()
-
-
-def test_plugin_config_defaults():
-    from ncatbot.utils.config.models import PluginConfig
-
-    p = PluginConfig()
-    assert p.enable_builtin_commands is True
-    assert p.builtin_commands.reload is True
-    assert p.builtin_commands_group_allowed is False

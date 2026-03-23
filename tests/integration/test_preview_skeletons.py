@@ -14,11 +14,8 @@
 
 from pathlib import Path
 
-from ncatbot.testing import (
-    PluginTestHarness,
-    TestHarness,
-    group_message,
-)
+from ncatbot.testing import PluginTestHarness, TestHarness
+from ncatbot.testing.factories.qq import group_message
 
 
 COMMON_EXAMPLES = (
@@ -48,7 +45,7 @@ async def test_pv01_hello_command_reply():
     ) as h:
         await h.inject(group_message("hello", group_id="10001"))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_pv01_hi_command_reply():
@@ -58,7 +55,7 @@ async def test_pv01_hi_command_reply():
     ) as h:
         await h.inject(group_message("hi", group_id="10001"))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---------------------------------------------------------------------------
@@ -88,7 +85,7 @@ async def test_pv02_full_registration_flow():
             group_message("注册", group_id=DIALOG_GROUP, user_id=DIALOG_USER)
         )
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应提示输入名字"
+        h.assert_api("send_group_msg").called()
 
         # 输入名字
         h.reset_api()
@@ -96,13 +93,13 @@ async def test_pv02_full_registration_flow():
             group_message("张三", group_id=DIALOG_GROUP, user_id=DIALOG_USER)
         )
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应提示输入年龄"
+        h.assert_api("send_group_msg").called()
 
         # 输入年龄
         h.reset_api()
         await h.inject(group_message("25", group_id=DIALOG_GROUP, user_id=DIALOG_USER))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应提示确认"
+        h.assert_api("send_group_msg").called()
 
         # 确认
         h.reset_api()
@@ -110,7 +107,7 @@ async def test_pv02_full_registration_flow():
             group_message("确认", group_id=DIALOG_GROUP, user_id=DIALOG_USER)
         )
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应回复注册成功"
+        h.assert_api("send_group_msg").called()
 
         # 验证数据持久化
         plugin = h.get_plugin(DIALOG_PLUGIN)
@@ -135,7 +132,7 @@ async def test_pv02_cancel_registration():
             group_message("取消", group_id=DIALOG_GROUP, user_id=DIALOG_USER)
         )
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应回复已取消"
+        h.assert_api("send_group_msg").called()
 
 
 # ---------------------------------------------------------------------------
@@ -160,7 +157,7 @@ async def test_pv03_api_status_command():
     ) as h:
         await h.inject(group_message("api状态", group_id="10001"))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---------------------------------------------------------------------------
@@ -189,7 +186,7 @@ async def test_pv04_webhook_triggers_notification():
         await h.settle(0.1)
 
         assert notification_sent
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +219,7 @@ async def test_pv05_admin_command_allowed():
         await h.settle(0.1)
 
         assert executed
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_pv05_normal_user_rejected():
@@ -246,4 +243,4 @@ async def test_pv05_normal_user_rejected():
         await h.settle(0.1)
 
         assert rejected
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()

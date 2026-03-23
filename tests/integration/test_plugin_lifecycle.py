@@ -21,7 +21,7 @@ from ncatbot.core.registry.registrar import (
     _pending_handlers,
 )
 from ncatbot.core.registry.context import set_current_plugin, _current_plugin_ctx
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 @pytest.fixture(autouse=True)

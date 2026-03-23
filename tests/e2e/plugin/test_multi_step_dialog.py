@@ -10,7 +10,8 @@
 
 import pytest
 
-from ncatbot.testing import PluginTestHarness, group_message
+from ncatbot.testing import PluginTestHarness
+from ncatbot.testing.factories.qq import group_message
 
 
 PLUGIN_NAME = "multi_step_dialog"
@@ -36,25 +37,25 @@ async def test_full_registration_flow(examples_dir):
         # 触发注册
         await h.inject(group_message("注册", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应回复要求输入名字"
+        h.assert_api("send_group_msg").called()
 
         # 输入名字
         h.reset_api()
         await h.inject(group_message("张三", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应回复要求输入年龄"
+        h.assert_api("send_group_msg").called()
 
         # 输入年龄
         h.reset_api()
         await h.inject(group_message("25", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应回复要求确认"
+        h.assert_api("send_group_msg").called()
 
         # 确认
         h.reset_api()
         await h.inject(group_message("确认", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
-        assert h.api_called("send_group_msg"), "应回复注册成功"
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-42: 用户取消 ----
@@ -72,7 +73,7 @@ async def test_registration_cancel(examples_dir):
         await h.inject(group_message("取消", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg"), "应回复注册已取消"
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-43: data 持久化 ----
@@ -127,4 +128,4 @@ async def test_my_info_after_registration(examples_dir):
         await h.inject(group_message("我的信息", group_id=GROUP_ID, user_id=USER_ID))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg"), "应回复用户注册信息"
+        h.assert_api("send_group_msg").called()

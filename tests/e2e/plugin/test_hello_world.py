@@ -10,7 +10,8 @@
 
 import pytest
 
-from ncatbot.testing import PluginTestHarness, group_message, private_message
+from ncatbot.testing import PluginTestHarness
+from ncatbot.testing.factories.qq import group_message, private_message
 
 
 PLUGIN_NAME = "hello_world_qq"
@@ -48,7 +49,7 @@ async def test_group_hello_reply(examples_dir):
         await h.inject(group_message("hello", group_id="10001", user_id="99999"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 async def test_group_hi_reply(examples_dir):
@@ -59,7 +60,7 @@ async def test_group_hi_reply(examples_dir):
         await h.inject(group_message("hi", group_id="10001", user_id="99999"))
         await h.settle(0.1)
 
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---- PL-03: 私聊消息 hello ----
@@ -73,7 +74,7 @@ async def test_private_hello_reply(examples_dir):
         await h.inject(private_message("hello", user_id="99999"))
         await h.settle(0.1)
 
-        assert h.api_called("send_private_msg")
+        h.assert_api("send_private_msg").called()
 
 
 # ---- PL-04: 卸载 ----

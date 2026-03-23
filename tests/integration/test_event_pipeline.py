@@ -16,7 +16,7 @@ from ncatbot.core.registry.dispatcher import HandlerDispatcher
 from ncatbot.core.registry.builtin_hooks import MessageTypeFilter
 from ncatbot.core.registry.hook import add_hooks
 from ncatbot.event.qq.message import GroupMessageEvent
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 # ---- I-01: 全链路 ----
@@ -139,8 +139,10 @@ async def test_handler_api_call():
 
     assert api.called("send_group_msg")
     call = api.last_call("send_group_msg")
-    assert call.args[0] == "1"  # group_id
-    assert "echo: ping" in str(call.args[1])  # message
+    assert call.params["group_id"] == "1"
+    from ncatbot.testing.assertions import extract_text
+
+    assert "echo: ping" in extract_text(call)
 
     await hd.stop()
     await ed.close()

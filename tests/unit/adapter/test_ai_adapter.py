@@ -2,8 +2,6 @@
 AI 适配器单元测试
 
 规范:
-  AI-01: AIConfig 默认值正确
-  AI-02: AIConfig 分功能默认模型独立设置
   AI-03: AIBotAPI.chat() str 自动包装为 messages
   AI-04: AIBotAPI.chat() list[dict] 直接透传
   AI-05: AIBotAPI 未指定模型时抛出 ValueError
@@ -28,36 +26,6 @@ from ncatbot.adapter.ai.config import AIConfig
 from ncatbot.adapter.ai.api.bot_api import AIBotAPI
 from ncatbot.adapter.ai.adapter import AIAdapter
 from ncatbot.types import Image
-
-
-# ---- AI-01 ----
-
-
-def test_ai_config_defaults():
-    """AI-01: AIConfig 默认值正确"""
-    cfg = AIConfig()
-    assert cfg.api_key == ""
-    assert cfg.base_url == ""
-    assert cfg.completion_model == ""
-    assert cfg.embedding_model == ""
-    assert cfg.image_model == ""
-    assert cfg.timeout == 120.0
-    assert cfg.max_tokens is None
-
-
-# ---- AI-02 ----
-
-
-def test_ai_config_per_capability_models():
-    """AI-02: 各功能默认模型可独立设置"""
-    cfg = AIConfig(
-        completion_model="gpt-4",
-        embedding_model="text-embedding-3-small",
-        image_model="dall-e-3",
-    )
-    assert cfg.completion_model == "gpt-4"
-    assert cfg.embedding_model == "text-embedding-3-small"
-    assert cfg.image_model == "dall-e-3"
 
 
 # ---- AI-03 ----

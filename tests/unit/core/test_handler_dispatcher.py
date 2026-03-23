@@ -23,7 +23,7 @@ from ncatbot.core.dispatcher import AsyncEventDispatcher
 from ncatbot.core.registry.dispatcher import HandlerDispatcher
 from ncatbot.core.registry.hook import Hook, HookAction, HookContext, HookStage
 from ncatbot.event.common.base import BaseEvent
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 # ---- 辅助 ----

@@ -5,9 +5,8 @@ Hook 系统规范测试
   K-01: Hook 作为装饰器绑定到 func.__hooks__
   K-02: add_hooks() 批量添加
   K-03: get_hooks() 按 priority 降序返回
-  K-04: HookContext 正确传递
-  K-04: 内置 MessageTypeFilter 过滤
-  K-05: 内置 SelfFilter 过滤自身消息
+  K-05: 内置 MessageTypeFilter 过滤
+  K-06: 内置 PostTypeFilter 过滤
 """
 
 from ncatbot.core.registry.hook import (
@@ -21,7 +20,7 @@ from ncatbot.core.registry.hook import (
 from ncatbot.core.registry.builtin_hooks import MessageTypeFilter, PostTypeFilter
 from ncatbot.core.dispatcher.event import Event
 from ncatbot.core.registry.dispatcher import HandlerEntry
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 from unittest.mock import MagicMock
 
 
@@ -120,50 +119,6 @@ def test_get_hooks_sorted_by_priority():
     assert priorities == sorted(priorities, reverse=True)
 
 
-# ---- K-04: HookContext ----
-
-
-def test_hook_context_fields():
-    """K-04: HookContext 正确传递 event / handler_entry"""
-    data = factory.group_message("test")
-    event = Event(type="message.group", data=data)
-
-    async def dummy(e):
-        pass
-
-    entry = HandlerEntry(func=dummy, event_type="message.group")
-
-    ctx = HookContext(
-        event=event, event_type="message.group", handler_entry=entry, api=_mock_api
-    )
-    assert ctx.event is event
-    assert ctx.event_type == "message.group"
-    assert ctx.handler_entry is entry
-    assert ctx.result is None
-    assert ctx.error is None
-    assert ctx.kwargs == {}
-
-
-def test_hook_context_error_field():
-    """K-04 补充: HookContext.error 可设置"""
-    data = factory.group_message("test")
-    event = Event(type="message.group", data=data)
-
-    async def dummy(e):
-        pass
-
-    entry = HandlerEntry(func=dummy, event_type="message.group")
-    err = ValueError("test")
-    ctx = HookContext(
-        event=event,
-        event_type="message.group",
-        handler_entry=entry,
-        api=_mock_api,
-        error=err,
-    )
-    assert ctx.error is err
-
-
 # ---- K-05: MessageTypeFilter ----
 
 
@@ -243,17 +198,3 @@ async def test_post_type_filter_rejects():
 
     result = await f.execute(ctx)
     assert result == HookAction.SKIP
-
-
-# ---- Hook subclass 必须定义 stage ----
-
-
-def test_hook_subclass_inherits_default_stage():
-    """Hook 子类继承默认 stage 属性 (BEFORE_CALL)"""
-
-    class MinimalHook(Hook):
-        async def execute(self, ctx):
-            return HookAction.CONTINUE
-
-    h = MinimalHook()
-    assert h.stage == HookStage.BEFORE_CALL

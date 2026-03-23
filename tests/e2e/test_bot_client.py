@@ -14,7 +14,7 @@ import asyncio
 
 from ncatbot.testing.harness import TestHarness
 from ncatbot.event.qq.message import GroupMessageEvent
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 # ---- B-01: 启动/停止 ----
@@ -26,7 +26,7 @@ async def test_harness_lifecycle():
     await harness.start()
 
     assert harness.bot._running
-    assert harness.adapter.connected
+    assert harness.adapter_for("qq").connected
 
     await harness.stop()
     assert not harness.bot._running
@@ -58,7 +58,7 @@ async def test_inject_event_triggers_handler():
 
         assert len(received) == 1
         assert isinstance(received[0], GroupMessageEvent)
-        assert h.api_called("send_group_msg")
+        h.assert_api("send_group_msg").called()
 
 
 # ---- B-03: 多事件 ----
@@ -102,9 +102,7 @@ async def test_reply_produces_api_call():
         await h.inject(factory.group_message("hello", group_id="999"))
         await h.settle()
 
-        assert h.api_called("send_group_msg")
-        call = h.last_api_call("send_group_msg")
-        assert call.args[0] == "999"
+        h.assert_api("send_group_msg").called().with_params(group_id="999")
 
 
 # ---- B-05: settle ----
@@ -141,11 +139,11 @@ async def test_reset_api():
 
         await h.inject(factory.group_message("first"))
         await h.settle()
-        assert h.api_call_count("send_group_msg") == 1
+        h.assert_api("send_group_msg").times(1)
 
         h.reset_api()
-        assert h.api_call_count("send_group_msg") == 0
+        h.assert_api("send_group_msg").times(0)
 
         await h.inject(factory.group_message("second"))
         await h.settle()
-        assert h.api_call_count("send_group_msg") == 1
+        h.assert_api("send_group_msg").times(1)

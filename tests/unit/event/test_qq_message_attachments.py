@@ -14,7 +14,7 @@ from ncatbot.adapter.mock.api import MockBotAPI
 from ncatbot.event.common.factory import create_entity
 from ncatbot.event.common.mixins import HasAttachments
 from ncatbot.event.qq.message import GroupMessageEvent
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 from ncatbot.types.common.attachment import ImageAttachment, VideoAttachment
 from ncatbot.types.common.attachment_list import AttachmentList
 from ncatbot.types.common.segment.media import Image, Video

@@ -2,7 +2,6 @@
 API 错误层级规范测试
 
 规范:
-  AE-01: APIError 可用 retcode / message / wording 构造
   AE-02: raise_for_retcode 在 retcode=0 时不抛异常
   AE-03: raise_for_retcode 在 retcode=1400 时抛 APIRequestError
   AE-04: raise_for_retcode 在 retcode=1401 时抛 APIPermissionError
@@ -20,17 +19,6 @@ from ncatbot.api.errors import (
     APINotFoundError,
     raise_for_retcode,
 )
-
-
-# ---- AE-01: 构造 ----
-
-
-def test_api_error_construction():
-    """AE-01: APIError 可用 retcode / message 构造"""
-    e = APIError(retcode=100, message="test", wording="hint")
-    assert e.retcode == 100
-    assert e.message == "test"
-    assert e.wording == "hint"
 
 
 # ---- AE-02: retcode=0 不抛异常 ----

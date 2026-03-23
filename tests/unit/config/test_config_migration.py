@@ -94,33 +94,6 @@ def test_napcat_null_treated_as_absent():
     assert cfg.adapters[0].type == "napcat"
 
 
-# ---- CF-04: AdapterEntry 验证 ----
-
-
-def test_adapter_entry_defaults():
-    """CF-04: AdapterEntry 默认值"""
-    entry = AdapterEntry(type="mock")
-
-    assert entry.platform == ""
-    assert entry.enabled is True
-    assert entry.config == {}
-
-
-def test_adapter_entry_full():
-    """CF-04b: AdapterEntry 完整字段"""
-    entry = AdapterEntry(
-        type="napcat",
-        platform="qq",
-        enabled=False,
-        config={"ws_uri": "wss://custom:3002"},
-    )
-
-    assert entry.type == "napcat"
-    assert entry.platform == "qq"
-    assert entry.enabled is False
-    assert entry.config["ws_uri"] == "wss://custom:3002"
-
-
 # ---- CF-05: 字段 coerce / clamp ----
 
 

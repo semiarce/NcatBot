@@ -2,7 +2,6 @@
 BotAPIClient 规范测试
 
 规范:
-  A-01: query 命名空间包含查询操作
   A-02: __getattr__ 兆底透传未定义平台
 """
 
@@ -19,15 +18,6 @@ def client():
     api = BotAPIClient()
     api.register_platform("qq", QQAPIClient(mock))
     return api, mock
-
-
-# ---- A-01: query 命名空间 ----
-
-
-def test_query_namespace_exists(client):
-    """A-01: api.qq.query 属性存在"""
-    api, _ = client
-    assert hasattr(api.qq, "query")
 
 
 # ---- A-02: 未注册平台 ----

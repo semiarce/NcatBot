@@ -19,7 +19,7 @@ from ncatbot.core.registry.registrar import (
     flush_pending,
     _pending_handlers,
 )
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 @pytest.fixture(autouse=True)

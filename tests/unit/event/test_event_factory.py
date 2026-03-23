@@ -14,7 +14,7 @@ from ncatbot.event.common.base import BaseEvent
 from ncatbot.event.qq.message import GroupMessageEvent, PrivateMessageEvent
 from ncatbot.event.qq.notice import GroupIncreaseEvent
 from ncatbot.event.qq.request import FriendRequestEvent, GroupRequestEvent
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 # ---- E-01 / E-02: 精确映射 ----

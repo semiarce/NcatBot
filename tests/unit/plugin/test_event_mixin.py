@@ -14,7 +14,7 @@ import pytest_asyncio
 
 from ncatbot.core.dispatcher import AsyncEventDispatcher
 from ncatbot.plugin.mixin.event_mixin import EventMixin
-from ncatbot.testing import factory
+from ncatbot.testing.factories import qq as factory
 
 
 class FakePlugin(EventMixin):
