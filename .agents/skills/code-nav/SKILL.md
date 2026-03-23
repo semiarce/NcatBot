@@ -38,7 +38,8 @@ description: '定位 NcatBot 代码实现：锁定模块目录、找到关键类
 | 事件模型 | `ncatbot/event/` | `MessageEvent`, `NoticeEvent`, `RequestEvent` |
 | 类型定义 | `ncatbot/types/` | Pydantic 数据模型 |
 | 服务管理 | `ncatbot/service/` | `ServiceManager` |
-| 测试框架 | `ncatbot/testing/` | `TestHarness` |
+| 测试框架 | `ncatbot/testing/` | `TestHarness`, `MockAPIBase`, `APICallAssertion` |
+| Mock 适配器 | `ncatbot/adapter/mock/` | `MockAdapter`, `MockAPIBase`, `MockBotAPI`, `MockBiliAPI`, `MockGitHubAPI` |
 
 > 完整模块映射表（含所有子模块）：[references/module-code-map.md](./references/module-code-map.md)
 

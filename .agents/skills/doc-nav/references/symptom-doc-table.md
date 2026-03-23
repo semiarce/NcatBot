@@ -29,6 +29,9 @@
 | QQ 专用类型/段错误 | types/qq | `reference/3. 数据类型/README.md` |
 | 跨平台事件路由问题 | event/common/factory, core/registry | `guide/10. 多平台开发/README.md` |
 | 多适配器/多平台配置 | app/client, api/client | `guide/10. 多平台开发/README.md` |
+| `!` 管理命令不响应 / 权限被拒 | plugin/builtin/system_manager | `guide/3. 插件开发/12. 内置管理命令.md` |
+| AI API 报错 / chat 不工作 | api/ai, adapter/ai | `reference/1. Bot API/5. AI/1. API.md` |
+| 下载失败 / 代理不生效 | api/misc | `reference/1. Bot API/6. Misc/1. API.md` |
 
 ## 多症状并发
 

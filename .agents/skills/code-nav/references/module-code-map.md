@@ -76,6 +76,8 @@
 | `reference/1. Bot API/2. QQ/2. 管理 API.md` | `ncatbot/api/qq/` | 群管理方法 |
 | `reference/1. Bot API/2. QQ/3. 信息支持 API.md` | `ncatbot/api/qq/` | 查询/辅助方法 |
 | `reference/1. Bot API/4. GitHub/1. API.md` | `ncatbot/adapter/github/api/` | `GitHubBotAPI` (Issue/Comment/PR/Query Mixin) |
+| `reference/1. Bot API/5. AI/1. API.md` | `ncatbot/api/ai/`, `ncatbot/adapter/ai/api/` | `IAIAPIClient`, `AIBotAPI` |
+| `reference/1. Bot API/6. Misc/1. API.md` | `ncatbot/api/misc.py` | `MiscAPI` |
 | `reference/2. 事件类型/1. 通用事件.md` | `ncatbot/event/` | 事件类层级 |
 | `reference/2. 事件类型/4. GitHub 事件.md` | `ncatbot/event/github/` | GitHub 事件实体类 |
 | `reference/3. 数据类型/1. 通用消息段.md` | `ncatbot/types/common/segment/` | 消息段类型 |

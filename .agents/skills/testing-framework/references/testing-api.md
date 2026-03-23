@@ -2,127 +2,236 @@
 
 ## TestHarness
 
+`from ncatbot.testing import TestHarness`
+
 | 属性/方法 | 签名 | 说明 |
 |-----------|------|------|
+| 构造 | `TestHarness(platforms=("qq",))` | 可传多平台 |
 | `bot` | `BotClient` | BotClient 实例 |
-| `adapter` | `MockAdapter` | MockAdapter 实例 |
-| `mock_api` | `MockBotAPI` | API mock，用于断言 |
 | `dispatcher` | `AsyncEventDispatcher` | 事件分发器 |
+| `mock_api` | `MockAPIBase` | 第一个平台的 MockAPI（单平台快捷） |
+| `mock_api_for(platform)` | `MockAPIBase` | 指定平台的 MockAPI |
+| `adapter_for(platform)` | `MockAdapter` | 指定平台的 MockAdapter |
 | `start()` | `async` | 启动 BotClient |
 | `stop()` | `async` | 停止 BotClient |
-| `inject(event_data)` | `async` | 注入单个事件 |
-| `inject_many(events)` | `async` | 注入多个事件 |
+| `inject(event_data)` | `async` | 注入事件（按 `event_data.platform` 自动路由） |
+| `inject_many(events)` | `async` | 依次注入多个事件 |
 | `settle(delay=0.05)` | `async` | 等待 handler 执行完 |
-| `wait_event(predicate, timeout=2.0)` | `async` | 等待满足条件的事件 |
-| `api_calls` | `list[APICall]` | 所有 API 调用记录 |
-| `api_called(action)` | `bool` | 是否调用过某 action |
-| `api_call_count(action)` | `int` | 某 action 的调用次数 |
-| `get_api_calls(action)` | `list[APICall]` | 某 action 的所有调用 |
-| `last_api_call(action)` | `APICall` | 某 action 最近一次调用 |
-| `reset_api()` | `void` | 清空调用记录 |
+| `wait_event(predicate, timeout=2.0)` | `async → Event` | 等待满足条件的事件 |
+| `assert_api(action)` | `→ APICallAssertion` | 全平台范围 fluent 断言 |
+| `on(platform)` | `→ PlatformScope` | 限定平台后再断言 |
+| `reset_api(platform=None)` | `void` | 清空调用记录（指定平台或全部） |
 
 ## PluginTestHarness（继承 TestHarness）
 
+`from ncatbot.testing import PluginTestHarness`
+
 | 参数/方法 | 签名 | 说明 |
 |-----------|------|------|
-| `plugin_names` | `list[str]` | 构造参数：要加载的插件名 |
-| `plugins_dir` | `Path` | 构造参数：插件根目录 |
-| `skip_builtin` | `bool = True` | 构造参数：是否跳过内置插件 |
-| `skip_pip` | `bool = True` | 构造参数：是否跳过 pip 依赖安装 |
+| 构造 | `PluginTestHarness(plugin_names, plugins_dir, *, platforms=("qq",), skip_builtin=True, skip_pip=True)` | |
 | `loaded_plugins` | `list[str]` | 已加载插件名列表 |
-| `get_plugin(name)` | `NcatBotPlugin` | 获取插件实例 |
+| `get_plugin(name)` | `BasePlugin \| None` | 获取插件实例 |
 | `plugin_config(name)` | `dict` | 获取插件配置 |
 | `plugin_data(name)` | `dict` | 获取插件数据 |
-| `reload_plugin(name)` | `async` | 热重载插件 |
-
-## 事件工厂函数
-
-| 函数 | 返回类型 | 关键参数（均有默认值） |
-|------|---------|----------------------|
-| `group_message(text)` | `GroupMessageEventData` | `group_id`, `user_id`, `self_id` |
-| `private_message(text)` | `PrivateMessageEventData` | `user_id`, `self_id` |
-| `friend_request()` | `FriendRequestEventData` | `user_id`, `comment` |
-| `group_request()` | `GroupRequestEventData` | `user_id`, `group_id`, `comment` |
-| `group_increase()` | `GroupIncreaseNoticeEventData` | `user_id`, `group_id`, `operator_id` |
-| `group_decrease()` | `GroupDecreaseNoticeEventData` | `user_id`, `group_id`, `operator_id` |
-| `group_ban()` | `GroupBanNoticeEventData` | `user_id`, `group_id`, `duration` |
-| `poke()` | `PokeNotifyEventData` | `user_id`, `target_id`, `group_id` |
-
-默认值：`user_id="99999"`, `group_id="100200"`, `self_id="10001"`
-
-## MockAdapter 平台参数
-
-TestHarness 和 PluginTestHarness 默认使用 `MockAdapter(platform="qq")`，事件数据工厂函数（`group_message` 等）也默认生成 `platform="qq"` 的数据。这确保 QQ 事件正确路由到 QQ 工厂并创建带有 `reply()` 等方法的实体。
-
-如需测试非 QQ 平台，显式指定 platform：
-
-```python
-adapter = MockAdapter(platform="telegram")
-bot = BotClient(adapter=adapter)
-```
-
-多适配器测试：
-
-```python
-bot = BotClient(adapters=[
-    MockAdapter(platform="qq"),
-    MockAdapter(platform="telegram"),
-])
-```
-
-## MockBotAPI
-
-| 方法 | 说明 |
-|------|------|
-| `set_response(action, response)` | 预设某 action 的返回值 |
-| `calls` | 所有 `APICall` 记录 |
-| `called(action)` | `bool` |
-| `call_count(action)` | `int` |
-| `get_calls(action)` | `list[APICall]` |
-| `last_call(action)` | `APICall` |
-| `reset()` | 清空记录 |
+| `reload_plugin(name)` | `async → bool` | 热重载插件 |
 
 ## APICall 数据类
+
+`from ncatbot.adapter.mock.api_base import APICall`
 
 ```python
 @dataclass
 class APICall:
-    action: str       # API action 名称
-    args: tuple       # 位置参数
-    kwargs: dict      # 关键字参数
-    timestamp: float  # 调用时间
+    action: str                          # API action 名称
+    params: Dict[str, Any] = field(...)  # 所有参数按名存储
 ```
+
+> 无 `args` / `kwargs` / `timestamp`。所有参数以关键字形式统一存入 `params` 字典。
+
+## MockAPIBase
+
+`from ncatbot.adapter.mock import MockAPIBase`
+
+所有平台 Mock API 的共享基类。`MockBotAPI`、`MockBiliAPI`、`MockGitHubAPI` 均继承此类。
+
+| 方法/属性 | 签名 | 说明 |
+|-----------|------|------|
+| 构造 | `MockAPIBase(platform="unknown")` | |
+| `platform` | `str` | 平台标识 |
+| `set_response(action, response)` | `void` | 预设某 action 的返回值 |
+| `calls` | `list[APICall]` | 全部调用记录 |
+| `called(action)` | `bool` | 某 action 是否被调用过 |
+| `call_count(action)` | `int` | 某 action 调用次数 |
+| `get_calls(action)` | `list[APICall]` | 某 action 的全部调用 |
+| `last_call(action=None)` | `APICall \| None` | 最近一次（指定 action 或全部） |
+| `reset()` | `void` | 清空全部记录 |
+
+## MockBotAPI（QQ）
+
+`from ncatbot.adapter.mock import MockBotAPI`
+
+继承 `MockAPIBase` + `IQQAPIClient`。所有 QQ API 方法均以 `self._record("action", key=val, ...)` 形式录制。
+
+代表方法签名示例：
+
+| 方法 | 录制 action | 录制的 params keys |
+|------|-----------|-------------------|
+| `send_group_msg(group_id, message, **kw)` | `send_group_msg` | `group_id`, `message`, ... |
+| `send_private_msg(user_id, message, **kw)` | `send_private_msg` | `user_id`, `message`, ... |
+| `set_group_ban(group_id, user_id, duration)` | `set_group_ban` | `group_id`, `user_id`, `duration` |
+
+## MockBiliAPI（Bilibili）
+
+`from ncatbot.adapter.mock import MockBiliAPI`
+
+继承 `MockAPIBase` + `IBiliAPIClient`。
+
+| 方法 | 录制 action | 录制的 params keys |
+|------|-----------|-------------------|
+| `send_danmu(room_id, text)` | `send_danmu` | `room_id`, `text` |
+| `send_private_msg(user_id, text)` | `send_private_msg` | `user_id`, `text` |
+| `ban_user(room_id, user_id, duration)` | `ban_user` | `room_id`, `user_id`, `duration` |
+
+## MockGitHubAPI（GitHub）
+
+`from ncatbot.adapter.mock import MockGitHubAPI`
+
+继承 `MockAPIBase` + `IGitHubAPIClient`。
+
+| 方法 | 录制 action | 录制的 params keys |
+|------|-----------|-------------------|
+| `create_issue_comment(repo, issue_number, body)` | `create_issue_comment` | `repo`, `issue_number`, `body` |
+| `create_issue(repo, title, body, labels)` | `create_issue` | `repo`, `title`, `body`, `labels` |
+| `merge_pull_request(repo, pr_number, method)` | `merge_pull_request` | `repo`, `pr_number`, `method` |
+
+## APICallAssertion（Fluent 断言）
+
+`from ncatbot.testing import APICallAssertion`
+
+通过 `h.assert_api(action)` 或 `h.on(platform).assert_api(action)` 获取。
+
+| 方法 | 返回 | 说明 |
+|------|------|------|
+| `called()` | `self` | 断言至少被调用一次 |
+| `not_called()` | `self` | 断言未被调用 |
+| `times(n)` | `self` | 断言调用次数 |
+| `with_params(**expected)` | `self` | 断言任一调用的 params 包含 expected 子集 |
+| `with_text(*fragments)` | `self` | 断言任一调用的文本包含所有 fragment（跨平台感知） |
+| `where(predicate)` | `self` | 断言任一调用满足自定义条件 |
+| `last` | `APICall` | 最后一次匹配调用（property） |
+| `calls` | `list[APICall]` | 所有匹配调用（property） |
+
+链式用法：
+
+```python
+h.assert_api("send_group_msg").called().with_params(group_id="999").with_text("pong")
+```
+
+## PlatformScope
+
+`from ncatbot.testing import PlatformScope`
+
+通过 `h.on(platform)` 获取。
+
+| 方法/属性 | 签名 | 说明 |
+|-----------|------|------|
+| `assert_api(action)` | `→ APICallAssertion` | 该平台范围内的断言 |
+| `mock_api` | `MockAPIBase` | 该平台的 MockAPI |
+| `reset()` | `void` | 清空该平台记录 |
+
+## extract_text()
+
+`from ncatbot.testing import extract_text`
+
+```python
+def extract_text(call: APICall) -> str
+```
+
+从 `APICall` 中提取文本内容（跨平台感知）：
+- QQ `message` (list[segment]) → 拼接 `type=text` 的 `data.text`
+- Bilibili `text`/`content` → 直接取字符串
+- GitHub `body` → 直接取字符串
+- 兜底 → `str(params)`
+
+## 事件工厂函数
+
+### QQ — `from ncatbot.testing.factories.qq import ...`
+
+| 函数 | 返回类型 | 关键参数（均有默认值） |
+|------|---------|----------------------|
+| `group_message(text)` | `GroupMessageEventData` | `group_id`, `user_id`, `self_id`, `message`, `raw_message`, `sub_type` |
+| `private_message(text)` | `PrivateMessageEventData` | `user_id`, `self_id`, `message`, `raw_message`, `sub_type` |
+| `friend_request(user_id, comment)` | `FriendRequestEventData` | `flag`, `self_id` |
+| `group_request(user_id, group_id, comment)` | `GroupRequestEventData` | `flag`, `sub_type`, `self_id` |
+| `group_increase(user_id, group_id, operator_id)` | `GroupIncreaseNoticeEventData` | `sub_type`, `self_id` |
+| `group_decrease(user_id, group_id, operator_id)` | `GroupDecreaseNoticeEventData` | `sub_type`, `self_id` |
+| `group_ban(user_id, group_id, operator_id, duration)` | `GroupBanNoticeEventData` | `sub_type`, `self_id` |
+| `poke(user_id, target_id, group_id)` | `PokeNotifyEventData` | `self_id` |
+
+默认值：`user_id="99999"`, `group_id="100200"`, `self_id="10001"`
+
+### Bilibili — `from ncatbot.testing.factories.bilibili import ...`
+
+| 函数 | 返回类型 | 关键参数 |
+|------|---------|---------|
+| `danmu(text)` | `DanmuMsgEventData` | `room_id`, `user_id`, `user_name` |
+| `super_chat(content, price)` | `SuperChatEventData` | `room_id`, `user_id`, `duration` |
+| `gift(gift_name, num)` | `GiftEventData` | `room_id`, `gift_id`, `price`, `coin_type` |
+| `private_message(text)` | `BiliPrivateMessageEventData` | `user_id`, `user_name` |
+| `comment(content)` | `BiliCommentEventData` | `resource_id`, `resource_type`, `comment_id` |
+| `dynamic(text)` | `BiliDynamicEventData` | `uid`, `dynamic_id`, `dynamic_type` |
+
+默认值：`room_id="12345"`, `user_id="88888"`
+
+### GitHub — `from ncatbot.testing.factories.github import ...`
+
+| 函数 | 返回类型 | 关键参数 |
+|------|---------|---------|
+| `issue_opened(title, body)` | `GitHubIssueEventData` | `repo`, `issue_number`, `login`, `labels` |
+| `issue_closed(title)` | `GitHubIssueEventData` | `repo`, `issue_number`, `login` |
+| `issue_comment(body)` | `GitHubIssueCommentEventData` | `repo`, `issue_number`, `comment_id`, `login` |
+| `pr_opened(title, body)` | `GitHubPREventData` | `repo`, `pr_number`, `head_ref`, `base_ref`, `login` |
+| `push(ref)` | `GitHubPushEventData` | `repo`, `login`, `before`, `after` |
+| `star()` | `GitHubStarEventData` | `repo`, `login`, `action` |
+| `release_published(tag_name, name, body)` | `GitHubReleaseEventData` | `repo`, `login` |
+
+默认值：`repo="owner/repo"`, `login="test-user"`
 
 ## Scenario 链式构建器
 
-`Scenario` 是链式步骤构建器，调用 `await scenario.run(harness)` 执行全部步骤。
+`from ncatbot.testing import Scenario`
 
 | 方法 | 返回 | 说明 |
 |------|------|------|
 | `Scenario(name="")` | `Scenario` | 构造，name 用于报错时定位步骤 |
+| `.on(platform)` | `Scenario` | 切换后续断言步骤的平台作用域 |
 | `.inject(event_data)` | `Scenario` | 注入单个事件 |
 | `.inject_many(events)` | `Scenario` | 注入多个事件 |
 | `.settle(delay=0.05)` | `Scenario` | 等待 handler 处理完成 |
-| `.assert_api_called(action, **match)` | `Scenario` | 断言 API 被调用（可选 kwargs 参数匹配） |
+| `.assert_api_called(action, **match)` | `Scenario` | 断言 API 被调用（可选 params 子集匹配） |
 | `.assert_api_not_called(action)` | `Scenario` | 断言 API 未被调用 |
 | `.assert_api_count(action, count)` | `Scenario` | 断言 API 调用次数 |
-| `.assert_that(predicate, desc="")` | `Scenario` | 自定义断言（predicate 接收 harness，可抛 AssertionError） |
+| `.assert_api_params(action, **params)` | `Scenario` | 断言 API 被调用且 params 包含指定子集 |
+| `.assert_api_text(action, *fragments)` | `Scenario` | 断言 API 文本内容包含所有 fragment |
+| `.assert_api_where(action, predicate, desc="")` | `Scenario` | 断言 API 任一调用满足 predicate |
+| `.assert_that(predicate, desc="")` | `Scenario` | 自定义断言（predicate 接收 harness） |
 | `.reset_api()` | `Scenario` | 清空 API 调用记录 |
-| `await .run(harness)` | `None` | 执行全部步骤（async，必须传入 harness） |
+| `await .run(harness)` | `None` | 执行全部步骤 |
 
 ```python
-# 示例
-scenario = (
-    Scenario("login_flow")
-    .inject(group_message("注册"))
+await (
+    Scenario("多步对话")
+    .inject(qq.group_message("注册", group_id="500"))
     .settle()
     .assert_api_called("send_group_msg")
+    .assert_api_text("send_group_msg", "请输入姓名")
     .reset_api()
-    .inject(group_message("张三"))
+    .inject(qq.group_message("张三", group_id="500"))
     .settle()
-    .assert_api_called("send_group_msg")
+    .on("qq").assert_api_called("send_group_msg")
+    .assert_api_params("send_group_msg", group_id="500")
+    .run(harness)
 )
-await scenario.run(harness)  # 必须传入 harness 实例
 ```
 
 ## pytest Fixtures（conftest.py 提供）
@@ -143,13 +252,12 @@ await scenario.run(harness)  # 必须传入 harness 实例
 
 | 症状 | 可能原因 | 排查 / 修复 |
 |------|---------|------------|
-| handler 没被调用 | 事件类型字符串不匹配 / Hook 拦截 | 检查注册的事件类型；打印 `h.api_calls` 确认 |
-| `api_called` 返回 False | handler 未执行 / `settle` 时间不足 | 改为 `await h.settle(0.1)`；加 `print` 确认 handler 执行 |
+| handler 没被调用 | 事件类型字符串不匹配 / Hook 拦截 | 检查注册的事件类型；打印 `h.mock_api.calls` 确认 |
+| `assert_api().called()` 失败 | handler 未执行 / `settle` 时间不足 | 改为 `await h.settle(0.1)`；加 `print` 确认 handler 执行 |
 | `asyncio` 警告/报错 | 缺少 `asyncio_mode` 标记 | 文件顶部加 `pytestmark = pytest.mark.asyncio(mode="strict")` |
 | `ImportError` | 测试依赖未安装 | `uv pip install -e ".[test]"` |
 | 插件加载失败 | `plugins_dir` 路径错误 / 缺少 `__init__.py` | 用 `Path(__file__).resolve().parents[N] / "..."` 确保绝对路径 |
 | flaky（偶发失败） | 异步竞态 / settle 时间不稳定 | 用 `wait_event(predicate, timeout=2.0)` 替代固定 delay |
 | Mock 返回值不对 | 未预设 response | `harness.mock_api.set_response("action", {...})` |
-| `platform` 过滤不生效 | 事件 data 与 adapter platform 不一致 | 工厂函数默认 `platform="qq"`；检查自定义事件数据 |
-| `'BotAPIClient' has no attr 'post_group_msg'` | 插件直接调 `self.api.xxx` | QQ sugar 方法在 `self.api.qq` 上；`self.api` 是多平台路由器 |
+| `ValueError: 未注册平台` | inject 的事件 platform 与 harness platforms 不匹配 | 构造 harness 时传入对应平台 |
 | `'BaseEvent' has no attr 'reply'` | 事件数据缺少 `platform="qq"` | QQ 数据模型已内置 `platform: str = "qq"` 默认值；检查自定义数据 |

@@ -50,7 +50,12 @@ async def test_registrar_on_collects_handler(fresh_registrar):
 | `assert obj is not None`（仅验证加载成功） | 无行为验证，意义不大 |
 | `assert hasattr(module, "Symbol")` | 导入检查不是行为测试 |
 | `obj.field = x; assert obj.field == x` | 平凡 setter，不验证副作用 |
+| `Cfg(); assert cfg.field == default` | 纯默认值快照，测的是 dataclass/Pydantic 赋默认值能力 |
+| `Cfg(k="v"); assert cfg.k == "v"` | 构造后读回同值，测的是 Python 属性存取 |
+| `dict.get` / `__getitem__` 薄封装 smoke | 无转换/校验/副作用的透传包装不值得单独测试 |
 | 重测框架/库已保证的行为（如 pydantic 字段验证） | 外部依赖不需重测 |
+
+**判定口诀**：如果把被测代码删了换成 `pass`，测试仍然不会 fail（因为测的是语言/框架内置行为），那这个测试就是无效的。
 
 **例外**：若"加载成功"本身是规范的一部分（如 PL-01 插件加载），相关断言是有意义的。
 

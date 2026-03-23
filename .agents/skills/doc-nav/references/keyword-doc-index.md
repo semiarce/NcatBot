@@ -28,4 +28,7 @@
 | 配置、Config、ConfigManager | `reference/8. 工具模块/1. 配置.md` |
 | Dispatcher、分发 | `reference/4. 核心模块/1. 内部实现.md` |
 | Registry、注册 | `reference/4. 核心模块/1. 内部实现.md` |
-| 生命周期、启动、关闭 | `docs/guide/11. 架构与概念/1. 架构总览.md`（§5 生命周期） |
+| 生命周期、启动、关闭 | `guide/11. 架构与概念/1. 架构总览.md`（§5 生命周期） |
+| AI、chat、embeddings、图像生成 | `reference/1. Bot API/5. AI/1. API.md` |
+| Misc、下载、代理、http_get | `reference/1. Bot API/6. Misc/1. API.md` |
+| 内置命令、!reload、!sysinfo、!builtin | `guide/3. 插件开发/12. 内置管理命令.md` |
