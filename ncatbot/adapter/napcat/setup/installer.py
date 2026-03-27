@@ -111,10 +111,10 @@ class NapCatInstaller:
         """
         return self._install("install", skip_confirm=skip_confirm)
 
-    def ensure_installed(self) -> bool:
+    def ensure_installed(self, skip_confirm: bool = False) -> bool:
         """确保 NapCat 已安装并为最新版本"""
         if not self._platform.is_napcat_installed():
-            return self._install("install")
+            return self._install("install", skip_confirm=skip_confirm)
 
         if not self._napcat_config or not self._napcat_config.enable_update_check:
             return True
@@ -124,7 +124,7 @@ class NapCatInstaller:
 
         if current and latest and current != latest:
             LOG.info(f"发现新版本: {latest} (当前: {current})")
-            return self._install("update")
+            return self._install("update", skip_confirm=skip_confirm)
 
         LOG.info("当前 NapCat 已是最新版本")
         return True

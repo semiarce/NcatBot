@@ -435,7 +435,7 @@ class PluginLoader:
             approved = True
         else:
             approved = await async_confirm(
-                f"是否安装以上 {len(missing)} 个依赖?", default=True
+                f"是否安装以上 {len(missing)} 个依赖?\n", default=True
             )
         if not approved:
             # 找出哪些插件受影响
