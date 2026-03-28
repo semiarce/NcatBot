@@ -118,7 +118,7 @@ constraint-dependencies = [
 ]
 
 [tool.codespell]
-ignore-words-list = "ans,fo,therefrom"
+ignore-words-list = "ans,fo,therefrom,lke"
 
 [tool.ruff]
 # docs/ 是 Git submodule，不进行 lint
