@@ -47,7 +47,7 @@ test 不发起任何网络请求，`settle()` 等待 handler 跑完，再用 flu
 
 ```python
 from ncatbot.testing import TestHarness, PluginTestHarness, Scenario
-from ncatbot.testing.factories import qq, bilibili, github  # 平台事件工厂
+from ncatbot.testing import factories  # factories.qq / factories.bilibili / factories.github
 ```
 
 完整工厂函数列表见 [references/testing-api.md](./references/testing-api.md)。
@@ -61,7 +61,7 @@ from ncatbot.testing.factories import qq, bilibili, github  # 平台事件工厂
 ```python
 import pytest
 from ncatbot.testing import TestHarness
-from ncatbot.testing.factories.qq import group_message
+from ncatbot.testing import group_message
 
 pytestmark = pytest.mark.asyncio(mode="strict")
 
@@ -84,7 +84,7 @@ async def test_handler_replies_to_group_message():
 import pytest
 from pathlib import Path
 from ncatbot.testing import PluginTestHarness
-from ncatbot.testing.factories.qq import group_message
+from ncatbot.testing import group_message
 
 pytestmark = pytest.mark.asyncio(mode="strict")
 
@@ -149,7 +149,7 @@ h.reset_api("qq")          # 只清空 QQ
 
 ```python
 from ncatbot.testing import Scenario
-from ncatbot.testing.factories.qq import group_message
+from ncatbot.testing import group_message
 
 async def test_registration_flow():
     """PL-40: 注册 → 输入名字 → 确认"""

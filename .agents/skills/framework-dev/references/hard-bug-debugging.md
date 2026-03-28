@@ -66,10 +66,10 @@ import asyncio
 import logging
 import pytest
 
-from ncatbot.adapter.mock.api import MockBotAPI
-from ncatbot.core.dispatcher import AsyncEventDispatcher
-from ncatbot.core.registry.dispatcher import HandlerDispatcher
-from ncatbot.core.registry.registrar import Registrar, flush_pending, _pending_handlers
+from ncatbot.adapter import MockBotAPI
+from ncatbot.core import AsyncEventDispatcher
+from ncatbot.core import HandlerDispatcher
+from ncatbot.core import Registrar, flush_pending, _pending_handlers
 from ncatbot.testing import factory
 
 pytestmark = pytest.mark.asyncio

@@ -142,7 +142,7 @@ plugin:
 ```text
 run()
   → _startup_core()
-    ├─ _setup_adapter()          → NapCat WebSocket 连接
+    ├─ _setup_adapters()          → NapCat WebSocket 连接
     ├─ _setup_api()              → BotAPIClient 包装
     ├─ _setup_dispatcher()       → AsyncEventDispatcher
     ├─ _setup_handler_dispatcher() → HandlerDispatcher
@@ -156,7 +156,7 @@ run()
 ```
 
 启动卡住时按阶段定位：
-- `_setup_adapter()` → WebSocket 连接问题
+- `_setup_adapters()` → WebSocket 连接问题
 - `_setup_services()` → 内置服务问题
 - `load_all()` → 插件加载问题
 - `adapter.listen()` → 运行时断连

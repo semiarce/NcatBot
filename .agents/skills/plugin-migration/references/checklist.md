@@ -86,7 +86,7 @@
 import sys, importlib
 sys.path.insert(0, "plugins/YOUR_PLUGIN")
 
-from ncatbot.plugin.manifest import PluginManifest
+from ncatbot.plugin import PluginManifest
 manifest = PluginManifest.from_toml("plugins/YOUR_PLUGIN/manifest.toml")
 print(f"Manifest: {manifest.name} v{manifest.version}")
 
