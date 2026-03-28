@@ -6,19 +6,19 @@
 
 ## ConfigMixin — 配置持久化
 
-> 存储到 `{workspace}/config.yaml`
+> 双层模型：插件源码目录 `config.yaml`（低优先级默认值）→ 全局 `config.yaml` 的 `plugin.plugin_configs.<name>`（高优先级覆盖）
 
 | 方法 | 签名 | 说明 |
 |------|------|------|
 | `get_config` | `(key: str, default: Any = None) -> Any` | 获取 |
-| `set_config` | `(key: str, value: Any) -> None` | 设置（立即持久化） |
+| `set_config` | `(key: str, value: Any) -> None` | 设置（立即持久化到全局 config.yaml） |
 | `remove_config` | `(key: str) -> bool` | 删除 |
 | `update_config` | `(updates: Dict[str, Any]) -> None` | 批量更新 |
+| `init_defaults` | `(defaults: Dict[str, Any]) -> None` | 补充缺失默认值（仅内存，不持久化） |
 
 ```python
 async def on_load(self):
-    if self.get_config("welcome_msg") is None:
-        self.set_config("welcome_msg", "欢迎新成员！")
+    self.init_defaults({"welcome_msg": "欢迎新成员！", "timeout": 30})
 
 @registrar.on_group_command("set_welcome")
 async def set_welcome(self, event, msg: str):
@@ -26,7 +26,7 @@ async def set_welcome(self, event, msg: str):
     await event.reply(f"欢迎语已设置为: {msg}")
 ```
 
-**注意**：`set_config()` 立即写文件，批量用 `update_config()`。
+**注意**：`set_config()` 立即写全局 config.yaml，批量用 `update_config()`。`init_defaults()` 仅补充内存中缺失的键，不写磁盘。
 
 ## DataMixin — 数据持久化
 

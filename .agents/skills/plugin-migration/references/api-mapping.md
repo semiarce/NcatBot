@@ -101,7 +101,7 @@ from ncatbot.core import registrar
 
 | 4.4/4.5 方式 | 5.0 等价 | 说明 |
 |-------------|---------|------|
-| `self.register_config("key", default, description=..., value_type=..., metadata=...)` | `if self.get_config("key") is None: self.set_config("key", default)` | register_config 不存在于 5.0 |
+| `self.register_config("key", default, description=..., value_type=..., metadata=...)` | `self.init_defaults({"key": default})` | register_config 不存在于 5.0 |
 | `self.config["key"]` | `self.get_config("key")` 或 `self.config["key"]` | 两者皆可，推荐 get_config |
 | `self.data['config']['key']` | `self.get_config("key")` | 4.5 data 嵌套 config，5.0 分离 |
 | `on_change_xxx` 配置回调 | 无等价 | 5.0 无配置变更回调 |
@@ -110,16 +110,15 @@ from ncatbot.core import registrar
 ### 5.0 ConfigMixin 完整 API
 
 ```python
-# 在 on_load() 中初始化
+# 在 on_load() 中补充默认值（仅内存，不持久化）
 async def on_load(self):
-    if self.get_config("key") is None:
-        self.set_config("key", "default_value")
+    self.init_defaults({"key": "default_value", "timeout": 30})
 
 # 读取
 val = self.get_config("key")
 val = self.get_config("key", default="fallback")
 
-# 写入（立即持久化到 config.yaml）
+# 写入（立即持久化到全局 config.yaml）
 self.set_config("key", "new_value")
 
 # 删除

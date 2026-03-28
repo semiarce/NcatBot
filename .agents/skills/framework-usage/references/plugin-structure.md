@@ -55,8 +55,7 @@ description = "插件说明"
 ```python
 async def on_load(self):
     """加载时：初始化配置、数据、定时任务"""
-    if self.get_config("welcome_msg") is None:
-        self.set_config("welcome_msg", "欢迎！")
+    self.init_defaults({"welcome_msg": "欢迎！"})
     self.data.setdefault("counter", 0)
     self.add_permission("my_plugin.admin")
     self.add_scheduled_task("daily_report", "08:00")

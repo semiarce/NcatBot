@@ -35,7 +35,7 @@
 ## 4. Config API
 
 - [ ] 无 `self.register_config(...)` 调用
-- [ ] 配置初始化改为 `if self.get_config("key") is None: self.set_config("key", default)`
+- [ ] 配置初始化改为 `self.init_defaults({"key": default, ...})`
 - [ ] 配置读取使用 `self.get_config("key")` 或 `self.config["key"]`
 - [ ] 无 `self.data['config']['key']` 形式的配置访问
 - [ ] 无 `on_change_xxx` 配置回调方法
