@@ -330,7 +330,9 @@ class PluginLoader:
                 manifest = self._indexer.index_plugin(candidate)
                 if manifest is not None:
                     plugin_name = manifest.name
-                    LOG.info("自动索引新插件: %s (文件夹: %s)", plugin_name, folder_name)
+                    LOG.info(
+                        "自动索引新插件: %s (文件夹: %s)", plugin_name, folder_name
+                    )
 
             if plugin_name is None:
                 LOG.debug("未知插件目录: %s，跳过重载", folder_name)

@@ -294,7 +294,9 @@ class TestReloadConsumer:
             await task
 
     @pytest.mark.asyncio
-    async def test_ld08_runtime_added_plugin_auto_indexed(self, loader: PluginLoader, tmp_path: Path):
+    async def test_ld08_runtime_added_plugin_auto_indexed(
+        self, loader: PluginLoader, tmp_path: Path
+    ):
         """LD-08: 运行时新放入的插件目录应自动索引并加载
 
         场景：
