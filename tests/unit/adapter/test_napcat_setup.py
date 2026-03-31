@@ -8,6 +8,7 @@ NapCat Setup 模块单元测试
   S-04: _install_linux() 不再要求 root 权限
   S-05: LinuxOps.napcat_dir rootless fallback
   S-06: LinuxOps 使用 napcat CLI（不带 sudo/bash）
+  S-10: _enforce_ws_token_security
 """
 
 import json
@@ -423,6 +424,102 @@ class TestEnforceWebuiTokenSecurity:
         mgr._enforce_webui_token_security()
 
         assert cfg.webui_token == "myweakpw"
+        mock_confirm.assert_called_once()
+
+
+# ==================== S-10: _enforce_ws_token_security ====================
+
+
+class TestEnforceWsTokenSecurity:
+    """WS token 安全强制检查（ws_listen_ip 非本地时）。"""
+
+    def _make_manager(self, tmp_path, ws_token="napcat_ws", ws_listen_ip="0.0.0.0"):
+        from ncatbot.adapter.napcat.setup.config import NapCatConfigManager
+
+        cfg = MagicMock()
+        cfg.ws_uri = "ws://127.0.0.1:3001"
+        cfg.ws_token = ws_token
+        cfg.ws_listen_ip = ws_listen_ip
+        cfg.enable_webui = False
+        cfg.webui_port = 6099
+        cfg.webui_token = "webui_token"
+        cfg.enable_napcat_builtin_plugins = False
+
+        platform_ops = MagicMock()
+        platform_ops.napcat_dir = tmp_path / "napcat"
+        platform_ops.config_dir = tmp_path / "napcat" / "config"
+
+        mgr = NapCatConfigManager(
+            platform_ops=platform_ops,
+            napcat_config=cfg,
+            bot_uin="123456",
+        )
+        return mgr, cfg
+
+    @patch("ncatbot.adapter.napcat.setup.config.get_config_manager")
+    def test_default_weak_token_replaced(self, mock_gcm, tmp_path):
+        """S-10a: 0.0.0.0 + 默认弱密钥 → 自动替换"""
+        mock_entry = MagicMock()
+        mock_entry.config = {"ws_token": "napcat_ws"}
+        mock_gcm.return_value.get_adapter_config.return_value = mock_entry
+
+        mgr, cfg = self._make_manager(tmp_path, ws_token="napcat_ws")
+        mgr._enforce_ws_token_security()
+
+        assert cfg.ws_token != "napcat_ws"
+        assert mock_entry.config["ws_token"] == cfg.ws_token
+        mock_gcm.return_value.save.assert_called_once()
+
+    def test_strong_token_unchanged(self, tmp_path):
+        """S-10b: 强密钥不做任何修改"""
+        from ncatbot.utils.config.security import generate_strong_token
+
+        strong = generate_strong_token()
+        mgr, cfg = self._make_manager(tmp_path, ws_token=strong)
+        mgr._enforce_ws_token_security()
+
+        assert cfg.ws_token == strong
+
+    def test_localhost_skips_check(self, tmp_path):
+        """S-10c: ws_listen_ip=localhost → 跳过检查，弱密钥保留"""
+        mgr, cfg = self._make_manager(
+            tmp_path, ws_token="napcat_ws", ws_listen_ip="localhost"
+        )
+        mgr._enforce_ws_token_security()
+
+        assert cfg.ws_token == "napcat_ws"
+
+    def test_127_skips_check(self, tmp_path):
+        """S-10d: ws_listen_ip=127.0.0.1 → 跳过检查"""
+        mgr, cfg = self._make_manager(
+            tmp_path, ws_token="napcat_ws", ws_listen_ip="127.0.0.1"
+        )
+        mgr._enforce_ws_token_security()
+
+        assert cfg.ws_token == "napcat_ws"
+
+    @patch("ncatbot.adapter.napcat.setup.config.confirm", return_value=True)
+    @patch("ncatbot.adapter.napcat.setup.config.get_config_manager")
+    def test_non_default_weak_token_confirm_yes(self, mock_gcm, mock_confirm, tmp_path):
+        """S-10e: 非默认弱密钥 + 确认替换 → 替换"""
+        mock_entry = MagicMock()
+        mock_entry.config = {"ws_token": "myweakpw"}
+        mock_gcm.return_value.get_adapter_config.return_value = mock_entry
+
+        mgr, cfg = self._make_manager(tmp_path, ws_token="myweakpw")
+        mgr._enforce_ws_token_security()
+
+        assert cfg.ws_token != "myweakpw"
+        mock_gcm.return_value.save.assert_called_once()
+        mock_confirm.assert_called_once()
+
+    @patch("ncatbot.adapter.napcat.setup.config.confirm", return_value=False)
+    def test_non_default_weak_token_confirm_no(self, mock_confirm, tmp_path):
+        """S-10f: 非默认弱密钥 + 拒绝替换 → 保持原样"""
+        mgr, cfg = self._make_manager(tmp_path, ws_token="myweakpw")
+        mgr._enforce_ws_token_security()
+
+        assert cfg.ws_token == "myweakpw"
         mock_confirm.assert_called_once()
 
 

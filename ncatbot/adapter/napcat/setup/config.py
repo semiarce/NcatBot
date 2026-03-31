@@ -16,6 +16,7 @@ from .default_webui_config import config as default_webui_config
 from .platform import PlatformOps
 
 _DEFAULT_WEBUI_TOKEN = "napcat_webui"
+_DEFAULT_WS_TOKEN = "napcat_ws"
 
 if TYPE_CHECKING:
     from ncatbot.utils.config.models import NapCatConfig
@@ -121,6 +122,49 @@ class NapCatConfigManager:
             LOG.warning(f"WebUI 令牌为默认弱密钥, 已自动替换, 新令牌: {new_token}")
         else:
             LOG.warning(f"WebUI 令牌已替换为强密钥, 新令牌: {new_token}")
+
+    # ==================== WS Token 安全强制 ====================
+
+    def _enforce_ws_token_security(self) -> None:
+        """当 ws_listen_ip 非本地时，确保 ws_token 满足强密码策略。"""
+        nc = self._napcat_config
+
+        if nc.ws_listen_ip in ("localhost", "127.0.0.1", "::1"):
+            return
+
+        token = nc.ws_token
+        if strong_password_check(token):
+            return
+
+        is_default = token == _DEFAULT_WS_TOKEN
+
+        if not is_default:
+            if not confirm(
+                f"WS 令牌 '{token}' 强度不足 (ws_listen_ip={nc.ws_listen_ip}), "
+                f"是否替换为自动生成的强密钥?",
+                default=True,
+            ):
+                LOG.warning(
+                    "WS 令牌强度不足且监听非本地地址, 存在安全风险, 继续使用现有令牌"
+                )
+                return
+
+        new_token = generate_strong_token()
+        nc.ws_token = new_token
+
+        try:
+            mgr = get_config_manager()
+            entry = mgr.get_adapter_config("napcat")
+            if entry is not None:
+                entry.config["ws_token"] = new_token
+                mgr.save()
+        except Exception as e:
+            LOG.warning(f"写回 config.yaml 失败: {e}")
+
+        if is_default:
+            LOG.warning(f"WS 令牌为默认弱密钥, 已自动替换, 新令牌: {new_token}")
+        else:
+            LOG.warning(f"WS 令牌已替换为强密钥, 新令牌: {new_token}")
 
     # ==================== OneBot11 配置 ====================
 
@@ -276,6 +320,7 @@ class NapCatConfigManager:
     def configure_all(self) -> None:
         self._config_dir.mkdir(parents=True, exist_ok=True)
         self._enforce_webui_token_security()
+        self._enforce_ws_token_security()
         self.configure_onebot()
         self.configure_quick_login()
         self.configure_webui()
