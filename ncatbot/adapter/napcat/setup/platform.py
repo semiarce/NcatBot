@@ -253,7 +253,10 @@ class LinuxOps(PlatformOps):
                 text=True,
                 timeout=5,
             )
-            return "napcat" in result.stdout
+            for line in result.stdout.splitlines():
+                if "napcat" in line.lower() and "dead" not in line.lower():
+                    return True
+            return False
         except Exception:
             return False
 
