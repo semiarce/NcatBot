@@ -1,7 +1,3 @@
 ## ✨ 新功能
-- **qq**: 支持 `group_msg_emoji_like` 群消息表情回应事件捕获，补齐事件实体、注册器、测试工厂与文档 (f792a4c3)
-
-## 🐛 修复
-- 修复类型模型错误 (4ccb9333)
-- 修复上一次回归问题 (fb1bbd3f)
-- 修复未设置默认值导致的异常 (38930186)
+- **event**: 补齐所有 QQ notice 事件实体 — GroupUploadEvent / GroupAdminEvent / GroupDecreaseEvent / GroupBanEvent / FriendAddEvent / GroupRecallEvent / FriendRecallEvent / NotifyEvent / PokeNotifyEvent / LuckyKingNotifyEvent / HonorNotifyEvent，有 sub_type 的实体代理 sub_type 属性，工厂精确映射从 6 条扩展到 17 条 (49980d09)
+- **cli**: 新增 `napcat stop` 命令停止本机 NapCat 进程（仅 Linux），BotClient 关闭时自动停止配置了 `stop_napcat` 的适配器 (51569f8e)
