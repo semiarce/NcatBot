@@ -50,14 +50,14 @@ __all__ = [
 ]
 
 
-class NoticeEvent(BaseEvent, HasSender, GroupScoped):
+class NoticeEvent(BaseEvent):
     """QQ 通知事件实体"""
 
     _data: NoticeEventData
     _api: QQAPIClient
 
     @property
-    def api(self) -> QQAPIClient:
+    def api(self) -> QQAPIClient:  # type: ignore[override]
         return self._api
 
     @property
@@ -73,30 +73,60 @@ class NoticeEvent(BaseEvent, HasSender, GroupScoped):
         return self._data.user_id
 
 
-class GroupUploadEvent(NoticeEvent):
+class GroupUploadEvent(NoticeEvent, HasSender, GroupScoped):
     """QQ 群文件上传事件"""
 
-    _data: GroupUploadNoticeEventData
+    _data: GroupUploadNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def file(self) -> FileInfo:
         return self._data.file
 
 
-class GroupAdminEvent(NoticeEvent):
+class GroupAdminEvent(NoticeEvent, HasSender, GroupScoped):
     """QQ 群管理员变动事件"""
 
-    _data: GroupAdminNoticeEventData
+    _data: GroupAdminNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def sub_type(self) -> str:
         return self._data.sub_type
 
 
-class GroupDecreaseEvent(NoticeEvent):
+class GroupDecreaseEvent(NoticeEvent, HasSender, GroupScoped):
     """QQ 群成员减少事件"""
 
-    _data: GroupDecreaseNoticeEventData
+    _data: GroupDecreaseNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def sub_type(self) -> str:
@@ -107,10 +137,20 @@ class GroupDecreaseEvent(NoticeEvent):
         return self._data.operator_id
 
 
-class GroupIncreaseEvent(NoticeEvent, Kickable):
+class GroupIncreaseEvent(NoticeEvent, HasSender, GroupScoped, Kickable):
     """QQ 群成员增加事件"""
 
-    _data: GroupIncreaseNoticeEventData
+    _data: GroupIncreaseNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def sub_type(self) -> str:
@@ -120,16 +160,26 @@ class GroupIncreaseEvent(NoticeEvent, Kickable):
     def operator_id(self) -> str:
         return self._data.operator_id
 
-    async def kick(self, reject_add_request: bool = False) -> Any:
-        return await self._api.set_group_kick(
-            self._data.group_id, self._data.user_id, reject_add_request
+    async def kick(self, reject_add_request: bool = False, **kwargs: Any) -> Any:
+        return await self._api.manage.set_group_kick(
+            self.group_id, self.user_id, reject_add_request
         )
 
 
-class GroupBanEvent(NoticeEvent):
+class GroupBanEvent(NoticeEvent, HasSender, GroupScoped):
     """QQ 群禁言事件"""
 
-    _data: GroupBanNoticeEventData
+    _data: GroupBanNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def sub_type(self) -> str:
@@ -144,16 +194,31 @@ class GroupBanEvent(NoticeEvent):
         return self._data.duration
 
 
-class FriendAddEvent(NoticeEvent):
+class FriendAddEvent(NoticeEvent, HasSender):
     """QQ 好友添加事件"""
 
-    _data: FriendAddNoticeEventData
+    _data: FriendAddNoticeEventData  # type: ignore[override]
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
 
-class GroupRecallEvent(NoticeEvent):
+class GroupRecallEvent(NoticeEvent, HasSender, GroupScoped):
     """QQ 群消息撤回事件"""
 
-    _data: GroupRecallNoticeEventData
+    _data: GroupRecallNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def operator_id(self) -> str:
@@ -164,20 +229,35 @@ class GroupRecallEvent(NoticeEvent):
         return self._data.message_id
 
 
-class FriendRecallEvent(NoticeEvent):
+class FriendRecallEvent(NoticeEvent, HasSender):
     """QQ 好友消息撤回事件"""
 
-    _data: FriendRecallNoticeEventData
+    _data: FriendRecallNoticeEventData  # type: ignore[override]
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def message_id(self) -> str:
         return self._data.message_id
 
 
-class GroupMsgEmojiLikeEvent(NoticeEvent):
+class GroupMsgEmojiLikeEvent(NoticeEvent, HasSender, GroupScoped):
     """QQ 群消息表情回应事件"""
 
-    _data: GroupMsgEmojiLikeNoticeEventData
+    _data: GroupMsgEmojiLikeNoticeEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def message_id(self) -> str:
@@ -199,10 +279,15 @@ class GroupMsgEmojiLikeEvent(NoticeEvent):
 # --- Notify 子类 ---
 
 
-class NotifyEvent(NoticeEvent):
+class NotifyEvent(NoticeEvent, HasSender):
     """QQ Notify 通知事件基类"""
 
-    _data: NotifyEventData
+    _data: NotifyEventData  # type: ignore[override]
+
+    @property
+    def user_id(self) -> str:
+        assert self._data.user_id is not None
+        return self._data.user_id
 
     @property
     def sub_type(self) -> str:
@@ -212,27 +297,37 @@ class NotifyEvent(NoticeEvent):
 class PokeNotifyEvent(NotifyEvent):
     """QQ 戳一戳事件"""
 
-    _data: PokeNotifyEventData
+    _data: PokeNotifyEventData  # type: ignore[override]
 
     @property
     def target_id(self) -> str:
         return self._data.target_id
 
 
-class LuckyKingNotifyEvent(NotifyEvent):
+class LuckyKingNotifyEvent(NotifyEvent, GroupScoped):
     """QQ 运气王事件"""
 
-    _data: LuckyKingNotifyEventData
+    _data: LuckyKingNotifyEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
 
     @property
     def target_id(self) -> str:
         return self._data.target_id
 
 
-class HonorNotifyEvent(NotifyEvent):
+class HonorNotifyEvent(NotifyEvent, GroupScoped):
     """QQ 群荣誉事件"""
 
-    _data: HonorNotifyEventData
+    _data: HonorNotifyEventData  # type: ignore[override]
+
+    @property
+    def group_id(self) -> str:
+        assert self._data.group_id is not None
+        return self._data.group_id
 
     @property
     def honor_type(self) -> Literal["talkative", "performer", "emotion"]:
