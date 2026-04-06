@@ -1,14 +1,15 @@
 """
 QQ Sugar 方法单元测试
 
-SG-01 ~ SG-06：覆盖消息组装和便捷发送。
+SG-01 ~ SG-09：覆盖消息组装、便捷发送和段冲突加固。
 """
 
 import pytest
 
 from ncatbot.adapter.mock.api import MockBotAPI
+from ncatbot.api.qq.segment_validator import QQSegmentConflictError
 from ncatbot.api.qq.sugar import QQMessageSugarMixin, _build_message_array
-from ncatbot.types import Image
+from ncatbot.types import Image, MessageArray
 
 
 class _SugarHost(QQMessageSugarMixin):
@@ -134,3 +135,29 @@ class TestBuildMessageArray:
 
         # reply 应在最前面
         assert types[0] == "reply"
+
+
+class TestSegmentConflictIntegration:
+    """SG-07 ~ SG-09: 段冲突加固在 sugar 层的集成"""
+
+    @pytest.mark.asyncio
+    async def test_sg07_video_text_auto_split(self, sugar, api):
+        """SG-07: post_group_msg(video=..., text=...) 触发自动拆分，发送两次"""
+        await sugar.post_group_msg("12345", video="v.mp4", text="hello")
+        # 冲突 → 自动拆为两条消息
+        assert api.call_count("send_group_msg") == 2
+
+    @pytest.mark.asyncio
+    async def test_sg08_strict_raises(self, sugar, api):
+        """SG-08: post_group_array_msg(strict=True) + Video+Text → 抛异常"""
+        msg = MessageArray()
+        msg.add_video("v.mp4")
+        msg.add_text("hello")
+        with pytest.raises(QQSegmentConflictError):
+            await sugar.post_group_array_msg("12345", msg, strict=True)
+
+    @pytest.mark.asyncio
+    async def test_sg09_no_conflict_single_send(self, sugar, api):
+        """SG-09: 无冲突时仍只发送一次"""
+        await sugar.post_group_msg("12345", text="hi", image="img.png")
+        assert api.call_count("send_group_msg") == 1

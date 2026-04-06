@@ -107,13 +107,13 @@ class MessageEvent(BaseEvent, Replyable, Deletable, HasSender, HasAttachments):
         if rtf is not None:
             msg = msg + rtf
         if self._data.message_type is MessageType.GROUP:
-            return await self._api.send_group_msg(
+            return await self._api.post_group_array_msg(
                 group_id=self._data.group_id,  # type: ignore[attr-defined]
-                message=msg.to_list(),
+                msg=msg,
             )
-        return await self._api.send_private_msg(
+        return await self._api.post_private_array_msg(
             user_id=self._data.user_id,
-            message=msg.to_list(),
+            msg=msg,
         )
 
     async def delete(self) -> Any:

@@ -15,6 +15,11 @@ from ncatbot.types import (
 from ncatbot.types.qq import Forward
 from ncatbot.types.napcat import SendMessageResult
 
+from .segment_validator import (
+    check_forward_node_conflicts,
+    validate_and_prepare,
+)
+
 if TYPE_CHECKING:
     from .interface import IQQAPIClient
 
@@ -38,12 +43,16 @@ class QQMessageSugarMixin:
         image: Optional[Union[str, Image]] = None,
         video: Optional[Union[str, Video]] = None,
         rtf: Optional[MessageArray] = None,
+        *,
+        strict: bool = False,
     ) -> SendMessageResult:
         """便捷群消息 — 关键字参数自动组装 MessageArray"""
         msg = _build_message_array(
             text=text, at=at, reply=reply, image=image, video=video, rtf=rtf
         )
-        return await self._api.send_group_msg(group_id, msg.to_list())
+        return await _send_with_validation(
+            self._api.send_group_msg, group_id, msg, strict=strict
+        )
 
     async def post_private_msg(
         self,
@@ -53,26 +62,38 @@ class QQMessageSugarMixin:
         image: Optional[Union[str, Image]] = None,
         video: Optional[Union[str, Video]] = None,
         rtf: Optional[MessageArray] = None,
+        *,
+        strict: bool = False,
     ) -> SendMessageResult:
         """便捷私聊消息"""
         msg = _build_message_array(
             text=text, reply=reply, image=image, video=video, rtf=rtf
         )
-        return await self._api.send_private_msg(user_id, msg.to_list())
+        return await _send_with_validation(
+            self._api.send_private_msg, user_id, msg, strict=strict
+        )
 
     async def post_group_array_msg(
         self,
         group_id: Union[str, int],
         msg: MessageArray,
+        *,
+        strict: bool = False,
     ) -> SendMessageResult:
-        return await self._api.send_group_msg(group_id, msg.to_list())
+        return await _send_with_validation(
+            self._api.send_group_msg, group_id, msg, strict=strict
+        )
 
     async def post_private_array_msg(
         self,
         user_id: Union[str, int],
         msg: MessageArray,
+        *,
+        strict: bool = False,
     ) -> SendMessageResult:
-        return await self._api.send_private_msg(user_id, msg.to_list())
+        return await _send_with_validation(
+            self._api.send_private_msg, user_id, msg, strict=strict
+        )
 
     # ---- 群消息 sugar ----
 
@@ -203,6 +224,7 @@ class QQMessageSugarMixin:
         group_id: Union[str, int],
         forward: Forward,
     ) -> SendMessageResult:
+        check_forward_node_conflicts(forward)
         return await self._api.send_forward_msg(
             "group",
             group_id,
@@ -214,6 +236,7 @@ class QQMessageSugarMixin:
         user_id: Union[str, int],
         forward: Forward,
     ) -> SendMessageResult:
+        check_forward_node_conflicts(forward)
         return await self._api.send_forward_msg(
             "private",
             user_id,
@@ -283,3 +306,18 @@ def _to_sticker(image: Union[str, Image]) -> Image:
         image.sub_type = 1
         return image
     return Image(file=image, sub_type=1)
+
+
+async def _send_with_validation(
+    send_fn,
+    target_id: Union[str, int],
+    msg: MessageArray,
+    *,
+    strict: bool = False,
+) -> SendMessageResult:
+    """验证消息段冲突后发送，必要时自动拆为多条"""
+    parts = validate_and_prepare(msg, strict=strict)
+    result = SendMessageResult(message_id="")
+    for part in parts:
+        result = await send_fn(target_id, part.to_list())
+    return result
