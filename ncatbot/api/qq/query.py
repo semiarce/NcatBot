@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, List, Literal, Union
 
+from ncatbot.types import ImageAttachment
 from ncatbot.types.napcat import (
     BotStatus,
     EmojiLikeInfo,
@@ -163,3 +164,31 @@ class QQQuery:
 
     async def ocr_image(self, image: str) -> OcrResult:
         return await self._api.ocr_image(image)
+
+    # ---- 头像查询 ----
+
+    async def get_user_avatar(
+        self,
+        user_id: Union[str, int],
+        spec: Literal[40, 100, 640] = 640,
+    ) -> ImageAttachment:
+        """获取 QQ 用户头像
+
+        通过 QQ 头像公开接口构造下载链接，返回 `ImageAttachment`。
+
+        Parameters
+        ----------
+        user_id : str | int
+            目标用户 QQ 号
+        spec : 40 | 100 | 640
+            头像尺寸（像素），默认 640
+        """
+        uid = int(user_id)
+        url = f"http://q.qlogo.cn/headimg_dl?dst_uin={uid}&spec={spec}&img_type=jpg"
+        return ImageAttachment(
+            name=f"{uid}_avatar_{spec}.jpg",
+            url=url,
+            content_type="image/jpeg",
+            width=spec,
+            height=spec,
+        )
