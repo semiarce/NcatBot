@@ -15,11 +15,13 @@ tests/
 │   ├── plugin/        # 插件 Mixin + 导入去重 + Loader (M-01 ~ M-41, ID-01 ~ ID-02, LD-01 ~ LD-05)
 │   ├── adapter/       # 适配器解析 + 注册表 + 真实数据 + 事件日志格式 (P-01 ~ P-07, RF-01 ~ RF-08, AR-01 ~ AR-05, GM-01 ~ GM-05, BL-01 ~ BL-22, GH-01 ~ GH-11, LK-01 ~ LK-09, LKP-01 ~ LKP-10, ELS-01 ~ ELS-17)
 │   ├── config/        # 配置迁移 + 安全 + 分层 + 事件日志格式 (CF-01 ~ CF-05, CS-01 ~ CS-05, CE-01 ~ CE-05, BQ-01 ~ BQ-11, AI-03 ~ AI-20, ELF-01 ~ ELF-06)
-│   └── cli/           # CLI 冒烟 (CX-01 ~ CX-14)
-├── integration/       # 集成测试 (I-01 ~ I-21)
+│   ├── cli/           # CLI 冒烟 (CX-01 ~ CX-14)
+│   └── webui/         # WebUI 单元测试 (WUI-01 ~ WUI-14)
+├── integration/       # 集成测试 (I-01 ~ I-21, WUI-I-01 ~ WUI-I-04)
 ├── e2e/               # 端到端测试
 │   ├── test_bot_client.py  # BotClient E2E (B-01 ~ B-05)
 │   ├── plugin/        # 插件离线 E2E (PL-01 ~ PL-53, PL-MR-01 ~ PL-MR-04)
+│   ├── test_webui_e2e.py  # WebUI E2E (WUI-E2E-01)
 │   └── napcat/        # NapCat 真实连接 E2E (NC-01 ~ NC-21)
 └── fixtures/          # 共享测试数据
 ```
@@ -105,3 +107,6 @@ python tests/e2e/napcat/run.py
 | AI | AI 适配器 (chat / image / ASR) | AI-03 ~ AI-20 |
 | ELF | Event Log Format Config | ELF-01 ~ ELF-06 |
 | ELS | Event Log Summary | ELS-01 ~ ELS-17 |
+| WUI | WebUI 单元测试 | WUI-01 ~ WUI-14 |
+| WUI-I | WebUI 集成测试 | WUI-I-01 ~ WUI-I-04 |
+| WUI-E2E | WebUI 端到端测试 | WUI-E2E-01 |
