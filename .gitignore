@@ -61,6 +61,10 @@ config.yaml
 # === Development ===
 dev/
 
+# === WebUI frontend ===
+ncatbot/webui/frontend/node_modules/
+ncatbot/webui/static/
+
 # === Misc ===
 *.log
 *.sqlite3
