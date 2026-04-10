@@ -14,6 +14,9 @@ class TestStrongPasswordCheck:
         """CS-01: 合法强密码通过检查"""
         assert strong_password_check("Abcdefg1234!")
         assert strong_password_check("MyP@ssw0rd!!XY")
+        # 常见特殊字符 @#$%^ 也应被接受
+        assert strong_password_check("WOCH@6645j#%")
+        assert strong_password_check("HS}o$Wor{d123^")
 
     def test_cs02_weak_passwords_rejected(self):
         """CS-02: 弱密码拒绝 — 缺少各字符类型"""
@@ -25,7 +28,7 @@ class TestStrongPasswordCheck:
         assert not strong_password_check("ABCDEFG1234!")
         # 无大写
         assert not strong_password_check("abcdefg1234!")
-        # 无特殊字符
+        # 无特殊字符（纯字母+数字）
         assert not strong_password_check("Abcdefg12345")
 
 

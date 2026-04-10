@@ -4,7 +4,11 @@ import random
 import string
 from re import search
 
+# 生成 token 时使用的安全字符子集（URI 友好）
 URI_SPECIAL_CHARS = "-_.~!()*"
+
+# 校验时接受的特殊字符范围（包含常见密码特殊字符）
+_ACCEPTED_SPECIAL_CHARS = set(URI_SPECIAL_CHARS + "@#$%^&+=!<>?/\\|{}[]`:;',\"")
 
 
 def strong_password_check(password: str) -> bool:
@@ -13,7 +17,7 @@ def strong_password_check(password: str) -> bool:
     return (
         len(password) >= 12
         and all(search(p, password) for p in patterns)
-        and any(c in URI_SPECIAL_CHARS for c in password)
+        and any(c in _ACCEPTED_SPECIAL_CHARS for c in password)
     )
 
 
