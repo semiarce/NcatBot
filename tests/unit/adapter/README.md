@@ -66,6 +66,17 @@ python -m pytest tests/unit/adapter/ -v
 | BL-21 | 转发动态 (DYNAMIC_TYPE_FORWARD) | text 和 forward_dynamic_id 正确 |
 | BL-22 | DataPair 时间戳缓存 | 首次/后续 update 与深拷贝隔离 |
 
+### SessionSource (`test_bilibili_session_source.py`)
+
+测试 SessionSource 私信时间戳过滤逻辑。
+
+| 规范 ID | 说明 | 验证点 |
+|---------|------|--------|
+| BL-24a | 新鲜私信正常推送 | age < max_msg_age 的消息传播到回调 |
+| BL-24b | 过期私信被丢弃 | age > max_msg_age 的消息不触发回调 |
+| BL-24c | timestamp=0 视为过期 | 无时间戳的消息被丢弃 |
+| BL-24d | 自定义 max_msg_age | 自定义阈值生效 |
+
 ### BiliQueryAPI (`test_bilibili_query_api.py`)
 
 测试 Bilibili 查询操作 Mixin：视频 ID 解析、音频流获取、字幕获取。

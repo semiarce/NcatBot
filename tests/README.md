@@ -94,7 +94,7 @@ python tests/e2e/napcat/run.py
 | FW | Forward 转发消息 | FW-01 ~ FW-03 |
 | RF | 真实日志夹具事件解析 | RF-01 ~ RF-08 |
 | GM | 群消息批量真实数据 | GM-01 ~ GM-05 |
-| BL | Bilibili 事件解析 | BL-01 ~ BL-17 |
+| BL | Bilibili 事件解析 + SessionSource | BL-01 ~ BL-24 |
 | LR | Bilibili 数据模型 (LiveRoomInfo) | LR-01 ~ LR-03 |
 | GH | GitHub 事件解析 | GH-01 ~ GH-11 |
 | SEG | 消息段附件桥接 | SEG-01 |
