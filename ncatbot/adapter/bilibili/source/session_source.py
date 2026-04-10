@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from typing import Any, Awaitable, Callable, Optional
 
 from ncatbot.utils import get_log
@@ -22,10 +23,12 @@ class SessionSource(BaseSource):
         callback: Callable[[str, dict], Awaitable[None]],
         *,
         poll_interval: float = 6.0,
+        max_msg_age: float = 30.0,
     ) -> None:
         super().__init__(callback)
         self._credential = credential
         self._poll_interval = poll_interval
+        self._max_msg_age = max_msg_age
         self._session: Optional[Any] = None
         self._task: Optional[asyncio.Task] = None
 
@@ -43,6 +46,16 @@ class SessionSource(BaseSource):
 
             @self._session.on(et)
             async def _on_event(event: Any, _v: str = evt_value) -> None:
+                ts = getattr(event, "timestamp", 0)
+                age = time.time() - ts if ts else float("inf")
+                if age > self._max_msg_age:
+                    LOG.debug(
+                        "丢弃过期私信 seqno=%s age=%.1fs (阈值 %.0fs)",
+                        getattr(event, "msg_seqno", "?"),
+                        age,
+                        self._max_msg_age,
+                    )
+                    return
                 raw = {
                     "source": "session",
                     "msg_type": _v,
