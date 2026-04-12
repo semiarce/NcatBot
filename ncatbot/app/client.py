@@ -335,11 +335,15 @@ class BotClient:
 
     def _setup_handler_dispatcher(self) -> None:
         """创建 HandlerDispatcher 并订阅事件流。"""
-        # 收集每个平台的 API
+        # 复用 _setup_api() 中已包装好的平台客户端（含 sugar 层），
+        # 而非裸 adapter.get_api()，否则事件实体上的 sugar 方法会缺失。
         platform_apis = {}
         for adapter in self._adapters:
             platform = getattr(adapter, "platform", adapter.name)
-            platform_apis[platform] = adapter.get_api()
+            try:
+                platform_apis[platform] = self._api.platform(platform)
+            except KeyError:
+                platform_apis[platform] = adapter.get_api()
 
         self._handler_dispatcher = HandlerDispatcher(
             api=self._api,
