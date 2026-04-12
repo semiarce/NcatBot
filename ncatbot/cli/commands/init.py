@@ -3,11 +3,105 @@
 import getpass
 import re
 from pathlib import Path
+from typing import Any, Dict, List
 
 import click
 import yaml
 
-from ..utils.colors import success, warning, info
+from ..utils.checkbox import checkbox_prompt, alt_screen
+from ..utils.colors import success, warning, info, header
+
+
+# ---------------------------------------------------------------------------
+# 适配器发现 — 从注册表读取
+# ---------------------------------------------------------------------------
+
+
+def _get_adapter_choices() -> List[Dict[str, Any]]:
+    """从适配器注册表构建选择列表。
+
+    返回 ``[{"name": "napcat", "cls": NapCatAdapter, ...}, ...]``。
+    排除 mock 适配器。
+    """
+    from ncatbot.adapter import adapter_registry
+
+    all_adapters = adapter_registry.discover()
+    choices: List[Dict[str, Any]] = []
+    for name, cls in all_adapters.items():
+        if name == "mock":
+            continue
+        choices.append(
+            {
+                "name": name,
+                "cls": cls,
+                "label": f"{getattr(cls, 'description', name)}",
+                "platform": getattr(cls, "platform", name),
+            }
+        )
+    return choices
+
+
+# ---------------------------------------------------------------------------
+# 适配器选择交互
+# ---------------------------------------------------------------------------
+
+
+def _select_adapters() -> List[Dict[str, Any]]:
+    """交互式选择并配置适配器，返回 adapters 列表。
+
+    1. 从注册表发现所有可用适配器
+    2. checkbox 选择在备用屏幕完成
+    3. 各适配器的 ``cli_configure()`` 钩子在备用屏幕中执行
+    4. 恢复主终端后由调用方打印配置摘要
+    """
+    choices = _get_adapter_choices()
+    if not choices:
+        click.echo(warning("未发现任何可用适配器"))
+        return []
+
+    labels = [c["label"] for c in choices]
+    # 不再需要单独的 descriptions，label 已包含描述
+
+    # ① checkbox 选择（自带 alt screen 进出）
+    chosen_indices = checkbox_prompt(
+        labels,
+        checked=[0],  # 默认选中第一个
+        title="请选择要启用的适配器:",
+    )
+
+    if not chosen_indices:
+        click.echo(warning("未选择任何适配器，默认使用第一个"))
+        chosen_indices = [0]
+
+    # ② 在备用屏幕中完成各适配器配置（调用适配器自身的钩子）
+    adapters: List[Dict[str, Any]] = []
+    with alt_screen():
+        for i, idx in enumerate(chosen_indices):
+            choice = choices[idx]
+            adapter_cls = choice["cls"]
+            config = adapter_cls.cli_configure()
+            adapters.append(
+                {
+                    "type": choice["name"],
+                    "platform": choice["platform"],
+                    "enabled": True,
+                    "config": config,
+                }
+            )
+
+    return adapters
+
+
+def _print_adapter_summary(adapters: List[Dict[str, Any]]) -> None:
+    """在主终端打印适配器配置摘要。"""
+    click.echo(header("已配置的适配器:"))
+    for adapter in adapters:
+        click.echo(f"  {success('✔')} {adapter['type']} ({adapter['platform']})")
+
+
+# ---------------------------------------------------------------------------
+# init 命令入口
+# ---------------------------------------------------------------------------
 
 
 @click.command()
@@ -26,27 +120,21 @@ def init(target_dir: str):
             _generate_template_plugin(plugins_path)
             return
 
-    bot_uin = click.prompt("请输入机器人 QQ 号", type=str)
-    root = click.prompt("请输入管理员 QQ 号", type=str)
+    bot_uin = click.prompt(
+        "请输入机器人 QQ 号（如不适用可留空）", default="", show_default=False
+    )
+    root = click.prompt(
+        "请输入管理员 QQ 号（如不适用可留空）", default="", show_default=False
+    )
 
-    config_data = {
+    adapters = _select_adapters()
+    _print_adapter_summary(adapters)
+
+    config_data: Dict[str, Any] = {
         "bot_uin": bot_uin,
         "root": root,
         "debug": False,
-        "adapters": [
-            {
-                "type": "napcat",
-                "platform": "qq",
-                "enabled": True,
-                "config": {
-                    "ws_uri": "ws://localhost:3001",
-                    "ws_token": "napcat_ws",
-                    "webui_uri": "http://localhost:6099",
-                    "webui_token": "napcat_webui",
-                    "enable_webui": True,
-                },
-            },
-        ],
+        "adapters": adapters,
         "plugin": {
             "plugins_dir": "plugins",
             "load_plugin": True,
@@ -65,9 +153,9 @@ def init(target_dir: str):
             sort_keys=False,
         )
 
-    click.echo(success(f"config.yaml 已创建: {config_path}"))
+    click.echo(success(f"\nconfig.yaml 已创建: {config_path}"))
     _ensure_plugins_dir(plugins_path)
-    _generate_template_plugin(plugins_path)
+    _generate_template_plugin(plugins_path, adapters)
     click.echo()
     click.echo(info("下一步: 运行 'ncatbot run' 启动机器人"))
 
@@ -88,33 +176,15 @@ def _sanitize_plugin_name(name: str) -> str:
     return sanitized or "my_plugin"
 
 
-def _generate_template_plugin(plugins_path: Path):
-    """在 plugins/ 下生成以当前用户名命名的模板插件。"""
-    username = getpass.getuser()
-    plugin_name = _sanitize_plugin_name(username) + "_plugin"
-    class_name = plugin_name.title().replace("_", "") + "Plugin"
-    plugins_dir = plugins_path / plugin_name
+# ---------------------------------------------------------------------------
+# 各平台模板插件内容
+# ---------------------------------------------------------------------------
 
-    if plugins_dir.exists():
-        click.echo(info(f"模板插件已存在，跳过: {plugins_dir}"))
-        return
-
-    plugins_dir.mkdir(parents=True)
-
-    manifest_content = f"""\
-name = "{plugin_name}"
-version = "0.1.0"
-main = "plugin.py"
-author = "{username}"
-description = "NcatBot 模板插件 — 发送 hello 回复 hi"
-entry_class = "{class_name}"
-pip_dependencies = []
-
-[dependencies]
-"""
-
-    plugin_py_content = f"""\
-\"\"\"模板插件 — 发送 hello 回复 hi。\"\"\"
+_PLUGIN_TEMPLATES: Dict[str, Dict[str, str]] = {
+    "qq": {
+        "description": "NcatBot 模板插件 — 发送 hello 回复 hi (QQ)",
+        "code": """\
+\"\"\"模板插件 — 发送 hello 回复 hi (QQ)。\"\"\"
 
 from ncatbot.plugin import NcatBotPlugin
 from ncatbot.core import registrar
@@ -136,7 +206,131 @@ class {class_name}(NcatBotPlugin):
     @registrar.on_private_command("hello", ignore_case=True)
     async def on_private_hello(self, event: PrivateMessageEvent):
         await event.reply(text="hi")
+""",
+    },
+    "bilibili": {
+        "description": "NcatBot 模板插件 — Bilibili 弹幕回复",
+        "code": """\
+\"\"\"模板插件 — Bilibili 弹幕回复。\"\"\"
+
+from ncatbot.plugin import NcatBotPlugin
+from ncatbot.core import registrar
+from ncatbot.event.bilibili import LiveDanmakuEvent
+
+
+class {class_name}(NcatBotPlugin):
+
+    async def on_load(self):
+        self.logger.info(f"{{self.name}} 已加载")
+
+    async def on_close(self):
+        self.logger.info(f"{{self.name}} 已卸载")
+
+    @registrar.bilibili.on_live_danmaku()
+    async def on_danmaku(self, event: LiveDanmakuEvent):
+        self.logger.info("收到弹幕: %s", event.content)
+""",
+    },
+    "github": {
+        "description": "NcatBot 模板插件 — GitHub 事件监听",
+        "code": """\
+\"\"\"模板插件 — GitHub 事件监听。\"\"\"
+
+from ncatbot.plugin import NcatBotPlugin
+from ncatbot.core import registrar
+from ncatbot.event.github import GitHubPushEvent
+
+
+class {class_name}(NcatBotPlugin):
+
+    async def on_load(self):
+        self.logger.info(f"{{self.name}} 已加载")
+
+    async def on_close(self):
+        self.logger.info(f"{{self.name}} 已卸载")
+
+    @registrar.github.on_push()
+    async def on_push(self, event: GitHubPushEvent):
+        self.logger.info("收到 Push 事件: %s", event.repo)
+""",
+    },
+    "ai": {
+        "description": "NcatBot 模板插件 — AI 对话",
+        "code": """\
+\"\"\"模板插件 — AI 对话。\"\"\"
+
+from ncatbot.plugin import NcatBotPlugin
+
+
+class {class_name}(NcatBotPlugin):
+
+    async def on_load(self):
+        self.logger.info(f"{{self.name}} 已加载")
+
+    async def on_close(self):
+        self.logger.info(f"{{self.name}} 已卸载")
+""",
+    },
+    "lark": {
+        "description": "NcatBot 模板插件 — 飞书消息回复",
+        "code": """\
+\"\"\"模板插件 — 飞书消息回复。\"\"\"
+
+from ncatbot.plugin import NcatBotPlugin
+from ncatbot.core import registrar
+from ncatbot.event.lark import LarkMessageEvent
+
+
+class {class_name}(NcatBotPlugin):
+
+    async def on_load(self):
+        self.logger.info(f"{{self.name}} 已加载")
+
+    async def on_close(self):
+        self.logger.info(f"{{self.name}} 已卸载")
+
+    @registrar.lark.on_message()
+    async def on_message(self, event: LarkMessageEvent):
+        self.logger.info("收到飞书消息: %s", event.text)
+""",
+    },
+}
+
+
+def _generate_template_plugin(
+    plugins_path: Path, adapters: List[Dict[str, Any]] | None = None
+):
+    """在 plugins/ 下生成以当前用户名命名的模板插件。"""
+    username = getpass.getuser()
+    plugin_name = _sanitize_plugin_name(username) + "_plugin"
+    class_name = plugin_name.title().replace("_", "") + "Plugin"
+    plugins_dir = plugins_path / plugin_name
+
+    if plugins_dir.exists():
+        click.echo(info(f"模板插件已存在，跳过: {plugins_dir}"))
+        return
+
+    # 根据第一个适配器的平台选择模板，默认 qq
+    platform = "qq"
+    if adapters:
+        platform = adapters[0].get("platform", "qq")
+    tmpl = _PLUGIN_TEMPLATES.get(platform, _PLUGIN_TEMPLATES["qq"])
+
+    plugins_dir.mkdir(parents=True)
+
+    manifest_content = f"""\
+name = "{plugin_name}"
+version = "0.1.0"
+main = "plugin.py"
+author = "{username}"
+description = "{tmpl["description"]}"
+entry_class = "{class_name}"
+pip_dependencies = []
+
+[dependencies]
 """
+
+    plugin_py_content = tmpl["code"].format(class_name=class_name)
 
     (plugins_dir / "manifest.toml").write_text(manifest_content, encoding="utf-8")
     (plugins_dir / "plugin.py").write_text(plugin_py_content, encoding="utf-8")

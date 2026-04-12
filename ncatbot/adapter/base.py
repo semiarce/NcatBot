@@ -119,6 +119,20 @@ class BaseAdapter(ABC):
     async def listen(self) -> None:
         """阻塞监听消息，内部完成事件解析后回调数据模型"""
 
+    # ---- CLI 配置钩子 ----
+
+    @classmethod
+    def cli_configure(cls) -> Dict[str, Any]:
+        """CLI ``init`` 命令调用的交互式配置钩子。
+
+        在终端中通过交互式问答收集适配器配置，返回可序列化到
+        ``config.yaml`` 中 ``adapters[].config`` 的字典。
+
+        子类可覆盖此方法以提供平台特有的配置流程（如下载运行时、
+        扫码登录等）。默认实现返回空字典。
+        """
+        return {}
+
     # ---- API ----
 
     @abstractmethod
